@@ -1,5 +1,5 @@
 import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Database, Job } from '@/types_db';
+import { Job } from '@/types_db';
 import {
   Modal,
   ModalContent,

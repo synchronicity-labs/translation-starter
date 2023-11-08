@@ -1,7 +1,7 @@
 'use client';
 
 import JobGridItemExpandedModal from './JobGridItemExpandedModal';
-import StatusTag from '@/components/ui/StatusTag';
+import StatusTag from '@/components/ui/Display/StatusTag';
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { Job } from '@/types_db';
 import { GridItem, Stack, Text, useDisclosure } from '@chakra-ui/react';
