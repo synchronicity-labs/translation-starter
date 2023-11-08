@@ -1,4 +1,3 @@
-import LogoCloud from '../LogoCloud';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import Link from 'next/link';
 import { FaGithub } from 'react-icons/fa';
@@ -65,7 +64,7 @@ export default function Footer() {
           })}
         </Flex>
       </Flex>
-      <Flex gap={4} fontSize={['xl', '2xl', '3xl']}>
+      <Flex gap={4} fontSize={['md', 'lg', 'xl']}>
         <Link href="https://twitter.com/synclabs_ai">
           <Box color="white">
             <FaXTwitter />
