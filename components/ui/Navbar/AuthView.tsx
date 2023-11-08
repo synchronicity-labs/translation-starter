@@ -1,6 +1,6 @@
 'use client';
 
-import ProfileButton from '../ProfileButton';
+import ProfileButton from '../Input/ProfileButton';
 import { Flex, Link, Text, useMediaQuery } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { usePathname } from 'next/navigation';
@@ -8,7 +8,7 @@ import { FC } from 'react';
 
 interface Props {
   user: User;
-  pages: { label: string; icon: JSX.Element; route: string }[];
+  pages: { label: string; route: string }[];
 }
 const AuthView: FC<Props> = ({ user, pages }) => {
   const pathname = usePathname();
@@ -22,7 +22,7 @@ const AuthView: FC<Props> = ({ user, pages }) => {
     <Flex gap={4}>
       {!isMobile && (
         <Flex gap={2}>
-          {pages.map(({ label, icon, route }) => {
+          {pages.map(({ label, route }) => {
             const onPath = pathname === route;
             return (
               <Link key={route} href={route}>
@@ -44,7 +44,6 @@ const AuthView: FC<Props> = ({ user, pages }) => {
                         }
                   }
                 >
-                  {icon}
                   <Text fontWeight="bold">{label}</Text>
                 </Flex>
               </Link>
