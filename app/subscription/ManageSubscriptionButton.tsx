@@ -1,6 +1,6 @@
 'use client';
 
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/Input/Button';
 import { postData } from '@/utils/helpers';
 import { Session } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
