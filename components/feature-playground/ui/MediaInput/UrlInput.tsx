@@ -1,6 +1,5 @@
-// import FilePreview from '@/components/ui/FilePreview';
-import Info from '@/components/ui/Info';
-import { Button, Flex, Input, Text, Stack } from '@chakra-ui/react';
+import Info from '@/components/ui/Display/Info';
+import { Input, Text, Stack } from '@chakra-ui/react';
 import { FC } from 'react';
 
 interface Props {
