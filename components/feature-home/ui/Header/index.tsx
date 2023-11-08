@@ -9,7 +9,7 @@ interface Props {}
 
 const Header: FC<Props> = () => {
   const router = useRouter();
-  const title = `Babel Fish AI`;
+  const title = `Translation AI`;
   const subtitle = `Lip-synced Language Translation at Your Fingertips`;
   return (
     <Flex
