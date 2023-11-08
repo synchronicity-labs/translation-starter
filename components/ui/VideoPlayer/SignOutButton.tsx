@@ -1,6 +1,6 @@
 'use client';
 
-import Button from '../Button';
+import Button from '../Input/Button';
 import { useSupabase } from '@/app/supabase-provider';
 import { useRouter } from 'next/navigation';
 
