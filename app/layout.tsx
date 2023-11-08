@@ -6,7 +6,7 @@ import { PropsWithChildren } from 'react';
 import '@/styles/main.css';
 
 const meta = {
-  title: 'Babel Fish AI',
+  title: 'Translation AI',
   description: 'Brought to you by Sync Labs',
   robots: 'follow, index',
   favicon: '/favicon.ico',
@@ -34,11 +34,15 @@ export default function RootLayout({
       <body className="bg-black loading">
         <SupabaseProvider>
           <ChakraProvider>
-            <Stack justifyContent="space-between" className="min-h-screen">
-              <Flex direction="column">
+            <Stack
+              justifyContent="space-between"
+              className="min-h-screen"
+              gap={0}
+            >
+              <Flex direction="column" flex="1">
                 <Navbar />
-                <Flex w="full" justifyContent={'center'}>
-                  <Flex w="full" maxW="6xl">
+                <Flex w="full" flex="1" justifyContent={'center'}>
+                  <Flex w="full" maxW="6xl" flex="1">
                     {children}
                   </Flex>
                 </Flex>
