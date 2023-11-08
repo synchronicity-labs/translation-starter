@@ -1,32 +1,36 @@
 import { getSession, getJobs } from '@/app/supabase-server';
 import JobGrid from '@/components/feature-playground/ui/JobGrid';
-import MediaInput from '@/components/ui/MediaInput';
-import { Flex, Heading, Stack, Tag, Text } from '@chakra-ui/react';
+import MediaInput from '@/components/feature-playground/ui/MediaInput';
+import PageHeader from '@/components/ui/Display/PageHeader';
+import { Flex, Stack } from '@chakra-ui/react';
 
-export default async function PricingPage() {
+export default async function HomePage() {
+  // Grab data from db
   const session = await getSession();
   const jobs = session ? await getJobs(session?.user.id as string) : [];
 
+  // Page content
   const title = `Video Translation`;
   const subtitle = `Translate any video to any language, with perfectly matched lip movements`;
+  const tag = `Beta`;
 
   return (
-    <Flex w="full" px={4} justifyContent={'center'} color="white">
+    <Flex
+      w="full"
+      h="full"
+      px={4}
+      justifyContent="center"
+      alignItems="center"
+      color="white"
+    >
       <Stack w="full" maxW="4xl" py={8} gap={8}>
-        <Stack w="full" textAlign="center" alignItems="center">
-          <Flex alignItems="center" gap={2}>
-            <Heading>{title}</Heading>
-            <Tag className="uppercase" size="sm">
-              Beta
-            </Tag>
-          </Flex>
-          <Text alignSelf={'center'} fontWeight="medium" fontSize={'xl'}>
-            {subtitle}
-          </Text>
-        </Stack>
-        <Flex w="full" justifyContent={'center'}>
-          <MediaInput session={session} />
-        </Flex>
+        <PageHeader
+          title={title}
+          subtitle={subtitle}
+          tag={tag}
+          className="items-center text-center"
+        />
+        <MediaInput session={session} />
         {jobs && <JobGrid jobs={jobs} />}
       </Stack>
     </Flex>
