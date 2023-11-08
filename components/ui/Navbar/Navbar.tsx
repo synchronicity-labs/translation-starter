@@ -1,23 +1,20 @@
-import Button from '../Button';
+import Button from '../Input/Button';
 import AuthView from './AuthView';
 import { createServerSupabaseClient } from '@/app/supabase-server';
 import logo from '@/assets/logo.png';
 import { Box, Flex } from '@chakra-ui/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaBook, FaSlack } from 'react-icons/fa';
+import { FaDollarSign, FaRegWindowMaximize } from 'react-icons/fa';
 
 const pages = [
   {
-    label: 'Docs',
-    icon: <FaBook />,
-    route: 'https://docs.synclabs.so/'
+    label: 'Playground',
+    route: '/'
   },
   {
-    label: 'Slack',
-    icon: <FaSlack />,
-    route:
-      'https://syncbetatesters.slack.com/join/shared_invite/zt-23592cxxg-sTjaMTkk2DO5yUcixzRWZg#/shared-invite/email'
+    label: 'Subscription',
+    route: '/subscription'
   }
 ];
 
