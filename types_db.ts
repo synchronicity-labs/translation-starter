@@ -290,6 +290,7 @@ export type Product = Database['public']['Tables']['products']['Row'];
 export type Price = Database['public']['Tables']['prices']['Row'];
 export type Job = Database['public']['Tables']['jobs']['Row'];
 export type Status = Database['public']['Enums']['status'];
+export type BillingInterval = 'lifetime' | 'year' | 'month';
 
 export interface ProductWithPrices extends Product {
   prices: Price[];
