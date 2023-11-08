@@ -1,11 +1,11 @@
 'use client';
 
-import FileDrop from '../FileDrop';
-import Info from '../Info';
-import { SignUpModal } from '../Modals';
-import Selector from '../Selector';
 import Requirements from './Requirements';
 import UrlInput from './UrlInput';
+import Info from '@/components/ui/Display/Info';
+import FileDrop from '@/components/ui/Input/FileDrop';
+import Selector from '@/components/ui/Input/Selector';
+import { SignUpModal } from '@/components/ui/Modals';
 import { insertBeforeDot } from '@/utils/helpers';
 import {
   Button,

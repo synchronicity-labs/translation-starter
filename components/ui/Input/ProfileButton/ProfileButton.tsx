@@ -16,20 +16,33 @@ import {
 import { User } from '@supabase/auth-helpers-nextjs';
 import { useRouter, usePathname } from 'next/navigation';
 import { FC } from 'react';
-import { FaDollarSign, FaChartBar, FaSlack, FaBook } from 'react-icons/fa';
+import {
+  FaDollarSign,
+  FaChartBar,
+  FaSlack,
+  FaBook,
+  FaRegWindowMaximize
+} from 'react-icons/fa';
 import { MdPerson } from 'react-icons/md';
 
 interface Props {
   user: User;
 }
 
-const tabs: any[] = [
+const pages = [
+  {
+    label: 'Playground',
+    icon: <FaRegWindowMaximize />,
+    route: '/',
+    showOnMobile: true,
+    showOnWeb: false
+  },
   {
     label: 'Subscription',
     icon: <FaDollarSign />,
     route: '/subscription',
     showOnMobile: true,
-    showOnWeb: true
+    showOnWeb: false
   },
   {
     label: 'Usage',
@@ -43,7 +56,7 @@ const tabs: any[] = [
     icon: <FaBook />,
     route: 'https://docs.synclabs.so/',
     showOnMobile: true,
-    showOnWeb: false
+    showOnWeb: true
   },
   {
     label: 'Slack',
@@ -51,7 +64,7 @@ const tabs: any[] = [
     route:
       'https://syncbetatesters.slack.com/join/shared_invite/zt-23592cxxg-sTjaMTkk2DO5yUcixzRWZg#/shared-invite/email',
     showOnMobile: true,
-    showOnWeb: false
+    showOnWeb: true
   }
 ];
 
@@ -142,8 +155,8 @@ const ProfileButton: FC<Props> = ({ user }) => {
                 <Divider borderColor={'#181818'} border={'10'} />
                 <Stack py="1">
                   {isMobile
-                    ? tabs
-                        .filter((tab) => tab.showOnMobile)
+                    ? pages
+                        .filter((page) => page.showOnMobile)
                         .map(({ label, icon, route }) => (
                           <Tab
                             key={label}
@@ -152,8 +165,8 @@ const ProfileButton: FC<Props> = ({ user }) => {
                             route={route}
                           />
                         ))
-                    : tabs
-                        .filter((tab) => tab.showOnWeb)
+                    : pages
+                        .filter((page) => page.showOnWeb)
                         .map(({ label, icon, route }) => (
                           <Tab
                             key={label}

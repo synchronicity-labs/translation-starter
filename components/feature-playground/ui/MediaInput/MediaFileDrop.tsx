@@ -1,7 +1,5 @@
-// import FilePreview from '@/components/ui/FilePreview';
-
-import FileDrop from '../FileDrop';
-import Info from '@/components/ui/Info';
+import Info from '@/components/ui/Display/Info';
+import FileDrop from '@/components/ui/Input/FileDrop';
 import { Flex, Stack, Text } from '@chakra-ui/react';
 import { FC } from 'react';
 

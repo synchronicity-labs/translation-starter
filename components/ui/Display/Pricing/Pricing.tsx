@@ -1,27 +1,19 @@
 'use client';
 
-import Button from '../Button';
-import { Database } from '@/types_db';
+import Button from '../../Input/Button';
+import PageHeader from '../PageHeader';
+import {
+  BillingInterval,
+  Price,
+  ProductWithPrices,
+  SubscriptionWithProduct
+} from '@/types_db';
 import { postData } from '@/utils/helpers';
 import { getStripe } from '@/utils/stripe-client';
 import { Box, Flex, Link, Stack, Text } from '@chakra-ui/react';
 import { Session, User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-
-type Subscription = Database['public']['Tables']['subscriptions']['Row'];
-type Product = Database['public']['Tables']['products']['Row'];
-type Price = Database['public']['Tables']['prices']['Row'];
-
-interface ProductWithPrices extends Product {
-  prices: Price[];
-}
-interface PriceWithProduct extends Price {
-  products: Product | null;
-}
-interface SubscriptionWithProduct extends Subscription {
-  prices: PriceWithProduct | null;
-}
 
 interface Props {
   session: Session | null;
@@ -30,8 +22,27 @@ interface Props {
   subscription: SubscriptionWithProduct | null;
 }
 
-const NoProductsView = () => {
-  return (
+export default function Pricing({
+  session,
+  user,
+  products,
+  subscription
+}: Props) {
+  const title = `Pricing`;
+
+  const intervals = Array.from(
+    new Set(
+      products.flatMap((product) =>
+        product?.prices?.map((price) => price?.interval)
+      )
+    )
+  );
+  const router = useRouter();
+  const [billingInterval, setBillingInterval] =
+    useState<BillingInterval>('month');
+  const [priceIdLoading, setPriceIdLoading] = useState<string>();
+
+  const NoProductsView = () => (
     <Stack px={4} py={8}>
       <Text
         fontSize={['4xl', '6xl']}
@@ -56,27 +67,6 @@ const NoProductsView = () => {
       </Box>
     </Stack>
   );
-};
-
-type BillingInterval = 'lifetime' | 'year' | 'month';
-
-export default function Pricing({
-  session,
-  user,
-  products,
-  subscription
-}: Props) {
-  const intervals = Array.from(
-    new Set(
-      products.flatMap((product) =>
-        product?.prices?.map((price) => price?.interval)
-      )
-    )
-  );
-  const router = useRouter();
-  const [billingInterval, setBillingInterval] =
-    useState<BillingInterval>('month');
-  const [priceIdLoading, setPriceIdLoading] = useState<string>();
 
   const handleCheckout = async (price: Price) => {
     setPriceIdLoading(price.id);
@@ -102,16 +92,10 @@ export default function Pricing({
   };
 
   if (!products.length) return <NoProductsView />;
+
   return (
-    <Stack py={8} textAlign="center" alignItems={'center'} gap={8}>
-      <Text
-        fontSize={['4xl', '6xl']}
-        fontWeight="extrabold"
-        color="white"
-        textAlign="center"
-      >
-        Pricing Plans
-      </Text>
+    <Stack gap={8}>
+      <PageHeader title={title} />
       <Flex w="full" gap={4} className="flex-col sm:flex-row">
         {products
           .sort(
