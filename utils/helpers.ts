@@ -52,3 +52,11 @@ export const insertBeforeDot = (url: string, insert: string) => {
 
   return beginning + '-' + insert + ending;
 };
+
+export const replaceFileExtension = (
+  filename: string,
+  newExtension: string
+): string => {
+  // This will remove the original extension and add the new extension
+  return filename.replace(/\.[^/.]+$/, '') + newExtension;
+};
