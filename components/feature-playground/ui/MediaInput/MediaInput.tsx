@@ -93,24 +93,42 @@ const MediaInput: FC<Props> = ({ session }) => {
     if (session) {
       setLoading(true);
       if (video) {
+        const formData = new FormData();
+        formData.append('file', video);
+
+        try {
+          const response = await fetch(`/api/aws/upload-to-s3`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to upload file');
+          }
+          const result = await response.json();
+          console.log('MediaInput.tsx - handleSubmit - result: ', result);
+        } catch (error) {
+          console.log(`Error during file upload: `, error);
+        }
+
         // Initialize S3 instance
-        const s3 = new S3({
-          accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-          secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
-          region: process.env.NEXT_PUBLIC_S3_REGION
-        });
-        const params = {
-          Bucket: 'synchlabs-public',
-          Key: insertBeforeDot(
-            `/translation-test-input/${video.name}`,
-            uuidv4()
-          ),
-          Body: video,
-          ContentType: video.type
-        };
-        const uploadPromise = s3.upload(params);
-        const upload = await uploadPromise.promise();
-        const url = upload.Location;
+        // const s3 = new S3({
+        //   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
+        //   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
+        //   region: process.env.NEXT_PUBLIC_S3_REGION
+        // });
+        // const params = {
+        //   Bucket: 'synchlabs-public',
+        //   Key: insertBeforeDot(
+        //     `/translation-test-input/${video.name}`,
+        //     uuidv4()
+        //   ),
+        //   Body: video,
+        //   ContentType: video.type
+        // };
+        // const uploadPromise = s3.upload(params);
+        // const upload = await uploadPromise.promise();
+        // const url = upload.Location;
         // const response = await fetch('/api/translate', {
         //   method: 'POST',
         //   body: JSON.stringify({ videoUrl: url, language })
