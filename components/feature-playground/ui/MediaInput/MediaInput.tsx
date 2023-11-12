@@ -6,7 +6,6 @@ import Info from '@/components/ui/Display/Info';
 import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
-import { insertBeforeDot } from '@/utils/helpers';
 import {
   Button,
   Flex,
@@ -17,10 +16,8 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import { Session } from '@supabase/auth-helpers-nextjs';
-import { S3 } from 'aws-sdk';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { HiSparkles } from 'react-icons/hi';
-import { v4 as uuidv4 } from 'uuid';
 
 interface Language {
   name: string;
@@ -34,6 +31,7 @@ interface Props {
 const MediaInput: FC<Props> = ({ session }) => {
   const [video, setVideo] = useState<File | null>(null);
   const [url, setUrl] = useState<string | null>(null);
+
   const [language, setLanguage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -96,44 +94,67 @@ const MediaInput: FC<Props> = ({ session }) => {
         const formData = new FormData();
         formData.append('file', video);
 
-        try {
-          const response = await fetch(`/api/aws/upload-to-s3`, {
-            method: 'POST',
-            body: formData
-          });
+        // Upload video file to S3, transcode video to audio and uplaod audio file to s3
 
-          if (!response.ok) {
-            throw new Error('Failed to upload file');
-          }
-          const result = await response.json();
-          console.log('MediaInput.tsx - handleSubmit - result: ', result);
-        } catch (error) {
-          console.log(`Error during file upload: `, error);
+        const uploadToS3Response = await fetch(`/api/aws/upload-to-s3`, {
+          method: 'POST',
+          body: formData
+        });
+        if (!uploadToS3Response.ok) {
+          throw new Error('Failed to upload file');
         }
 
-        // Initialize S3 instance
-        // const s3 = new S3({
-        //   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-        //   secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
-        //   region: process.env.NEXT_PUBLIC_S3_REGION
-        // });
-        // const params = {
-        //   Bucket: 'synchlabs-public',
-        //   Key: insertBeforeDot(
-        //     `/translation-test-input/${video.name}`,
-        //     uuidv4()
-        //   ),
-        //   Body: video,
-        //   ContentType: video.type
-        // };
-        // const uploadPromise = s3.upload(params);
-        // const upload = await uploadPromise.promise();
-        // const url = upload.Location;
-        // const response = await fetch('/api/translate', {
-        //   method: 'POST',
-        //   body: JSON.stringify({ videoUrl: url, language })
-        // });
-        // const data = await response.json();
+        const uploadToS3Result = await uploadToS3Response.json();
+
+        const { videoUrl, audioUrl } = uploadToS3Result.data;
+
+        console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
+        console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
+
+        const transcriptionResponse = await fetch(`/api/transcribe`, {
+          method: 'POST',
+          body: JSON.stringify({ audioUrl })
+        });
+
+        if (!transcriptionResponse.ok) {
+          throw new Error('Failed to convert audio to text');
+        }
+
+        const transcriptionResult = await transcriptionResponse.json();
+        console.log('transcriptionResult: ', transcriptionResult);
+
+        const transcript = JSON.parse(transcriptionResult.data)
+          .map((item: { start: number; end: number; text: string }) =>
+            item.text.trim()
+          )
+          .join(' ');
+
+        console.log('transcript: ', transcript);
+
+        const translationResponse = await fetch(`/api/translate`, {
+          method: 'POST',
+          body: JSON.stringify({ text: transcript, language })
+        });
+
+        if (!translationResponse.ok) {
+          throw new Error('Failed to translate text');
+        }
+
+        const translationResult = await translationResponse.json();
+        console.log('translationResult: ', translationResult);
+
+        const speechSynthesisResponse = await fetch(`/api/speech-synthesis`, {
+          method: 'POST',
+          body: JSON.stringify({ text: translationResult.data })
+        });
+
+        if (!speechSynthesisResponse.ok) {
+          throw new Error('Failed to synthesize speech');
+        }
+
+        const speechSynthesisResult = await speechSynthesisResponse.json();
+
+        console.log('speechSynthesisResult: ', speechSynthesisResult);
         setLoading(false);
         setVideo(null);
         setUrl(null);
