@@ -28,6 +28,7 @@
     "luxon": "^3.4.3",
     "next": "13.4.3",
     "node-fetch": "^3.3.2",
+    "openai": "^4.17.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
