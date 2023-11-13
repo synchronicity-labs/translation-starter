@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
   // Convert video to audio and upload to S3
   try {
     audioUrl = await new Promise<string>((resolve, reject) => {
-      fileStream.on('finish', async function () {
+      fileStream.on('finish', async () => {
         ffmpeg(tempVideoPath)
           .toFormat('mp3')
           .on('end', async () => {
@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
 
             const audioUpload = await s3.upload(params).promise();
 
-            // Clean up temp files and directory
-            await Promise.all([
-              fsPromises.unlink(tempVideoPath),
-              fsPromises.unlink(tempAudioPath)
-            ]);
-            await fsPromises.rm(tempDir, { recursive: true, force: true });
+            // // Clean up temp files and directory
+            // await Promise.all([
+            //   fsPromises.unlink(tempVideoPath),
+            //   fsPromises.unlink(tempAudioPath)
+            // ]);
+            // await fsPromises.rm(tempDir, { recursive: true, force: true });
 
             resolve(audioUpload.Location);
           })
@@ -108,7 +108,10 @@ export async function POST(request: NextRequest) {
           .saveToFile(tempAudioPath);
       });
     });
-    return NextResponse.json({ success: true, data: { videoUrl, audioUrl } });
+    return NextResponse.json({
+      success: true,
+      data: { videoUrl, audioUrl, tempDir, tempAudioPath, tempVideoPath }
+    });
   } catch (error) {
     console.error('Error converting video to audio:', error);
     return NextResponse.json({
