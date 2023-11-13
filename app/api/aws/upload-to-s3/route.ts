@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
 
             const audioUpload = await s3.upload(params).promise();
 
-            // // Clean up temp files and directory
-            // await Promise.all([
-            //   fsPromises.unlink(tempVideoPath),
-            //   fsPromises.unlink(tempAudioPath)
-            // ]);
-            // await fsPromises.rm(tempDir, { recursive: true, force: true });
+            // Clean up temp files and directory
+            await Promise.all([
+              fsPromises.unlink(tempVideoPath),
+              fsPromises.unlink(tempAudioPath)
+            ]);
+            await fsPromises.rm(tempDir, { recursive: true, force: true });
 
             resolve(audioUpload.Location);
           })
