@@ -36,6 +36,8 @@ const MediaInput: FC<Props> = ({ session }) => {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const [status, setStatus] = useState('Idle');
+
   const submitDisabled = !url || !language;
   const inputOptions = ['upload', 'url'];
 
@@ -91,26 +93,52 @@ const MediaInput: FC<Props> = ({ session }) => {
     if (session) {
       setLoading(true);
       if (video) {
+        // Create form data for upload-to-s3 endpoint
         const formData = new FormData();
         formData.append('file', video);
 
-        // Upload video file to S3, transcode video to audio and uplaod audio file to s3
-
+        // 1. upload-to-s3
+        // Handles uploading video file to S3, transcoding video to audio and then uploading audio file to s3
+        setStatus('Uploading');
         const uploadToS3Response = await fetch(`/api/aws/upload-to-s3`, {
           method: 'POST',
           body: formData
         });
+
         if (!uploadToS3Response.ok) {
           throw new Error('Failed to upload file');
         }
 
         const uploadToS3Result = await uploadToS3Response.json();
 
-        const { videoUrl, audioUrl } = uploadToS3Result.data;
+        const { videoUrl, audioUrl, tempDir, tempVideoPath, tempAudioPath } =
+          uploadToS3Result.data;
+
+        console.log('tempAudioPath: ', tempAudioPath);
+
+        // const trainVoiceModelResponse = await fetch(`/api/train-voice-model`, {
+        //   method: 'POST',
+        //   body: JSON.stringify({ path: tempAudioPath })
+        // });
+
+        // if (!trainVoiceModelResponse.ok) {
+        //   throw new Error('Failed to train voice model');
+        // }
+
+        // const trainVoiceModelResult = await trainVoiceModelResponse.json();
+
+        // console.log('trainVoiceModelResult: ', trainVoiceModelResult);
+
+        // const { voiceId } = trainVoiceModelResult.data;
+
+        // console.log('voiceId: ', voiceId);
 
         console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
         console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
 
+        // 2. transcribe
+        // Handles converting audio to text
+        setStatus('Transcribing');
         const transcriptionResponse = await fetch(`/api/transcribe`, {
           method: 'POST',
           body: JSON.stringify({ audioUrl })
@@ -131,6 +159,9 @@ const MediaInput: FC<Props> = ({ session }) => {
 
         console.log('transcript: ', transcript);
 
+        // 3. translate
+        // Handles translating text to target language
+        setStatus('Translating');
         const translationResponse = await fetch(`/api/translate`, {
           method: 'POST',
           body: JSON.stringify({ text: transcript, language })
@@ -143,9 +174,16 @@ const MediaInput: FC<Props> = ({ session }) => {
         const translationResult = await translationResponse.json();
         console.log('translationResult: ', translationResult);
 
+        // 4. speech-synthesis
+        // Handles synthesizing translated text to audio
+        setStatus('Synthesizing');
         const speechSynthesisResponse = await fetch(`/api/speech-synthesis`, {
           method: 'POST',
-          body: JSON.stringify({ text: translationResult.data })
+          body: JSON.stringify({
+            text: translationResult.data,
+            // voiceId: voiceId
+            voiceId: '21m00Tcm4TlvDq8ikWAM'
+          })
         });
 
         if (!speechSynthesisResponse.ok) {
@@ -153,8 +191,26 @@ const MediaInput: FC<Props> = ({ session }) => {
         }
 
         const speechSynthesisResult = await speechSynthesisResponse.json();
-
         console.log('speechSynthesisResult: ', speechSynthesisResult);
+
+        // 5. synchronize
+        // Handles synchronizing audio to video
+        setStatus('Synchronizing');
+        const synchronizeResponse = await fetch(`/api/lip-sync`, {
+          method: 'POST',
+          body: JSON.stringify({
+            videoUrl,
+            audioUrl: speechSynthesisResult.data
+          })
+        });
+
+        if (!synchronizeResponse.ok) {
+          throw new Error('Failed to synchronize speech');
+        }
+
+        const synchronizeResult = await synchronizeResponse.json();
+        console.log('synchronizeResult: ', synchronizeResult);
+
         setLoading(false);
         setVideo(null);
         setUrl(null);
@@ -235,7 +291,7 @@ const MediaInput: FC<Props> = ({ session }) => {
               <Button
                 type="submit"
                 isLoading={loading}
-                loadingText="submitting"
+                loadingText={status}
                 isDisabled={submitDisabled}
                 leftIcon={<HiSparkles />}
               >
