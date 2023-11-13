@@ -19,9 +19,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { text } = await req.json();
-  // ID of voice to be used for speech
-  const voiceId = '21m00Tcm4TlvDq8ikWAM';
+  const { text, voiceId } = await req.json();
 
   try {
     console.log(`starting speech synthesis on: ${text}`);
@@ -94,7 +92,7 @@ export async function POST(req: Request) {
     await fsPromises.unlink(tempFilePath);
     await fsPromises.rm(tempDir, { recursive: true, force: true });
 
-    return new Response(JSON.stringify({ url }), {
+    return new Response(JSON.stringify({ data: url }), {
       status: 200
     });
   } catch (error) {
