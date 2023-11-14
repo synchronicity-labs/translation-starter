@@ -60,3 +60,12 @@ export const replaceFileExtension = (
   // This will remove the original extension and add the new extension
   return filename.replace(/\.[^/.]+$/, '') + newExtension;
 };
+
+export const sortByCreatedAt = (array: any[]) => {
+  return array.sort((a, b) => {
+    const dateA = new Date(a.created_at);
+    const dateB = new Date(b.created_at);
+
+    return dateB.getTime() - dateA.getTime();
+  });
+};
