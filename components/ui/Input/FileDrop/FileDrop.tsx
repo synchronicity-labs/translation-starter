@@ -7,6 +7,7 @@ interface Props extends PropsWithChildren {
   title?: JSX.Element | string;
   icon?: JSX.Element;
   accept?: string[];
+  disabled?: boolean;
 }
 
 const FileDrop: FC<Props> = ({
@@ -14,6 +15,7 @@ const FileDrop: FC<Props> = ({
   accept,
   title,
   icon,
+  disabled,
   children
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -75,6 +77,7 @@ const FileDrop: FC<Props> = ({
         ref={fileInputRef}
         style={{ display: 'none' }}
         onChange={(e) => handleFileChange(e)}
+        disabled={disabled}
       />
       <Stack alignItems={'center'}>
         <Box fontSize="4xl">{icon || <MdOutlineFileUpload />}</Box>
