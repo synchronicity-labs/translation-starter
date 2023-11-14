@@ -17,7 +17,7 @@ import {
   ModalCloseButton
 } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BsTranslate } from 'react-icons/bs';
 import { FaTrash, FaVideo } from 'react-icons/fa';
 
@@ -64,10 +64,27 @@ const Detail = (props: { title: string; value: string }) => {
 
 const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
   const [show, setShow] = useState('translated-video');
-  const url = job.video_url || job.original_video_url || '';
+  const [url, setUrl] = useState(job.video_url);
   const timeStamp = DateTime.fromJSDate(new Date(job.created_at)).toFormat(
     "MMMM d, yyyy 'at' h:mm a"
   );
+
+  useEffect(() => {
+    setShow('translated-video');
+  }, []);
+
+  useEffect(() => {
+    switch (show) {
+      case 'translated-video':
+        setUrl(job.video_url);
+        break;
+      case 'original-video':
+        setUrl(job.original_video_url);
+        break;
+      default:
+        setUrl(null);
+    }
+  }, [show]);
 
   const {
     isOpen: deleteIsOpen,
@@ -93,7 +110,7 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
       >
         <ModalCloseButton />
         <ModalBody>
-          <Stack>
+          <Stack p={2}>
             <Flex gap={4}>
               <Detail title="Created" value={timeStamp} />
               <Detail title="Job ID" value={job.id} />
@@ -101,8 +118,8 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
             <Flex justifyContent={'space-between'}>
               <Flex gap={'2'}>
                 <Button
-                  onClick={() => setShow('lip-synced-video')}
-                  variant={show === 'lip-synced-video' ? 'outline' : 'solid'}
+                  onClick={() => setShow('translated-video')}
+                  variant={show === 'translated-video' ? 'outline' : 'solid'}
                 >
                   <Tooltip hasArrow label="Lip synced video">
                     <Flex w="full" h="full" alignItems="center">
@@ -148,7 +165,24 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
                 </Tooltip>
               </Button>
             </Flex>
-            <VideoPlayer url={url} />
+            {url ? (
+              <VideoPlayer key={`${job.id}-${url}`} url={url} />
+            ) : (
+              <Flex
+                overflow="hidden"
+                w="full"
+                aspectRatio={'16/9'}
+                justifyContent={'center'}
+                alignItems={'center'}
+                bgColor={'whiteAlpha.200'}
+                bgGradient="linear(to-b, RGBA(128,96,159,0.1), transparent)"
+                rounded={'md'}
+              >
+                <Text fontWeight="bold" fontSize="2xl">
+                  Media not found.
+                </Text>
+              </Flex>
+            )}
           </Stack>
         </ModalBody>
       </ModalContent>
