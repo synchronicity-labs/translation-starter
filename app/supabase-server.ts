@@ -1,4 +1,4 @@
-import { Database } from '@/types_db';
+import { Database, Status } from '@/types_db';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
@@ -77,7 +77,25 @@ export async function getJobs(userId: string) {
     const { data: jobs } = await supabase
       .from('jobs')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    return jobs;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
+  }
+}
+
+export async function getJobsNotDeleted() {
+  const supabase = createServerSupabaseClient();
+  const user = await getUserDetails();
+  try {
+    const { data: jobs } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('user_id', user?.id as string)
+      .neq('is_deleted', true)
+      .order('created_at', { ascending: false });
     return jobs;
   } catch (error) {
     console.error('Error:', error);
@@ -127,7 +145,7 @@ export async function getCreditBalance() {
     };
   }
 
-  const credits = 600;
+  const credits = 300;
   const jobs = await getJobs(user?.id as string);
   const creditsSpent = jobs
     ? jobs.reduce((sum, job) => sum + (job.credits || 0), 0)
@@ -136,4 +154,65 @@ export async function getCreditBalance() {
     remaining: credits - creditsSpent,
     outOf: credits
   };
+}
+
+export async function insertJob(
+  originalVideoUrl: string,
+  credits: number,
+  status: Status
+) {
+  const supabase = createServerSupabaseClient();
+  const user = await getUserDetails();
+  const jobData: {
+    user_id: string;
+    original_video_url: string;
+    credits: number;
+    status: Status;
+  } = {
+    user_id: user?.id as string,
+    original_video_url: originalVideoUrl,
+    credits,
+    status
+  };
+  const { data, error } = await supabase
+    .from('jobs')
+    .insert([jobData])
+    .select();
+  if (error) {
+    console.log(error.message);
+  }
+  return data ?? [];
+}
+
+export async function updateJob(jobId: string, updatedFields: any) {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from('jobs')
+    .update({ ...updatedFields })
+    .eq('id', jobId)
+    .select();
+
+  if (error) {
+    console.log(error.message);
+  }
+  console.log('data: ', data);
+  return data ?? [];
+}
+
+export async function updateJobByOriginalVideoUrl(
+  originalVideoUrl: string,
+  updatedFields: any
+) {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from('jobs')
+    .update({ ...updatedFields })
+    .eq('original_video_url', originalVideoUrl)
+    .select();
+
+  if (error) {
+    console.log(error.message);
+  }
+  console.log('data: ', data);
+  return data ?? [];
 }
