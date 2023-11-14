@@ -1,4 +1,4 @@
-import { getSession, getJobs } from '@/app/supabase-server';
+import { getSession } from '@/app/supabase-server';
 import JobGrid from '@/components/feature-playground/ui/JobGrid';
 import MediaInput from '@/components/feature-playground/ui/MediaInput';
 import PageHeader from '@/components/ui/Display/PageHeader';
@@ -7,7 +7,6 @@ import { Flex, Stack } from '@chakra-ui/react';
 export default async function HomePage() {
   // Grab data from db
   const session = await getSession();
-  const jobs = session ? await getJobs(session?.user.id as string) : [];
 
   // Page content
   const title = `Video Translation`;
@@ -31,7 +30,7 @@ export default async function HomePage() {
           className="items-center text-center"
         />
         <MediaInput session={session} />
-        {jobs && <JobGrid jobs={jobs} />}
+        <JobGrid />
       </Stack>
     </Flex>
   );
