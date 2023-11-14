@@ -111,10 +111,22 @@ const MediaInput: FC<Props> = ({ session }) => {
 
         const uploadToS3Result = await uploadToS3Response.json();
 
-        const { videoUrl, audioUrl, tempDir, tempVideoPath, tempAudioPath } =
-          uploadToS3Result.data;
+        const { videoUrl, audioUrl } = uploadToS3Result.data;
 
-        console.log('tempAudioPath: ', tempAudioPath);
+        // 2. Create Job
+        const createJobResponse = await fetch(`/api/db/create-job`, {
+          method: 'POST',
+          body: JSON.stringify({
+            originalVideoUrl: videoUrl
+          })
+        });
+
+        if (!createJobResponse.ok) {
+          throw new Error('Failed to create job');
+        }
+
+        const { data: job } = await createJobResponse.json();
+        console.log('job: ', job);
 
         // const trainVoiceModelResponse = await fetch(`/api/train-voice-model`, {
         //   method: 'POST',
@@ -133,8 +145,8 @@ const MediaInput: FC<Props> = ({ session }) => {
 
         // console.log('voiceId: ', voiceId);
 
-        console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
-        console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
+        // console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
+        // console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
 
         // 2. transcribe
         // Handles converting audio to text
@@ -205,10 +217,31 @@ const MediaInput: FC<Props> = ({ session }) => {
         });
 
         if (!synchronizeResponse.ok) {
+          setLoading(false);
           throw new Error('Failed to synchronize speech');
         }
 
         const synchronizeResult = await synchronizeResponse.json();
+
+        // const intervalId = setInterval(async () => {
+        //   try {
+        //     const response = await fetch('/api/lip-sync/poll');
+        //     if (!response.ok) {
+        //       throw new Error('Server error');
+        //     }
+        //     const result = await response.json();
+
+        //     // Check for the specific result and clear the interval if achieved
+        //     if (result.status === 'COMPLETED') {
+        //       clearInterval(intervalId);
+        //       setLoading(false);
+        //     }
+        //   } catch (e) {
+        //     setLoading(false);
+        //     clearInterval(intervalId);
+        //   }
+        // }, 5000);
+
         console.log('synchronizeResult: ', synchronizeResult);
 
         setLoading(false);
@@ -247,7 +280,7 @@ const MediaInput: FC<Props> = ({ session }) => {
           />
           <Flex w="full" justifyContent={'center'}>
             {inputType === 'upload' && (
-              <FileDrop onFilesAdded={handleAddFile}>
+              <FileDrop onFilesAdded={handleAddFile} disabled={loading}>
                 {video && <Text>{url}</Text>}
                 <Flex p="4">
                   <Info
@@ -263,6 +296,7 @@ const MediaInput: FC<Props> = ({ session }) => {
                 setUrl={setUrl}
                 placeholder="https://video.example.com/eea672b9-ad0b-4010-ad89-37fab618b7c7"
                 requirements={<Requirements requirements={[requirements]} />}
+                disabled={loading}
               />
             )}
           </Flex>
