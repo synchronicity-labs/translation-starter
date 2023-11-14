@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   }
   const { videoUrl, audioUrl } = await req.json();
 
-  const response = await fetch(`https://api.synclabs.so/video`, {
+  const response = await fetch(`https://staging-api.synclabs.org/video`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -18,7 +18,9 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       audioUrl,
       videoUrl,
-      synergize: true
+      synergize: true,
+      webhookUrl:
+        'https://9e5a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/lip-sync/webhook'
     })
   });
 
