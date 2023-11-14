@@ -6,6 +6,7 @@ import Info from '@/components/ui/Display/Info';
 import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
+import { Status } from '@/types_db';
 import {
   Button,
   Flex,
@@ -13,7 +14,8 @@ import {
   Stack,
   Text,
   Tooltip,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from '@chakra-ui/react';
 import { Session } from '@supabase/auth-helpers-nextjs';
 import { FC, useCallback, useEffect, useState } from 'react';
@@ -29,6 +31,7 @@ interface Props {
 }
 
 const MediaInput: FC<Props> = ({ session }) => {
+  const toast = useToast();
   const [video, setVideo] = useState<File | null>(null);
   const [url, setUrl] = useState<string | null>(null);
 
@@ -87,31 +90,87 @@ const MediaInput: FC<Props> = ({ session }) => {
     }
   }, [session]);
 
+  const handleJobFailed = async (errorMessage: string, jobId?: string) => {
+    setLoading(false);
+    setStatus('Idle');
+    setVideo(null);
+    setUrl(null);
+    setLanguage(null);
+    {
+      jobId &&
+        (await fetch('/api/db/update-job', {
+          method: 'POST',
+          body: JSON.stringify({
+            jobId,
+            updatedFields: {
+              status: 'failed' as Status
+            }
+          })
+        }));
+    }
+    toast({
+      title: 'Error occured while creating video',
+      description: errorMessage,
+      status: 'error',
+      duration: null,
+      isClosable: true
+    });
+  };
+
   // Uploads file to S3 and calls '/api/translate' endpoint
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (session) {
+      let videoUrl: string;
+      let audioUrl: string;
       setLoading(true);
-      if (video) {
-        // Create form data for upload-to-s3 endpoint
-        const formData = new FormData();
-        formData.append('file', video);
-
+      if (video || url) {
         // 1. upload-to-s3
         // Handles uploading video file to S3, transcoding video to audio and then uploading audio file to s3
         setStatus('Uploading');
-        const uploadToS3Response = await fetch(`/api/aws/upload-to-s3`, {
-          method: 'POST',
-          body: formData
-        });
 
-        if (!uploadToS3Response.ok) {
-          throw new Error('Failed to upload file');
+        if (video) {
+          // Create form data for upload-to-s3 endpoint
+          const formData = new FormData();
+          formData.append('file', video);
+          const uploadToS3Response = await fetch(`/api/aws/upload-to-s3`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!uploadToS3Response.ok) {
+            setLoading(false);
+            setStatus('Idle');
+            throw new Error('Failed to upload file');
+          }
+
+          const uploadToS3Result = await uploadToS3Response.json();
+
+          const uploadData = uploadToS3Result.data;
+
+          videoUrl = uploadData.videoUrl;
+          audioUrl = uploadData.audioUrl;
+        } else if (url) {
+          const transcodeResponse = await fetch(`/api/transcode`, {
+            method: 'POST',
+            body: JSON.stringify({ videoUrl: url })
+          });
+
+          if (!transcodeResponse.ok) {
+            handleJobFailed(`Failed to transcode video`);
+            throw new Error(`Failed to transcode video`);
+          }
+
+          const transcodeResult = await transcodeResponse.json();
+
+          console.log('transcodeData.data: ', transcodeResult.data);
+
+          videoUrl = url;
+          audioUrl = transcodeResult.data;
+        } else {
+          handleJobFailed(`No video or url provided`);
+          throw new Error(`No video or url provided`);
         }
-
-        const uploadToS3Result = await uploadToS3Response.json();
-
-        const { videoUrl, audioUrl } = uploadToS3Result.data;
 
         // 2. Create Job
         const createJobResponse = await fetch(`/api/db/create-job`, {
@@ -122,7 +181,8 @@ const MediaInput: FC<Props> = ({ session }) => {
         });
 
         if (!createJobResponse.ok) {
-          throw new Error('Failed to create job');
+          handleJobFailed(`Failed to create job`);
+          throw new Error(`Failed to create job`);
         }
 
         const { data: job } = await createJobResponse.json();
@@ -151,13 +211,15 @@ const MediaInput: FC<Props> = ({ session }) => {
         // 2. transcribe
         // Handles converting audio to text
         setStatus('Transcribing');
+        console.log('audioUrl: ', audioUrl);
         const transcriptionResponse = await fetch(`/api/transcribe`, {
           method: 'POST',
           body: JSON.stringify({ audioUrl })
         });
 
         if (!transcriptionResponse.ok) {
-          throw new Error('Failed to convert audio to text');
+          handleJobFailed(`Failed to convert audio to text`, job.id);
+          throw new Error(`Failed to convert audio to text`);
         }
 
         const transcriptionResult = await transcriptionResponse.json();
@@ -180,7 +242,8 @@ const MediaInput: FC<Props> = ({ session }) => {
         });
 
         if (!translationResponse.ok) {
-          throw new Error('Failed to translate text');
+          handleJobFailed(`Failed to translate text`, job.id);
+          throw new Error(`Failed to translate text`);
         }
 
         const translationResult = await translationResponse.json();
@@ -199,7 +262,8 @@ const MediaInput: FC<Props> = ({ session }) => {
         });
 
         if (!speechSynthesisResponse.ok) {
-          throw new Error('Failed to synthesize speech');
+          handleJobFailed(`Failed to synthesize speech`, job.id);
+          throw new Error(`Failed to synthesize speech`);
         }
 
         const speechSynthesisResult = await speechSynthesisResponse.json();
@@ -217,34 +281,16 @@ const MediaInput: FC<Props> = ({ session }) => {
         });
 
         if (!synchronizeResponse.ok) {
-          setLoading(false);
-          throw new Error('Failed to synchronize speech');
+          handleJobFailed(`Failed to synchronize speech`, job.id);
+          throw new Error(`Failed to synchronize speech`);
         }
 
         const synchronizeResult = await synchronizeResponse.json();
 
-        // const intervalId = setInterval(async () => {
-        //   try {
-        //     const response = await fetch('/api/lip-sync/poll');
-        //     if (!response.ok) {
-        //       throw new Error('Server error');
-        //     }
-        //     const result = await response.json();
-
-        //     // Check for the specific result and clear the interval if achieved
-        //     if (result.status === 'COMPLETED') {
-        //       clearInterval(intervalId);
-        //       setLoading(false);
-        //     }
-        //   } catch (e) {
-        //     setLoading(false);
-        //     clearInterval(intervalId);
-        //   }
-        // }, 5000);
-
         console.log('synchronizeResult: ', synchronizeResult);
 
         setLoading(false);
+        setStatus('Idle');
         setVideo(null);
         setUrl(null);
         setLanguage(null);
@@ -252,6 +298,7 @@ const MediaInput: FC<Props> = ({ session }) => {
         return null;
       }
       setLoading(false);
+      setStatus('Idle');
       setVideo(null);
       setUrl(null);
       setLanguage(null);
@@ -304,6 +351,7 @@ const MediaInput: FC<Props> = ({ session }) => {
             placeholder="Select target language"
             onChange={(e) => setLanguage(e.target.value)}
             value={language || ''}
+            disabled={loading}
           >
             {languages.map(({ name, code }) => {
               return (
