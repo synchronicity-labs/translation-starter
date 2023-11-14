@@ -1,3 +1,4 @@
+import JobGridItemDeleteModal from './JobGridItemDeleteModal';
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { Job } from '@/types_db';
 import {
@@ -151,6 +152,11 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
           </Stack>
         </ModalBody>
       </ModalContent>
+      <JobGridItemDeleteModal
+        jobId={job.id}
+        isOpen={deleteIsOpen}
+        onClose={deleteOnClose}
+      />
     </Modal>
   );
 };
