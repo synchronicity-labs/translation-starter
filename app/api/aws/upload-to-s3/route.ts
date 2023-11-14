@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     videoUrl = videoUpload.Location;
 
     const transcodeResponse = await fetch(
-      `http://localhost:3000/api/transcode`,
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/transcode`,
       {
         method: 'POST',
         body: JSON.stringify({ videoUrl })

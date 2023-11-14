@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     console.log('in sync labs webhook');
 
     const updateJobResponse = await fetch(
-      'http://localhost:3000/api/db/update-job-by-original-video-url',
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/db/update-job-by-original-video-url`,
       {
         method: 'POST',
         body: JSON.stringify({
