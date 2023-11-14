@@ -3,8 +3,17 @@
 import JobGridItemExpandedModal from './JobGridItemExpandedModal';
 import StatusTag from '@/components/ui/Display/StatusTag';
 import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Job } from '@/types_db';
-import { GridItem, Stack, Text, useDisclosure } from '@chakra-ui/react';
+import { Job, Status } from '@/types_db';
+import {
+  AspectRatio,
+  Box,
+  Flex,
+  GridItem,
+  Spinner,
+  Stack,
+  Text,
+  useDisclosure
+} from '@chakra-ui/react';
 import { DateTime } from 'luxon';
 import { FC, useState } from 'react';
 
@@ -19,6 +28,7 @@ const JobGridItem: FC<Props> = ({ job }) => {
 
   const url = job.video_url || job.original_video_url || '';
   // Time since job was created
+
   const elapsedTime = DateTime.fromJSDate(
     new Date(job.created_at)
   ).toRelative();
@@ -45,7 +55,36 @@ const JobGridItem: FC<Props> = ({ job }) => {
         position={'relative'}
         w="full"
       >
-        <VideoPlayer url={url} preview />
+        {['pending', 'processing'].includes(job.status as Status) ? (
+          <Box width={'full'}>
+            <AspectRatio ratio={16 / 9}>
+              <Stack
+                w="full"
+                h="full"
+                p={4}
+                justifyContent={'start'}
+                aspectRatio={'16/9'}
+                bgColor={'blackAlpha.400'}
+                bgGradient="linear(to-b, whiteAlpha.200, transparent)"
+              >
+                <Text fontWeight="bold" fontSize="sm">
+                  Please wait while we generate your video.
+                </Text>
+                <Flex
+                  w="full"
+                  h="full"
+                  justifyContent="center"
+                  alignItems="center"
+                  rounded="md"
+                >
+                  <Spinner />
+                </Flex>
+              </Stack>
+            </AspectRatio>
+          </Box>
+        ) : (
+          <VideoPlayer url={url} preview />
+        )}
         <Text fontSize={'sm'}>{`Created ${elapsedTime}`}</Text>
         {job.status && <StatusTag status={job.status} />}
       </Stack>
