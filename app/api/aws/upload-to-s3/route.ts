@@ -1,10 +1,6 @@
 import { S3 } from 'aws-sdk';
-import ffmpeg from 'fluent-ffmpeg';
-import { createWriteStream, readFileSync } from 'fs';
-import { promises as fsPromises } from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 import fetch from 'node-fetch';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 // Initialize S3 instance
@@ -15,6 +11,7 @@ const s3 = new S3({
 });
 
 export async function POST(request: NextRequest) {
+  console.log('uploading to aws s3');
   if (request.method !== 'POST') {
     return NextResponse.json({ success: false, message: `Method not allowed` });
   }
@@ -56,6 +53,9 @@ export async function POST(request: NextRequest) {
     );
 
     if (!transcodeResponse.ok) {
+      console.error(
+        `Error translating video file: , ${transcodeResponse.status} ${transcodeResponse.statusText}`
+      );
       return NextResponse.json({
         success: false,
         message: `Error translating video file`,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       data: { videoUrl, audioUrl: transcodeData.data }
     });
   } catch (error) {
-    console.error('Error uploading file to S3:', error);
+    console.error(`Error translating video file: ${error}`);
     return NextResponse.json({
       success: false,
       message: `Error uploading video file to S3`,
