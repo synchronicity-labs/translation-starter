@@ -1,6 +1,7 @@
 import supabase from '@/utils/supabase';
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
 import fetch from 'node-fetch';
+import os from 'os';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -51,7 +52,10 @@ export async function POST(req: Request) {
 
     const uuid = uuidv4();
 
-    const tempDir = path.resolve('./temp/generated');
+    // const tempDir = path.resolve('./temp/generated');
+    const tempDir = process.env.NEXT_PUBLIC_SITE_URL
+      ? os.tmpdir()
+      : path.resolve('./tmp');
     await fsPromises.mkdir(tempDir, { recursive: true });
     const tempFilePath = path.join(tempDir, `translated-audio-${uuid}.mp3`);
     const fileStream = createWriteStream(tempFilePath);
