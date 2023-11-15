@@ -35,7 +35,8 @@ export default async function transcodeVideoToAudio(
   const data = (await ffmpeg.readFile(output)) as any;
   console.log('transcodeVideoToAudio - data: ', data);
   const blob = new Blob([data], { type: 'audio/mp3' });
-  // const url = URL.createObjectURL(blob);
-  // return { data, output };
+  const url = URL.createObjectURL(blob);
+  console.log('url ', url);
+  // return { data, output };r
   return { blob, output };
 }
