@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/transcribe/*.ts": {
+    "app/api/transcribe/*.js": {
       "maxDuration": 60
     }
   }
