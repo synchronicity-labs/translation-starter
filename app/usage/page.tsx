@@ -20,7 +20,7 @@ export default async function Usage() {
     <Flex w="full" px={4} justifyContent={'center'} color="white">
       <Stack w="full" maxW="4xl" py={8} gap={8}>
         <PageHeader title={title} />
-        <UsageTable />
+        <UsageTable userId={session.user.id} />
       </Stack>
     </Flex>
   );

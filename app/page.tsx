@@ -30,7 +30,7 @@ export default async function HomePage() {
           className="items-center text-center"
         />
         <MediaInput session={session} />
-        <JobGrid />
+        {session && <JobGrid userId={session.user.id} />}
       </Stack>
     </Flex>
   );
