@@ -4,6 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
 import { NextResponse } from 'next/server';
 import fetch from 'node-fetch';
+import os from 'os';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,8 +20,10 @@ export async function POST(req: Request) {
   const uuid = uuidv4();
 
   // Create temporary directory and files for video and audio
-  // const tempDir = path.resolve('./tmp');
-  const tempDir = './tmp';
+  // const tempDir =
+  const tempDir = process.env.NEXT_PUBLIC_SITE_URL
+    ? os.tmpdir()
+    : path.resolve('./tmp');
   await fsPromises.mkdir(tempDir, { recursive: true });
 
   const tempVideoPath = path.join(tempDir, `input-video-${uuid}.mp4`);
