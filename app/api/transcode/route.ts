@@ -19,7 +19,8 @@ export async function POST(req: Request) {
   const uuid = uuidv4();
 
   // Create temporary directory and files for video and audio
-  const tempDir = path.resolve('./tmp');
+  // const tempDir = path.resolve('./tmp');
+  const tempDir = './tmp';
   await fsPromises.mkdir(tempDir, { recursive: true });
 
   const tempVideoPath = path.join(tempDir, `input-video-${uuid}.mp4`);
