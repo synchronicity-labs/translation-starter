@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   const tempVideoPath = path.join(tempDir, `input-video-${uuid}.mp4`);
   const tempAudioPath = path.join(tempDir, `input-audio-${uuid}.mp3`);
 
-  // Download video from S3
+  // Download video from Supabase
   const response = await fetch(videoUrl);
 
   if (!response.ok)
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const fileStream = createWriteStream(tempVideoPath);
   response.body?.pipe(fileStream);
 
-  // Convert video to audio and upload to S3
+  // Convert video to audio and upload to Supabase
   try {
     const audioBuffer = await new Promise<String>((resolve, reject) => {
       fileStream.on('finish', async () => {
@@ -56,13 +56,13 @@ export async function POST(req: Request) {
               });
 
             if (error) {
-              console.error('Error uploading audio to S3:', error);
+              console.error('Error uploading audio to Supabase:', error);
               reject(error);
             }
 
             if (!data) {
-              console.error('No data returned from S3');
-              reject('No data returned from S3');
+              console.error('No data returned from Supabase');
+              reject('No data returned from Supabase');
             }
 
             const url = `${
