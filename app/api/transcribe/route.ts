@@ -1,6 +1,7 @@
 import Replicate from 'replicate';
 
 export async function POST(req: Request) {
+  console.log('starting transcription');
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', {
       headers: { Allow: 'POST' },
@@ -9,7 +10,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    console.log('starting transcription');
     const { audioUrl } = await req.json();
     const replicate = new Replicate({
       auth: process.env.REPLICATE_API_TOKEN
@@ -26,6 +26,7 @@ export async function POST(req: Request) {
         }
       }
     );
+    console.log('transcription - data: ', data);
     return new Response(JSON.stringify({ data }), {
       status: 200
     });
