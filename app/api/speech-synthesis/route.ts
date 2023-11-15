@@ -102,7 +102,6 @@ export async function POST(req: Request) {
 
     // Clean up temp files and directory
     await fsPromises.unlink(tempFilePath);
-    await fsPromises.rm(tempDir, { recursive: true, force: true });
 
     return new Response(JSON.stringify({ data: url }), {
       status: 200
