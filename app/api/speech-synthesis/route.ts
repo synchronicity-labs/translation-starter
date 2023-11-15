@@ -1,3 +1,4 @@
+import supabase from '@/utils/supabase';
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
@@ -66,15 +67,30 @@ export async function POST(req: Request) {
     const url = await new Promise<string>((resolve, reject) => {
       fileStream.on('finish', async function () {
         try {
-          const params = {
-            Bucket: 'synchlabs-public',
-            Key: `/translation-test-input/translated-audio-${uuid}.mp3`, // This is what the file will be named in S3
-            Body: audioData
-          };
-          const upload = await s3.upload(params).promise();
-          resolve(upload.Location);
+          const filePath = `public/output-audio-${Date.now()}.mp3`;
+          const { data, error } = await supabase.storage
+            .from('translation')
+            .upload(filePath, audioData, {
+              contentType: 'audio/mp3',
+              upsert: false
+            });
+
+          if (error) {
+            console.error('Error uploading audio to Supabase:', error);
+            reject(error);
+          }
+
+          if (!data) {
+            console.error('No data returned from Supabase');
+            reject('No data returned from Supabase');
+          }
+
+          const url = `${
+            process.env.NEXT_PUBLIC_SUPABASE_URL
+          }/storage/v1/object/public/translation/${data!.path}`;
+          resolve(url);
         } catch (error) {
-          console.error('Error uploading audio to S3:', error);
+          console.error('Error uploading audio to Supabase:', error);
           reject(error);
         }
       });
