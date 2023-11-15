@@ -8,9 +8,8 @@ Translation AI is an open-source tool for translating spoken language in video c
 ## How it works
 
 - [Sync Labs](https://synclabs.so) for perfectly synchronized lip movements
-- [Open AI](https://openai.com/)'s [Whisper](https://openai.com/research/whisper) for translation
+- [Open AI](https://openai.com/) for transcribing and translating
 - [Eleven Labs](https://elevenlabs.io/) for voice synthesis
-- [AWS](https://aws.amazon.com/) S3 for file hosting
 - [Next.js](https://nextjs.org) for web app
 - [Vercel](https://vercel.com) for deployment
 - [Supabase](https://supabase.io) for db and auth

@@ -22,6 +22,7 @@
     "@types/luxon": "^3.3.3",
     "@types/uuid": "^9.0.6",
     "classnames": "^2.3.2",
+    "coconutjs": "^3.0.2",
     "fluent-ffmpeg": "^2.1.2",
     "framer-motion": "^10.16.4",
     "luxon": "^3.4.3",
