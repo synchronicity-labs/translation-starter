@@ -7,7 +7,9 @@ import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
 import { Status } from '@/types_db';
+import loadFfmpeg from '@/utils/load-ffmpeg';
 import supabase from '@/utils/supabase';
+import transcodeVideoToAudio from '@/utils/transcode-video-to-audio';
 import {
   Button,
   Flex,
@@ -18,9 +20,11 @@ import {
   useDisclosure,
   useToast
 } from '@chakra-ui/react';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { Session } from '@supabase/auth-helpers-nextjs';
 import { FC, useCallback, useEffect, useState, useRef } from 'react';
 import { HiSparkles } from 'react-icons/hi';
+import { v4 as uuidV4 } from 'uuid';
 
 interface Language {
   name: string;
@@ -32,6 +36,9 @@ interface Props {
 }
 
 const MediaInput: FC<Props> = ({ session }) => {
+  const ffmpegRef = useRef<any>(null);
+  const [is_loaded, setIsLoaded] = useState<boolean>(false);
+
   const toast = useToast();
   const [video, setVideo] = useState<File | null>(null);
   const [url, setUrl] = useState<string | null>(null);
@@ -91,40 +98,24 @@ const MediaInput: FC<Props> = ({ session }) => {
     }
   }, [session]);
 
-  // async function getPresignedUrlAndUpload(file: File) {
-  //   console.log('in getPresignedUrlAndUpload - file: ', file);
-  //   // Fetch the pre-signed URL from your API
-  //   const response = await fetch(
-  //     `/api/aws/get-upload-url?fileName=${encodeURIComponent(file.name)}`
-  //   );
-  //   const { data } = await response.json();
+  // Load FFMPEG on component mount
+  useEffect(() => {
+    load();
+  }, []);
 
-  //   console.log('data: ', data);
-
-  //   // Use the fetch API to upload the file directly to S3
-  //   const uploadResponse = await fetch(data.url, {
-  //     method: 'PUT',
-  //     body: file,
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data'
-  //     }
-  //   });
-
-  //   if (uploadResponse.ok) {
-  //     console.log('File uploaded successfully');
-  //     const data = await uploadResponse.json();
-  //     console.log('getPresignedUrlAndUpload - data: ', data);
-  //     return data;
-  //   } else {
-  //     console.error('File upload failed');
-  //   }
-  // }
+  const load = async () => {
+    const ffmpeg_response: FFmpeg = await loadFfmpeg();
+    ffmpegRef.current = ffmpeg_response;
+    setIsLoaded(true);
+  };
 
   async function uploadFile(file: File, filePath: string) {
     console.log('in uploadFile - file: ', file);
     const { data, error } = await supabase.storage
       .from('translation')
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        contentType: file.type
+      });
 
     if (error) {
       console.error('Upload error:', error);
@@ -181,6 +172,8 @@ const MediaInput: FC<Props> = ({ session }) => {
         // 1. upload-to-supabase
         setStatus('Uploading');
 
+        const uuid = uuidV4();
+
         if (video) {
           console.log('video: ', video);
 
@@ -188,23 +181,39 @@ const MediaInput: FC<Props> = ({ session }) => {
           videoUrl =
             (await uploadFile(
               video,
-              `public/input-video-${Date.now()}-${video.name}`
+              `public/input-video-${uuid}-${video.name}`
             )) || '';
           console.log('uploadFile response - videoUrl: ', videoUrl);
+
+          // TODO: Update Transocder
+          const { blob, output } = await transcodeVideoToAudio(
+            ffmpegRef.current,
+            video
+          );
+
+          console.log('transcodeVideoToAudio output: ', {
+            blob,
+            output
+          });
+
+          audioUrl =
+            (await uploadFile(blob, `public/input-audio-${uuid}-${output}`)) ||
+            '';
+
+          console.log('audioUrl: ', audioUrl);
         }
+        // const transcodeResponse = await fetch(`/api/transcode`, {
+        //   method: 'POST',
+        //   body: JSON.stringify({ videoUrl })
+        // });
 
-        const transcodeResponse = await fetch(`/api/transcode`, {
-          method: 'POST',
-          body: JSON.stringify({ videoUrl })
-        });
+        // if (!transcodeResponse.ok) {
+        //   handleJobFailed(`Failed to transcode video`);
+        //   throw new Error(`Failed to transcode video`);
+        // }
 
-        if (!transcodeResponse.ok) {
-          handleJobFailed(`Failed to transcode video`);
-          throw new Error(`Failed to transcode video`);
-        }
-
-        const transcodeResult = await transcodeResponse.json();
-        audioUrl = transcodeResult.data;
+        // const transcodeResult = await transcodeResponse.json();
+        // audioUrl = transcodeResult.data;
 
         // 2. Create Job
         const createJobResponse = await fetch(`/api/db/create-job`, {
