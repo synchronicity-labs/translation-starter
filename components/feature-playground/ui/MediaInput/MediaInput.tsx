@@ -7,6 +7,7 @@ import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
 import { Status } from '@/types_db';
+import supabase from '@/utils/supabase';
 import {
   Button,
   Flex,
@@ -18,7 +19,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { Session } from '@supabase/auth-helpers-nextjs';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState, useRef } from 'react';
 import { HiSparkles } from 'react-icons/hi';
 
 interface Language {
@@ -90,6 +91,58 @@ const MediaInput: FC<Props> = ({ session }) => {
     }
   }, [session]);
 
+  // async function getPresignedUrlAndUpload(file: File) {
+  //   console.log('in getPresignedUrlAndUpload - file: ', file);
+  //   // Fetch the pre-signed URL from your API
+  //   const response = await fetch(
+  //     `/api/aws/get-upload-url?fileName=${encodeURIComponent(file.name)}`
+  //   );
+  //   const { data } = await response.json();
+
+  //   console.log('data: ', data);
+
+  //   // Use the fetch API to upload the file directly to S3
+  //   const uploadResponse = await fetch(data.url, {
+  //     method: 'PUT',
+  //     body: file,
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data'
+  //     }
+  //   });
+
+  //   if (uploadResponse.ok) {
+  //     console.log('File uploaded successfully');
+  //     const data = await uploadResponse.json();
+  //     console.log('getPresignedUrlAndUpload - data: ', data);
+  //     return data;
+  //   } else {
+  //     console.error('File upload failed');
+  //   }
+  // }
+
+  async function uploadFile(file: File, filePath: string) {
+    console.log('in uploadFile - file: ', file);
+    const { data, error } = await supabase.storage
+      .from('translation')
+      .upload(filePath, file);
+
+    if (error) {
+      console.error('Upload error:', error);
+      return;
+    }
+
+    if (!data) {
+      console.error('No data returned from upload');
+      return;
+    }
+
+    console.log('data: ', data);
+
+    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/translation/${data.path}`;
+
+    return url;
+  }
+
   const handleJobFailed = async (errorMessage: string, jobId?: string) => {
     setLoading(false);
     setStatus('Idle');
@@ -121,56 +174,37 @@ const MediaInput: FC<Props> = ({ session }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (session) {
-      let videoUrl: string;
-      let audioUrl: string;
+      let videoUrl = url;
+      let audioUrl = '';
       setLoading(true);
       if (video || url) {
-        // 1. upload-to-s3
-        // Handles uploading video file to S3, transcoding video to audio and then uploading audio file to s3
+        // 1. upload-to-supabase
         setStatus('Uploading');
 
         if (video) {
-          // Create form data for upload-to-s3 endpoint
-          const formData = new FormData();
-          formData.append('file', video);
-          const uploadToS3Response = await fetch(`/api/aws/upload-to-s3`, {
-            method: 'POST',
-            body: formData
-          });
+          console.log('video: ', video);
 
-          if (!uploadToS3Response.ok) {
-            setLoading(false);
-            setStatus('Idle');
-            throw new Error('Failed to upload file');
-          }
-
-          const uploadToS3Result = await uploadToS3Response.json();
-
-          const uploadData = uploadToS3Result.data;
-
-          videoUrl = uploadData.videoUrl;
-          audioUrl = uploadData.audioUrl;
-        } else if (url) {
-          const transcodeResponse = await fetch(`/api/transcode`, {
-            method: 'POST',
-            body: JSON.stringify({ videoUrl: url })
-          });
-
-          if (!transcodeResponse.ok) {
-            handleJobFailed(`Failed to transcode video`);
-            throw new Error(`Failed to transcode video`);
-          }
-
-          const transcodeResult = await transcodeResponse.json();
-
-          console.log('transcodeData.data: ', transcodeResult.data);
-
-          videoUrl = url;
-          audioUrl = transcodeResult.data;
-        } else {
-          handleJobFailed(`No video or url provided`);
-          throw new Error(`No video or url provided`);
+          // const data = await getPresignedUrlAndUpload(video);x
+          videoUrl =
+            (await uploadFile(
+              video,
+              `public/input-video-${Date.now()}-${video.name}`
+            )) || '';
+          console.log('uploadFile response - videoUrl: ', videoUrl);
         }
+
+        const transcodeResponse = await fetch(`/api/transcode`, {
+          method: 'POST',
+          body: JSON.stringify({ videoUrl })
+        });
+
+        if (!transcodeResponse.ok) {
+          handleJobFailed(`Failed to transcode video`);
+          throw new Error(`Failed to transcode video`);
+        }
+
+        const transcodeResult = await transcodeResponse.json();
+        audioUrl = transcodeResult.data;
 
         // 2. Create Job
         const createJobResponse = await fetch(`/api/db/create-job`, {
@@ -188,25 +222,25 @@ const MediaInput: FC<Props> = ({ session }) => {
         const { data: job } = await createJobResponse.json();
         console.log('job: ', job);
 
-        // const trainVoiceModelResponse = await fetch(`/api/train-voice-model`, {
-        //   method: 'POST',
-        //   body: JSON.stringify({ path: tempAudioPath })
-        // });
+        // // const trainVoiceModelResponse = await fetch(`/api/train-voice-model`, {
+        // //   method: 'POST',
+        // //   body: JSON.stringify({ path: tempAudioPath })
+        // // });
 
-        // if (!trainVoiceModelResponse.ok) {
-        //   throw new Error('Failed to train voice model');
-        // }
+        // // if (!trainVoiceModelResponse.ok) {
+        // //   throw new Error('Failed to train voice model');
+        // // }
 
-        // const trainVoiceModelResult = await trainVoiceModelResponse.json();
+        // // const trainVoiceModelResult = await trainVoiceModelResponse.json();
 
-        // console.log('trainVoiceModelResult: ', trainVoiceModelResult);
+        // // console.log('trainVoiceModelResult: ', trainVoiceModelResult);
 
-        // const { voiceId } = trainVoiceModelResult.data;
+        // // const { voiceId } = trainVoiceModelResult.data;
 
-        // console.log('voiceId: ', voiceId);
+        // // console.log('voiceId: ', voiceId);
 
-        // console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
-        // console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
+        // // console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
+        // // console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
 
         // 2. transcribe
         // Handles converting audio to text
