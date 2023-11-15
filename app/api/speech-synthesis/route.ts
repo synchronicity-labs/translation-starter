@@ -1,15 +1,7 @@
-import { S3 } from 'aws-sdk';
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-
-// Initialize S3 instance
-const s3 = new S3({
-  accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-  secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
-  region: process.env.NEXT_PUBLIC_S3_REGION
-});
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
