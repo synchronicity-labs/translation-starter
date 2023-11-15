@@ -1,6 +1,5 @@
 import { Status } from '@/types_db';
-import { NextApiRequest } from 'next';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
