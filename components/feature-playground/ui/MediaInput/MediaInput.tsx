@@ -167,25 +167,22 @@ const MediaInput: FC<Props> = ({ session }) => {
     if (session) {
       let videoUrl = url;
       let audioUrl = '';
+      const uuid = uuidV4();
       setLoading(true);
       if (video || url) {
-        // 1. upload-to-supabase
         setStatus('Uploading');
-
-        const uuid = uuidV4();
-
+        // STEP 1 - If video is uploaded, upload to supabase storage
         if (video) {
           console.log('video: ', video);
 
-          // const data = await getPresignedUrlAndUpload(video);x
           videoUrl =
             (await uploadFile(
               video,
               `public/input-video-${uuid}-${video.name}`
             )) || '';
+
           console.log('uploadFile response - videoUrl: ', videoUrl);
 
-          // TODO: Update Transocder
           const { blob, output } = await transcodeVideoToAudio(
             ffmpegRef.current,
             video
@@ -202,20 +199,8 @@ const MediaInput: FC<Props> = ({ session }) => {
 
           console.log('audioUrl: ', audioUrl);
         }
-        // const transcodeResponse = await fetch(`/api/transcode`, {
-        //   method: 'POST',
-        //   body: JSON.stringify({ videoUrl })
-        // });
 
-        // if (!transcodeResponse.ok) {
-        //   handleJobFailed(`Failed to transcode video`);
-        //   throw new Error(`Failed to transcode video`);
-        // }
-
-        // const transcodeResult = await transcodeResponse.json();
-        // audioUrl = transcodeResult.data;
-
-        // 2. Create Job
+        // STEP 2. Create job
         const createJobResponse = await fetch(`/api/db/create-job`, {
           method: 'POST',
           body: JSON.stringify({
@@ -253,11 +238,12 @@ const MediaInput: FC<Props> = ({ session }) => {
 
         // 2. transcribe
         // Handles converting audio to text
+
         setStatus('Transcribing');
         console.log('audioUrl: ', audioUrl);
         const transcriptionResponse = await fetch(`/api/transcribe`, {
           method: 'POST',
-          body: JSON.stringify({ audioUrl })
+          body: JSON.stringify({ url: audioUrl })
         });
 
         if (!transcriptionResponse.ok) {
@@ -266,14 +252,14 @@ const MediaInput: FC<Props> = ({ session }) => {
         }
 
         const transcriptionResult = await transcriptionResponse.json();
-        console.log('transcriptionResult: ', transcriptionResult);
 
-        const transcript = JSON.parse(transcriptionResult.data)
-          .map((item: { start: number; end: number; text: string }) =>
-            item.text.trim()
-          )
-          .join(' ');
+        // const transcript = transcriptionResult.data
+        //   .map((item: { start: number; end: number; text: string }) =>
+        //     item.text.trim()
+        //   )
+        //   .join(' ');
 
+        const transcript = transcriptionResult.data;
         console.log('transcript: ', transcript);
 
         // 3. translate
