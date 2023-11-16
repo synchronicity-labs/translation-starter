@@ -247,7 +247,12 @@ const MediaInput: FC<Props> = ({ session }) => {
         }
 
         const transcriptionResult = await transcriptionResponse.json();
-        const transcript = transcriptionResult.data;
+        console.log('transcriptionResult: ', transcriptionResult);
+
+        const transcript = transcriptionResult.data.prediction
+          .map((item: { transcription: string }) => item.transcription.trim())
+          .join(' ');
+
         console.log('transcript: ', transcript);
 
         // 3. translate
@@ -255,7 +260,10 @@ const MediaInput: FC<Props> = ({ session }) => {
         setStatus('Translating');
         const translationResponse = await fetch(`/api/translate`, {
           method: 'POST',
-          body: JSON.stringify({ text: transcript, language })
+          body: JSON.stringify({
+            // text: transcript.prediction.transcription,
+            language
+          })
         });
 
         if (!translationResponse.ok) {
