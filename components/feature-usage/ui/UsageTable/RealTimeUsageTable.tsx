@@ -1,4 +1,5 @@
-import JobGridItem from './UsageTable';
+'use client';
+
 import StatusTag from '@/components/ui/Display/StatusTag';
 import PageNavigator from '@/components/ui/PageNavigator';
 import { Job } from '@/types_db';
@@ -8,8 +9,6 @@ import {
   Button,
   Link,
   Stack,
-  Flex,
-  Grid,
   Text,
   Table,
   TableContainer,
@@ -18,11 +17,11 @@ import {
   Th,
   Thead,
   Tooltip,
-  Tr
+  Tr,
+  Flex
 } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
-import { Props } from 'next/script';
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect } from 'react';
 
 const NoUsageView = () => {
   const message = `You haven't translated any videos yet`;
@@ -40,6 +39,7 @@ const NoUsageView = () => {
 };
 
 export default function RealTimeUsageTable({ data }: { data: Job[] }) {
+  console.log('RealTimeUsageTable - data: ', data);
   const pageSize = 10;
   const [offset, setOffset] = useState(0);
   const [jobs, setJobs] = useState<Job[]>(data);

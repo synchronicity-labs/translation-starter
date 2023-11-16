@@ -71,13 +71,14 @@ export const getActiveProductsWithPrices = async () => {
   return data ?? [];
 };
 
-export async function getJobs(userId: string) {
+export async function getJobs() {
   const supabase = createServerSupabaseClient();
+  const user = await getUserDetails();
   try {
     const { data: jobs } = await supabase
       .from('jobs')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', user?.id as string)
       .order('created_at', { ascending: false });
     return jobs;
   } catch (error) {
@@ -146,7 +147,7 @@ export async function getCreditBalance() {
   }
 
   const credits = 300;
-  const jobs = await getJobs(user?.id as string);
+  const jobs = await getJobs();
   const creditsSpent = jobs
     ? jobs.reduce((sum, job) => sum + (job.credits || 0), 0)
     : 0;

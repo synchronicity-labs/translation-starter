@@ -1,3 +1,5 @@
+'use client';
+
 import JobGridItem from './JobGridItem';
 import PageNavigator from '@/components/ui/PageNavigator';
 import { Job } from '@/types_db';

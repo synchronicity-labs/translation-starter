@@ -15,13 +15,13 @@ export async function POST(req: Request) {
       auth: process.env.REPLICATE_API_TOKEN
     });
     const data = await replicate.run(
+      // 'openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2',
       'carnifexer/whisperx:1e0315854645f245d04ff09f5442778e97b8588243c7fe40c644806bde297e04',
       {
         input: {
           audio: audioUrl, // Use the S3 URL of the uploaded file
-          debug: true,
           only_text: false,
-          batch_size: 16,
+          batch_size: 32,
           align_output: true
         }
       }
