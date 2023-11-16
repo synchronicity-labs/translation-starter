@@ -15,6 +15,9 @@ export async function POST(req: Request) {
 
   const { text, voiceId } = await req.json();
 
+  console.log('speech synthesis - text: ', text);
+  console.log('speech synthesis - voiceId: ', voiceId);
+
   try {
     console.log(`starting speech synthesis on: ${text}`);
     const response = await fetch(
@@ -72,6 +75,7 @@ export async function POST(req: Request) {
       fileStream.on('finish', async function () {
         try {
           const filePath = `public/output-audio-${Date.now()}.mp3`;
+          console.log('speech-synthesis - audioData: ', audioData);
           const { data, error } = await supabase.storage
             .from('translation')
             .upload(filePath, audioData, {
