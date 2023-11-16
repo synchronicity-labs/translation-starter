@@ -51,6 +51,7 @@ export async function POST(req: Request) {
       });
     }
     console.log('response: ', response.body);
+    console.log('response.buffer: ', response.buffer);
     const data = response.body;
 
     const uuid = uuidv4();
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
     fileStream.end();
 
     const audioData = readFileSync(tempFilePath);
-
+    console.log('speech-synthesis - audioData: ', audioData);
     const url = await new Promise<string>((resolve, reject) => {
       fileStream.on('finish', async function () {
         try {
