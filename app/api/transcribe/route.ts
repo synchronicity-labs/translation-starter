@@ -1,46 +1,5 @@
-// import Replicate from 'replicate';
-
-// export async function POST(req: Request) {
-//   console.log('starting transcription');
-//   if (req.method !== 'POST') {
-//     return new Response('Method Not Allowed', {
-//       headers: { Allow: 'POST' },
-//       status: 405
-//     });
-//   }
-
-//   try {
-//     const { audioUrl } = await req.json();
-//     const replicate = new Replicate({
-//       auth: process.env.REPLICATE_API_TOKEN
-//     });
-//     const data = await replicate.run(
-//       // 'openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2',
-//       'carnifexer/whisperx:1e0315854645f245d04ff09f5442778e97b8588243c7fe40c644806bde297e04',
-//       {
-//         input: {
-//           audio: audioUrl, // Use the S3 URL of the uploaded file
-//           only_text: false,
-//           batch_size: 32,
-//           align_output: true
-//         }
-//       }
-//     );
-//     console.log('transcription - data: ', data);
-//     return new Response(JSON.stringify({ data }), {
-//       status: 200
-//     });
-//   } catch (err: any) {
-//     console.log(err);
-//     return new Response(
-//       JSON.stringify({ error: { statusCode: 500, message: err.message } }),
-//       { status: 500 }
-//     );
-//   }
-// }
-
 import { createReadStream } from 'fs';
-import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
+import { createWriteStream, promises as fsPromises } from 'fs';
 import fetch from 'node-fetch';
 import OpenAI from 'openai';
 import os from 'os';
@@ -50,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const openai = new OpenAI();
 
+// This function downloads the file from the URL and writes it to a temporary file
 async function writeToTempFile(url: string): Promise<string> {
   const uuid = uuidv4();
   const response = await fetch(url);
@@ -82,6 +42,8 @@ async function writeToTempFile(url: string): Promise<string> {
 
 export async function POST(req: Request) {
   console.log('starting transcription');
+
+  // Only allow POST requests
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', {
       headers: { Allow: 'POST' },
@@ -89,9 +51,11 @@ export async function POST(req: Request) {
     });
   }
 
+  // Get the URL of the audio file from the request body
   const { url } = await req.json();
-  console.log('transcribe - url: ', url);
 
+  // Download the audio file and write it to a temporary file
+  // Then transcribe the temporary audio file
   return writeToTempFile(url)
     .then(async (tempFilePath) => {
       try {
