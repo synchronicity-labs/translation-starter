@@ -173,30 +173,25 @@ const MediaInput: FC<Props> = ({ session }) => {
         setStatus('Uploading');
         // STEP 1 - If video is uploaded, upload to supabase storage
         if (video) {
-          console.log('video: ', video);
-
+          // Upload video to Supabase and grab url
           videoUrl =
             (await uploadFile(
               video,
               `public/input-video-${uuid}-${video.name}`
             )) || '';
 
-          console.log('uploadFile response - videoUrl: ', videoUrl);
-
+          // Transcode video to audio
           const { blob, output } = await transcodeVideoToAudio(
             ffmpegRef.current,
             video
           );
 
-          console.log('transcodeVideoToAudio output: ', {
-            blob,
-            output
-          });
-
+          // Upload audio to Supabase and grab url
           audioUrl =
             (await uploadFile(blob, `public/input-audio-${uuid}-${output}`)) ||
             '';
 
+          console.log('videoUrl: ', videoUrl);
           console.log('audioUrl: ', audioUrl);
         }
 
@@ -252,13 +247,6 @@ const MediaInput: FC<Props> = ({ session }) => {
         }
 
         const transcriptionResult = await transcriptionResponse.json();
-
-        // const transcript = transcriptionResult.data
-        //   .map((item: { start: number; end: number; text: string }) =>
-        //     item.text.trim()
-        //   )
-        //   .join(' ');
-
         const transcript = transcriptionResult.data;
         console.log('transcript: ', transcript);
 
