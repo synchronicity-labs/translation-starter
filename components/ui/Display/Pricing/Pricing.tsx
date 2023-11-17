@@ -7,7 +7,7 @@ import {
   Price,
   ProductWithPrices,
   SubscriptionWithProduct
-} from '@/types_db';
+} from '@/types/db';
 import { postData } from '@/utils/helpers';
 import { getStripe } from '@/utils/stripe-client';
 import { Box, Flex, Link, Stack, Text } from '@chakra-ui/react';

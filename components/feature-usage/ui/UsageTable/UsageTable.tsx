@@ -1,7 +1,7 @@
 'use client';
 
 import RealTimeUsageTable from './RealTimeUsageTable';
-import { Job } from '@/types_db';
+import { Job } from '@/types/db';
 import supabase from '@/utils/supabase';
 import { FC, useState, useEffect } from 'react';
 
