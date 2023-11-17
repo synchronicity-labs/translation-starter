@@ -1,4 +1,5 @@
-import { Database, Status } from '@/types_db';
+import { JobStatus } from '@/types/db';
+import { Database } from '@/types_db';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
@@ -157,23 +158,15 @@ export async function getCreditBalance() {
   };
 }
 
-export async function insertJob(
-  originalVideoUrl: string,
-  credits: number,
-  status: Status
-) {
+export async function insertJob() {
   const supabase = createServerSupabaseClient();
   const user = await getUserDetails();
   const jobData: {
     user_id: string;
-    original_video_url: string;
-    credits: number;
-    status: Status;
+    status: JobStatus;
   } = {
     user_id: user?.id as string,
-    original_video_url: originalVideoUrl,
-    credits,
-    status
+    status: 'pending' as JobStatus
   };
   const { data, error } = await supabase
     .from('jobs')
@@ -209,6 +202,24 @@ export async function updateJobByOriginalVideoUrl(
     .from('jobs')
     .update({ ...updatedFields })
     .eq('original_video_url', originalVideoUrl)
+    .select();
+
+  if (error) {
+    console.log(error.message);
+  }
+  console.log('data: ', data);
+  return data ?? [];
+}
+
+export async function updateJobByTranscriptionId(
+  transcriptionId: string,
+  updatedFields: any
+) {
+  const supabase = createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from('jobs')
+    .update({ ...updatedFields })
+    .eq('transcription_id', transcriptionId)
     .select();
 
   if (error) {
