@@ -93,9 +93,15 @@ CREATE TABLE jobs (
   status TEXT,
   video_url TEXT,
   original_video_url TEXT,
-  user_id UUID REFERENCES auth.users NOT NULL,
-  is_deleted BOOLEAN DEFAULT FALSE,
+  original_audio_url TEXT,
+  translated_audio_url TEXT,
+  source_language TEXT,
+  target_language TEXT,
+  transcript JSON,
   credits INT
+  is_deleted BOOLEAN DEFAULT FALSE,
+  transcription_id TEXT,
+  user_id UUID REFERENCES auth.users NOT NULL,
 );
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Can view own jobs data." ON jobs FOR SELECT USING (auth.uid() = user_id);
