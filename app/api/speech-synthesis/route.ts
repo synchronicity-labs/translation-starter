@@ -56,7 +56,6 @@ export async function POST(req: Request) {
 
     const uuid = uuidv4();
 
-    // const tempDir = path.resolve('./temp/generated');
     const tempDir =
       process.env.NEXT_PUBLIC_SITE_URL !== 'http://localhost:3000'
         ? os.tmpdir()
@@ -74,34 +73,36 @@ export async function POST(req: Request) {
     const audioData = readFileSync(tempFilePath);
 
     const url = await new Promise<string>(async (resolve, reject) => {
-      try {
-        const filePath = `public/output-audio-${Date.now()}.mp3`;
-        console.log('speech-synthesis - audioData: ', audioData);
-        const { data, error } = await supabase.storage
-          .from('translation')
-          .upload(filePath, audioData, {
-            contentType: 'audio/mp3',
-            upsert: false
-          });
+      fileStream.on('finish', async function () {
+        try {
+          const filePath = `public/output-audio-${Date.now()}.mp3`;
+          console.log('speech-synthesis - audioData: ', audioData);
+          const { data, error } = await supabase.storage
+            .from('translation')
+            .upload(filePath, audioData, {
+              contentType: 'audio/mp3',
+              upsert: false
+            });
 
-        if (error) {
+          if (error) {
+            console.error('Error uploading audio to Supabase:', error);
+            reject(error);
+          }
+
+          if (!data) {
+            console.error('No data returned from Supabase');
+            reject('No data returned from Supabase');
+          }
+
+          const url = `${
+            process.env.NEXT_PUBLIC_SUPABASE_URL
+          }/storage/v1/object/public/translation/${data!.path}`;
+          resolve(url);
+        } catch (error) {
           console.error('Error uploading audio to Supabase:', error);
           reject(error);
         }
-
-        if (!data) {
-          console.error('No data returned from Supabase');
-          reject('No data returned from Supabase');
-        }
-
-        const url = `${
-          process.env.NEXT_PUBLIC_SUPABASE_URL
-        }/storage/v1/object/public/translation/${data!.path}`;
-        resolve(url);
-      } catch (error) {
-        console.error('Error uploading audio to Supabase:', error);
-        reject(error);
-      }
+      });
     });
 
     // Clean up temp files and directory
