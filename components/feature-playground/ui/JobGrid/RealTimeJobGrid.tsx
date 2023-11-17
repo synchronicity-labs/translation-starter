@@ -73,13 +73,6 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
           console.log('intiating translation');
           translateAndSynthesize(job);
           break;
-        case 'synchronizing':
-          if (!job.credits) {
-            console.log('intiating lip sychnronization');
-            synchronize(job);
-          }
-
-          break;
         default:
           break;
       }
@@ -212,6 +205,8 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
       handleJobFailed(job.id, 'Failed to update job status to synchronizing.');
       return;
     }
+
+    synchronize(job);
   }
 
   async function synchronize(job: Job) {
