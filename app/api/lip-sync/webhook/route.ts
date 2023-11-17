@@ -1,4 +1,4 @@
-import { Status } from '@/types_db';
+import { JobStatus } from '@/types/db';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
           originalVideoUrl: result.originalVideoUrl,
           updatedFields: {
             video_url: result.url,
-            status: 'completed' as Status
+            status: 'completed' as JobStatus
           }
         })
       }
