@@ -61,17 +61,60 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
 
   useEffect(() => {
     console.log('in jobs ussEffect: ', jobs);
+
+    const updateJob = async (
+      jobId: string,
+      updatedFields: any,
+      errorMessage: string
+    ) => {
+      const updateJobToTranscribing = await fetch('/api/db/update-job', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId,
+          updatedFields
+        })
+      });
+
+      if (!updateJobToTranscribing.ok) {
+        handleJobFailed(jobId, errorMessage);
+        return;
+      }
+    };
+
     for (const job of jobs) {
       switch (job.status) {
-        case 'transcribing':
-          if (!job.transcript && !job.transcription_id) {
+        // case 'transcribing':
+        //   if (!job.transcript && !job.transcription_id) {
+        //     console.log('intiating transcription');
+        //     transcribe(job);
+        //   }
+        //   break;
+        case 'uploading':
+          if (job.original_video_url && job.original_audio_url) {
+            // Update job status to transcribing
+            updateJob(
+              job.id,
+              { status: 'transcribing' },
+              'Failed to update job status to transcribing'
+            );
             console.log('intiating transcription');
             transcribe(job);
           }
           break;
-        case 'translating':
-          console.log('intiating translation');
-          translateAndSynthesize(job);
+        // case 'translating':
+        //   console.log('intiating translation');
+        //   translateAndSynthesize(job);
+        //   break;
+        case 'transcribing':
+          if (job.transcript && job.transcription_id) {
+            updateJob(
+              job.id,
+              { status: 'translating' },
+              'Failed to update job status to translating'
+            );
+            translateAndSynthesize(job);
+          }
+
           break;
         default:
           break;
