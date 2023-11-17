@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const { url } = await req.json();
 
   const webhook_url =
-    // `${process.env.NEXT_PUBLIC_SITE_URL}/api/transcribe/webhook` ||
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/transcribe/webhook` ||
     `https://6ba6-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`;
 
   const form = new FormData();
