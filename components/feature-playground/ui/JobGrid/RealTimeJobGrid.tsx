@@ -2,13 +2,14 @@
 
 import JobGridItem from './JobGridItem';
 import PageNavigator from '@/components/ui/PageNavigator';
-import { Job } from '@/types_db';
+import { Job, JobStatus, Transcript } from '@/types/db';
 import { sortByCreatedAt } from '@/utils/helpers';
 import supabase from '@/utils/supabase';
-import { Stack, Flex, Grid } from '@chakra-ui/react';
+import { Stack, Flex, Grid, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 
 export default function RealTimeJobGrid({ data }: { data: Job[] }) {
+  const toast = useToast();
   const pageSize = 6;
   const [offset, setOffset] = useState(0);
   const [jobs, setJobs] = useState<Job[]>(data);
@@ -57,6 +58,191 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
       supabase.removeChannel(channel);
     };
   }, [supabase, jobs, setJobs]);
+
+  useEffect(() => {
+    console.log('in jobs ussEffect: ', jobs);
+    for (const job of jobs) {
+      switch (job.status) {
+        case 'transcribing':
+          console.log('intiating transcription');
+          if (!job.transcript && !job.transcription_id) {
+            transcribe(job);
+          }
+          break;
+        case 'translating':
+          console.log('intiating translation');
+          translateAndSynthesize(job);
+          break;
+        case 'synchronizing':
+          // TODO: add check to see if synchronization is already started
+          console.log('intiating lip sychnronization');
+          synchronize(job);
+          break;
+        default:
+          break;
+      }
+    }
+  }, [jobs]);
+
+  const handleJobFailed = async (jobId: string, errorMessage: string) => {
+    await fetch('/api/db/update-job', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId,
+        updatedFields: {
+          status: 'failed' as JobStatus
+        }
+      })
+    });
+    toast({
+      title: 'Error occured while creating video',
+      description: errorMessage,
+      status: 'error',
+      duration: null,
+      isClosable: true
+    });
+  };
+
+  async function transcribe(job: Job) {
+    const transcription = await fetch(`/api/transcribe`, {
+      method: 'POST',
+      body: JSON.stringify({
+        url: job.original_audio_url
+      })
+    });
+
+    if (!transcription.ok) {
+      handleJobFailed(job.id, 'Failed to transcribe video.');
+      return;
+    }
+
+    const transcriptionResult = await transcription.json();
+
+    const updatedJobResponse = await fetch('/api/db/update-job', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId: job.id,
+        updatedFields: {
+          transcription_id: transcriptionResult.request_id
+        }
+      })
+    });
+
+    if (!updatedJobResponse.ok) {
+      handleJobFailed(job.id, 'Failed to update job with transcription id.');
+      return;
+    }
+  }
+
+  async function translateAndSynthesize(job: Job) {
+    const transcript = job.transcript! as Transcript;
+
+    console.log('transcript: ', transcript);
+
+    const text = transcript
+      .map((item: { transcription: string }) => item.transcription.trim())
+      .join(' ');
+
+    console.log('text: ', text);
+
+    const translation = await fetch(`/api/translate`, {
+      method: 'POST',
+      body: JSON.stringify({
+        text,
+        language: job.target_language
+      })
+    });
+
+    if (!translation.ok) {
+      handleJobFailed(job.id, 'Failed to translate video.');
+      return;
+    }
+
+    const translationResult = await translation.json();
+
+    const updatedJobTranslationResponse = await fetch('/api/db/update-job', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId: job.id,
+        updatedFields: {
+          status: 'synthesizing'
+        }
+      })
+    });
+
+    if (!updatedJobTranslationResponse.ok) {
+      handleJobFailed(job.id, 'Failed to update job status to synthesizing.');
+      return;
+    }
+
+    const translatedAudio = await fetch(`/api/speech-synthesis`, {
+      method: 'POST',
+      body: JSON.stringify({
+        text: translationResult.data,
+        // voiceId: voiceId
+        voiceId: '21m00Tcm4TlvDq8ikWAM'
+      })
+    });
+
+    if (!translatedAudio.ok) {
+      handleJobFailed(job.id, 'Failed to synthesize translated audio.');
+      return;
+    }
+
+    const { data: translatedAudioUrl } = await translatedAudio.json();
+    console.log('translatedAudioUrl: ', translatedAudioUrl);
+
+    const updatedJobSpeechSynthesisResponse = await fetch(
+      '/api/db/update-job',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: job.id,
+          updatedFields: {
+            status: 'synchronizing',
+            translated_audio_url: translatedAudioUrl
+          }
+        })
+      }
+    );
+
+    if (!updatedJobSpeechSynthesisResponse.ok) {
+      handleJobFailed(job.id, 'Failed to update job status to synchronizing.');
+      return;
+    }
+  }
+
+  async function synchronize(job: Job) {
+    const synchronizeResponse = await fetch(`/api/lip-sync`, {
+      method: 'POST',
+      body: JSON.stringify({
+        videoUrl: job.original_video_url,
+        audioUrl: job.translated_audio_url
+      })
+    });
+
+    if (!synchronizeResponse.ok) {
+      handleJobFailed(job.id, 'Failed to synchronize speech.');
+      return;
+    }
+
+    const { data } = await synchronizeResponse.json();
+
+    const updatedJobResponse = await fetch('/api/db/update-job', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId: job.id,
+        updatedFields: {
+          credits: data.credits_deducted
+        }
+      })
+    });
+
+    if (!updatedJobResponse.ok) {
+      handleJobFailed(job.id, 'Failed to update job with transcription id.');
+      return;
+    }
+  }
 
   const numJobs = jobs.length;
   const pages = Math.ceil(numJobs / pageSize);
