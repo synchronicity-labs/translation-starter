@@ -3,8 +3,8 @@ import { Input, Text, Stack } from '@chakra-ui/react';
 import { FC } from 'react';
 
 interface Props {
-  url: string | null;
-  setUrl: (u: string | null) => void;
+  url: string;
+  setUrl: (u: string) => void;
   disabled?: boolean;
   requirements?: JSX.Element;
   placeholder?: string;

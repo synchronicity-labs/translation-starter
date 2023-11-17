@@ -39,7 +39,7 @@ const MediaInput: FC<Props> = ({ session }) => {
 
   const toast = useToast();
   const [video, setVideo] = useState<File | null>(null);
-  const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string>('');
 
   const [language, setLanguage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -132,7 +132,7 @@ const MediaInput: FC<Props> = ({ session }) => {
   const handleJobFailed = async (errorMessage: string, jobId?: string) => {
     setLoading(false);
     setVideo(null);
-    setUrl(null);
+    setUrl('');
     setLanguage(null);
     {
       jobId &&
@@ -166,9 +166,12 @@ const MediaInput: FC<Props> = ({ session }) => {
       return;
     }
 
+    console.log('MediaInput - video: ', video);
+    console.log('MediaInput - url: ', url);
+
     // If no video is selected, show error
-    if (!video) {
-      handleJobFailed('Video file is required');
+    if (!video && !url) {
+      handleJobFailed('Video file or url is required');
       return;
     }
 
@@ -204,20 +207,23 @@ const MediaInput: FC<Props> = ({ session }) => {
     // TODO: Add logic for creating local file for transcode function
 
     // 1. Transcode video to audio
+    const videoInput = video || url;
     const { blob, output } = await transcodeVideoToAudio(
       ffmpegRef.current,
-      video
+      videoInput!
     );
 
     // 2. Upload video and audio to Supabase storage
-    const videoUrl = await uploadFile(
-      video,
-      `public/input-video-${job.id}-${video.name}`
-    );
+    const videoUrl =
+      url ||
+      (await uploadFile(video!, `public/input-video-${job.id}-${video!.name}`));
     const audioUrl = await uploadFile(
       blob,
       `public/input-audio-${job.id}-${output}`
     );
+
+    console.log('MediaInput - videoUrl: ', videoUrl);
+    console.log('MediaInput - audioUrl: ', audioUrl);
 
     if (!videoUrl || !audioUrl) {
       handleJobFailed(`Failed to upload video and audio to Supabase storage`);
@@ -244,7 +250,8 @@ const MediaInput: FC<Props> = ({ session }) => {
 
     setLoading(false);
     setVideo(null);
-    setUrl(null);
+    setLanguage(null);
+    setUrl('');
   };
 
   // Function for updating video state when file is added
