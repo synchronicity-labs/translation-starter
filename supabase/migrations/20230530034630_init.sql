@@ -85,7 +85,8 @@ CREATE TABLE subscriptions (
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Can only view own subs data" ON subscriptions FOR SELECT USING (auth.uid() = user_id);
 
--- Jobs table
+-- Jobs table and related types
+CREATE TYPE job_status AS ENUM ('pending', 'uploading', 'transcribing', 'translating', 'cloning', 'synthesizing', 'synchronizing', 'completed', 'failed');
 CREATE TABLE jobs (
   id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
