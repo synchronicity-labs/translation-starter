@@ -214,9 +214,10 @@ const MediaInput: FC<Props> = ({ session }) => {
     );
 
     // 2. Upload video and audio to Supabase storage
-    const videoUrl =
-      url ||
-      (await uploadFile(video!, `public/input-video-${job.id}-${video!.name}`));
+    const videoUrl = video
+      ? await uploadFile(video!, `public/input-video-${job.id}-${video!.name}`)
+      : url;
+
     const audioUrl = await uploadFile(
       blob,
       `public/input-audio-${job.id}-${output}`
