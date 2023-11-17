@@ -13,6 +13,10 @@ export async function POST(req: Request) {
 
   const form = new FormData();
   form.append('audio_url', url);
+  form.append(
+    'webhook_url',
+    `https://9e5a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`
+  );
 
   const response = await fetch(
     'https://api.gladia.io/audio/text/audio-transcription/',
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
 
   const data = await response.json();
 
-  return new Response(JSON.stringify({ data }), {
+  return new Response(JSON.stringify(data), {
     status: 200
   });
 }
