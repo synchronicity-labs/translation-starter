@@ -18,7 +18,8 @@ const JobGrid: FC<Props> = ({ userId }) => {
         .from('jobs')
         .select('*')
         .eq('user_id', userId) // Ensure `userId` is defined in your component
-        .neq('is_deleted', true);
+        .neq('is_deleted', true)
+        .neq('status', 'failed');
 
       if (error) {
         console.error('Error fetching jobs:', error);
