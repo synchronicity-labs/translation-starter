@@ -2,7 +2,7 @@
 
 import StatusTag from '@/components/ui/Display/StatusTag';
 import PageNavigator from '@/components/ui/PageNavigator';
-import { Job } from '@/types_db';
+import { Job, JobStatus } from '@/types/db';
 import { sortByCreatedAt } from '@/utils/helpers';
 import supabase from '@/utils/supabase';
 import {
@@ -135,7 +135,7 @@ export default function RealTimeUsageTable({ data }: { data: Job[] }) {
                       </Tooltip>
                     </Td>
                     <Td>
-                      <StatusTag status={job.status!} />
+                      <StatusTag status={job.status! as JobStatus} />
                     </Td>
                     <Td isNumeric>{job.credits}</Td>
                   </Tr>
