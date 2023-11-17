@@ -3,7 +3,7 @@
 import JobGridItemExpandedModal from './JobGridItemExpandedModal';
 import StatusTag from '@/components/ui/Display/StatusTag';
 import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Job, Status } from '@/types_db';
+import { Job, JobStatus } from '@/types/db';
 import {
   AspectRatio,
   Box,
@@ -55,7 +55,9 @@ const JobGridItem: FC<Props> = ({ job }) => {
         position={'relative'}
         w="full"
       >
-        {['pending', 'processing'].includes(job.status as Status) ? (
+        {['completed', 'failed'].includes(job.status as JobStatus) ? (
+          <VideoPlayer url={url} preview />
+        ) : (
           <Box width={'full'}>
             <AspectRatio ratio={16 / 9}>
               <Stack
@@ -82,11 +84,9 @@ const JobGridItem: FC<Props> = ({ job }) => {
               </Stack>
             </AspectRatio>
           </Box>
-        ) : (
-          <VideoPlayer url={url} preview />
         )}
         <Text fontSize={'sm'}>{`Created ${elapsedTime}`}</Text>
-        {job.status && <StatusTag status={job.status} />}
+        {job.status && <StatusTag status={job.status as JobStatus} />}
       </Stack>
       <JobGridItemExpandedModal job={job} isOpen={isOpen} onClose={onClose} />
     </GridItem>

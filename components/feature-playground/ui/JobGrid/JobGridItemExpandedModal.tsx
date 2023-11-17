@@ -1,6 +1,6 @@
 import JobGridItemDeleteModal from './JobGridItemDeleteModal';
 import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Job } from '@/types_db';
+import { Job } from '@/types/db';
 import {
   Modal,
   ModalContent,
@@ -72,6 +72,10 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
   useEffect(() => {
     setShow('translated-video');
   }, []);
+
+  useEffect(() => {
+    setUrl(job.video_url);
+  }, [job]);
 
   useEffect(() => {
     switch (show) {
