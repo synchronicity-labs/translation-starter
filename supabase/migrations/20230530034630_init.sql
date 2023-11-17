@@ -42,7 +42,7 @@ CREATE TABLE products (
   metadata JSONB
 );
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read-only access." ON products FOR SELECT USING (TRUE);
+CREATE POLICY "Allow public read-only access" ON products FOR SELECT USING (TRUE);
 
 -- Prices table and related types
 CREATE TYPE pricing_type AS ENUM ('one_time', 'recurring');
@@ -61,7 +61,7 @@ CREATE TABLE prices (
   metadata JSONB
 );
 ALTER TABLE prices ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read-only access." ON prices FOR SELECT USING (TRUE);
+CREATE POLICY "Allow public read-only access" ON prices FOR SELECT USING (TRUE);
 
 -- Subscriptions table and related types
 CREATE TYPE subscription_status AS ENUM ('trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired', 'past_due', 'unpaid', 'paused');
@@ -83,7 +83,7 @@ CREATE TABLE subscriptions (
   trial_end TIMESTAMPTZ DEFAULT timezone('utc', now())
 );
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Can only view own subs data." ON subscriptions FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Can only view own subs data" ON subscriptions FOR SELECT USING (auth.uid() = user_id);
 
 -- Jobs table
 CREATE TABLE jobs (
@@ -98,15 +98,15 @@ CREATE TABLE jobs (
   source_language TEXT,
   target_language TEXT,
   transcript JSON,
-  credits INT
+  credits INT,
   is_deleted BOOLEAN DEFAULT FALSE,
   transcription_id TEXT,
-  user_id UUID REFERENCES auth.users NOT NULL,
+  user_id UUID REFERENCES auth.users NOT NULL
 );
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Can view own jobs data." ON jobs FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Can update own jobs data." ON jobs FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Can view own jobs data" ON jobs FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Can update own jobs data" ON jobs FOR UPDATE USING (auth.uid() = user_id);
 
 -- Realtime subscriptions
 DROP PUBLICATION IF EXISTS supabase_realtime;
-CREATE PUBLICATION supabase_realtime FOR TABLE products, prices;
+CREATE PUBLICATION supabase_realtime FOR TABLE products, prices, jobs;
