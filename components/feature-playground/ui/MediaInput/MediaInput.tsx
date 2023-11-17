@@ -201,6 +201,8 @@ const MediaInput: FC<Props> = ({ session }) => {
       return;
     }
 
+    // TODO: Add logic for creating local file for transcode function
+
     // 1. Transcode video to audio
     const { blob, output } = await transcodeVideoToAudio(
       ffmpegRef.current,

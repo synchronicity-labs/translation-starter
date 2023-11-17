@@ -1,5 +1,6 @@
 'use client';
 
+import JobGridLoading from './JobGridLoading';
 import RealTimeJobGrid from './RealTimeJobGrid';
 import { Job } from '@/types/db';
 import supabase from '@/utils/supabase';
@@ -33,7 +34,7 @@ const JobGrid: FC<Props> = ({ userId }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <JobGridLoading />;
   }
 
   return <RealTimeJobGrid data={data} />;

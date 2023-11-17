@@ -37,6 +37,5 @@ export default async function transcodeVideoToAudio(
   const blob = new Blob([data], { type: 'audio/mp3' });
   const url = URL.createObjectURL(blob);
   console.log('url ', url);
-  // return { data, output };r
   return { blob, output };
 }
