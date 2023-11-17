@@ -1,9 +1,9 @@
-import { Database, Status } from '@/types_db';
+import { JobStatus } from '@/types/db';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { FC } from 'react';
 
 interface Props {
-  status: Status;
+  status: JobStatus;
 }
 
 const StatusBox: FC<Props> = ({ status }) => {
@@ -12,7 +12,14 @@ const StatusBox: FC<Props> = ({ status }) => {
     case 'pending':
       color = 'blue.900';
       break;
-    case 'processing':
+    case 'uploading':
+    case 'transcribing':
+    case 'translating':
+    case 'cloning':
+    case 'synthesizing':
+    case 'synchronizing':
+    case 'completed':
+    case 'failed':
       color = 'yellow.900';
       break;
     case 'completed':
