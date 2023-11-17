@@ -64,8 +64,8 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
     for (const job of jobs) {
       switch (job.status) {
         case 'transcribing':
-          console.log('intiating transcription');
           if (!job.transcript && !job.transcription_id) {
+            console.log('intiating transcription');
             transcribe(job);
           }
           break;
@@ -74,9 +74,11 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
           translateAndSynthesize(job);
           break;
         case 'synchronizing':
-          // TODO: add check to see if synchronization is already started
-          console.log('intiating lip sychnronization');
-          synchronize(job);
+          if (!job.credits) {
+            console.log('intiating lip sychnronization');
+            synchronize(job);
+          }
+
           break;
         default:
           break;
@@ -213,7 +215,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
   }
 
   async function synchronize(job: Job) {
-    const synchronizeResponse = await fetch(`/api/lip-sync`, {
+    const synchronize = await fetch(`/api/lip-sync`, {
       method: 'POST',
       body: JSON.stringify({
         videoUrl: job.original_video_url,
@@ -221,14 +223,14 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
       })
     });
 
-    if (!synchronizeResponse.ok) {
+    if (!synchronize.ok) {
       handleJobFailed(job.id, 'Failed to synchronize speech.');
       return;
     }
 
-    const { data } = await synchronizeResponse.json();
+    const { data } = await synchronize.json();
 
-    const updatedJobResponse = await fetch('/api/db/update-job', {
+    const updatedJob = await fetch('/api/db/update-job', {
       method: 'POST',
       body: JSON.stringify({
         jobId: job.id,
@@ -238,7 +240,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
       })
     });
 
-    if (!updatedJobResponse.ok) {
+    if (!updatedJob.ok) {
       handleJobFailed(job.id, 'Failed to update job with transcription id.');
       return;
     }
