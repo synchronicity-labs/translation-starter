@@ -30,7 +30,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
         { event: 'UPDATE', schema: 'public', table: 'jobs' },
         (payload) => {
           setJobs((currentJobs) => {
-            if (payload.new.is_deleted) {
+            if (payload.new.is_deleted || payload.new.status === 'failed') {
               return currentJobs.filter((job) => job.id !== payload.new.id);
             }
             // Find the index of the job that has been updated.
@@ -170,6 +170,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
       return;
     }
 
+    console.log('about to call api/speech-synthesis');
     const translatedAudio = await fetch(`/api/speech-synthesis`, {
       method: 'POST',
       body: JSON.stringify({
@@ -206,20 +207,24 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
       return;
     }
 
-    synchronize(job);
+    synchronize(job.id, job.original_video_url!, translatedAudioUrl);
   }
 
-  async function synchronize(job: Job) {
+  async function synchronize(
+    jobId: string,
+    videoUrl: string,
+    audioUrl: string
+  ) {
     const synchronize = await fetch(`/api/lip-sync`, {
       method: 'POST',
       body: JSON.stringify({
-        videoUrl: job.original_video_url,
-        audioUrl: job.translated_audio_url
+        videoUrl,
+        audioUrl
       })
     });
 
     if (!synchronize.ok) {
-      handleJobFailed(job.id, 'Failed to synchronize speech.');
+      handleJobFailed(jobId, 'Failed to synchronize speech.');
       return;
     }
 
@@ -228,7 +233,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
     const updatedJob = await fetch('/api/db/update-job', {
       method: 'POST',
       body: JSON.stringify({
-        jobId: job.id,
+        jobId: jobId,
         updatedFields: {
           credits: data.credits_deducted
         }
@@ -236,7 +241,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
     });
 
     if (!updatedJob.ok) {
-      handleJobFailed(job.id, 'Failed to update job with transcription id.');
+      handleJobFailed(jobId, 'Failed to update job with transcription id.');
       return;
     }
   }
