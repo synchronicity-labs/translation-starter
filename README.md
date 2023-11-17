@@ -17,9 +17,9 @@ Translation AI is an open-source tool for translating spoken language in video c
 - [Stripe](https://stripe.com) for billing
 
 
-### [Live demo](https://translation-phi.vercel.app/)
+### [Live demo](https://translation-starter-khaki.vercel.app/)
 
-[![Screenshot of demo](./public/demo.png)](https://translation-phi.vercel.app/)
+[![Screenshot of demo](./public/demo.png)](https://translation-starter-khaki.vercel.app/)
 
 ## Getting set up
 
