@@ -70,11 +70,10 @@ export async function POST(req: Request) {
     }
     fileStream.end();
 
-    const audioData = readFileSync(tempFilePath);
-
     const url = await new Promise<string>(async (resolve, reject) => {
       fileStream.on('finish', async function () {
         try {
+          const audioData = readFileSync(tempFilePath);
           const filePath = `public/output-audio-${Date.now()}.mp3`;
           console.log('speech-synthesis - audioData: ', audioData);
           const { data, error } = await supabase.storage
