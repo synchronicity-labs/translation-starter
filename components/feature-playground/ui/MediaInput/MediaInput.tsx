@@ -6,7 +6,7 @@ import Info from '@/components/ui/Display/Info';
 import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
-import { Status } from '@/types_db';
+import { Job, JobStatus } from '@/types/db';
 import loadFfmpeg from '@/utils/load-ffmpeg';
 import supabase from '@/utils/supabase';
 import transcodeVideoToAudio from '@/utils/transcode-video-to-audio';
@@ -37,7 +37,6 @@ interface Props {
 
 const MediaInput: FC<Props> = ({ session }) => {
   const ffmpegRef = useRef<any>(null);
-  const [is_loaded, setIsLoaded] = useState<boolean>(false);
 
   const toast = useToast();
   const [video, setVideo] = useState<File | null>(null);
@@ -106,7 +105,6 @@ const MediaInput: FC<Props> = ({ session }) => {
   const load = async () => {
     const ffmpeg_response: FFmpeg = await loadFfmpeg();
     ffmpegRef.current = ffmpeg_response;
-    setIsLoaded(true);
   };
 
   async function uploadFile(file: File, filePath: string) {
@@ -147,7 +145,7 @@ const MediaInput: FC<Props> = ({ session }) => {
           body: JSON.stringify({
             jobId,
             updatedFields: {
-              status: 'failed' as Status
+              status: 'failed' as JobStatus
             }
           })
         }));
@@ -161,175 +159,92 @@ const MediaInput: FC<Props> = ({ session }) => {
     });
   };
 
-  // Uploads file to S3 and calls '/api/translate' endpoint
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (session) {
-      let videoUrl = url;
-      let audioUrl = '';
-      const uuid = uuidV4();
-      setLoading(true);
-      if (video || url) {
-        setStatus('Uploading');
-        // STEP 1 - If video is uploaded, upload to supabase storage
-        if (video) {
-          // Upload video to Supabase and grab url
-          videoUrl =
-            (await uploadFile(
-              video,
-              `public/input-video-${uuid}-${video.name}`
-            )) || '';
 
-          // Transcode video to audio
-          const { blob, output } = await transcodeVideoToAudio(
-            ffmpegRef.current,
-            video
-          );
+    setLoading(true);
 
-          // Upload audio to Supabase and grab url
-          audioUrl =
-            (await uploadFile(blob, `public/input-audio-${uuid}-${output}`)) ||
-            '';
-
-          console.log('videoUrl: ', videoUrl);
-          console.log('audioUrl: ', audioUrl);
-        }
-
-        // STEP 2. Create job
-        const createJobResponse = await fetch(`/api/db/create-job`, {
-          method: 'POST',
-          body: JSON.stringify({
-            originalVideoUrl: videoUrl
-          })
-        });
-
-        if (!createJobResponse.ok) {
-          handleJobFailed(`Failed to create job`);
-          throw new Error(`Failed to create job`);
-        }
-
-        const { data: job } = await createJobResponse.json();
-        console.log('job: ', job);
-
-        // // const trainVoiceModelResponse = await fetch(`/api/train-voice-model`, {
-        // //   method: 'POST',
-        // //   body: JSON.stringify({ path: tempAudioPath })
-        // // });
-
-        // // if (!trainVoiceModelResponse.ok) {
-        // //   throw new Error('Failed to train voice model');
-        // // }
-
-        // // const trainVoiceModelResult = await trainVoiceModelResponse.json();
-
-        // // console.log('trainVoiceModelResult: ', trainVoiceModelResult);
-
-        // // const { voiceId } = trainVoiceModelResult.data;
-
-        // // console.log('voiceId: ', voiceId);
-
-        // // console.log('MediaInput - handleSubmit - videoUrl: ', videoUrl);
-        // // console.log('MediaInput - handleSubmit - audioUrl: ', audioUrl);
-
-        // 2. transcribe
-        // Handles converting audio to text
-
-        setStatus('Transcribing');
-        console.log('audioUrl: ', audioUrl);
-        const transcriptionResponse = await fetch(`/api/transcribe`, {
-          method: 'POST',
-          body: JSON.stringify({ url: audioUrl })
-        });
-
-        if (!transcriptionResponse.ok) {
-          handleJobFailed(`Failed to convert audio to text`, job.id);
-          throw new Error(`Failed to convert audio to text`);
-        }
-
-        const transcriptionResult = await transcriptionResponse.json();
-        console.log('transcriptionResult: ', transcriptionResult);
-
-        const transcript = transcriptionResult.data.prediction
-          .map((item: { transcription: string }) => item.transcription.trim())
-          .join(' ');
-
-        console.log('transcript: ', transcript);
-
-        // 3. translate
-        // Handles translating text to target language
-        setStatus('Translating');
-        const translationResponse = await fetch(`/api/translate`, {
-          method: 'POST',
-          body: JSON.stringify({
-            // text: transcript.prediction.transcription,
-            language
-          })
-        });
-
-        if (!translationResponse.ok) {
-          handleJobFailed(`Failed to translate text`, job.id);
-          throw new Error(`Failed to translate text`);
-        }
-
-        const translationResult = await translationResponse.json();
-        console.log('translationResult: ', translationResult);
-
-        // 4. speech-synthesis
-        // Handles synthesizing translated text to audio
-        setStatus('Synthesizing');
-        const speechSynthesisResponse = await fetch(`/api/speech-synthesis`, {
-          method: 'POST',
-          body: JSON.stringify({
-            text: translationResult.data,
-            // voiceId: voiceId
-            voiceId: '21m00Tcm4TlvDq8ikWAM'
-          })
-        });
-
-        if (!speechSynthesisResponse.ok) {
-          handleJobFailed(`Failed to synthesize speech`, job.id);
-          throw new Error(`Failed to synthesize speech`);
-        }
-
-        const speechSynthesisResult = await speechSynthesisResponse.json();
-        console.log('speechSynthesisResult: ', speechSynthesisResult);
-
-        // 5. synchronize
-        // Handles synchronizing audio to video
-        setStatus('Synchronizing');
-        const synchronizeResponse = await fetch(`/api/lip-sync`, {
-          method: 'POST',
-          body: JSON.stringify({
-            videoUrl,
-            audioUrl: speechSynthesisResult.data
-          })
-        });
-
-        if (!synchronizeResponse.ok) {
-          handleJobFailed(`Failed to synchronize speech`, job.id);
-          throw new Error(`Failed to synchronize speech`);
-        }
-
-        const synchronizeResult = await synchronizeResponse.json();
-
-        console.log('synchronizeResult: ', synchronizeResult);
-
-        setLoading(false);
-        setStatus('Idle');
-        setVideo(null);
-        setUrl(null);
-        setLanguage(null);
-        // return data;
-        return null;
-      }
-      setLoading(false);
-      setStatus('Idle');
-      setVideo(null);
-      setUrl(null);
-      setLanguage(null);
-    } else {
+    // If user isn't signed in, open sign up modal
+    if (!session) {
       onOpen();
+      return;
     }
+
+    // If no video is selected, show error
+    if (!video) {
+      handleJobFailed('Video file is required');
+      return;
+    }
+
+    // Create new job
+    const createJob = await fetch(`/api/db/create-job`, {
+      method: 'POST'
+    });
+
+    if (!createJob.ok) {
+      handleJobFailed(`Failed to create job`);
+      return;
+    }
+
+    const { data: job } = await createJob.json();
+
+    // Update job status to uploading
+    const updateJobToUploading = await fetch('/api/db/update-job', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId: job.id,
+        updatedFields: {
+          status: 'uploading' as JobStatus,
+          target_language: language
+        }
+      })
+    });
+
+    if (!updateJobToUploading.ok) {
+      handleJobFailed(`Failed to update job status to 'uploading'`);
+      return;
+    }
+
+    // 1. Transcode video to audio
+    const { blob, output } = await transcodeVideoToAudio(
+      ffmpegRef.current,
+      video
+    );
+
+    // 2. Upload video and audio to Supabase storage
+    const videoUrl = await uploadFile(
+      video,
+      `public/input-video-${job.id}-${video.name}`
+    );
+    const audioUrl = await uploadFile(
+      blob,
+      `public/input-audio-${job.id}-${output}`
+    );
+
+    if (!videoUrl || !audioUrl) {
+      handleJobFailed(`Failed to upload video and audio to Supabase storage`);
+      return;
+    }
+
+    // Update job status to transcribing
+    const updateJobToTranscribing = await fetch('/api/db/update-job', {
+      method: 'POST',
+      body: JSON.stringify({
+        jobId: job.id,
+        updatedFields: {
+          original_video_url: videoUrl,
+          original_audio_url: audioUrl,
+          status: 'transcribing' as JobStatus
+        }
+      })
+    });
+
+    if (!updateJobToTranscribing.ok) {
+      handleJobFailed(`Failed to update job status to 'transcribing'`);
+      return;
+    }
+
+    setLoading(false);
   };
 
   // Function for updating video state when file is added
