@@ -1,5 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', {
