@@ -103,9 +103,6 @@ CREATE TABLE jobs (
   transcription_id TEXT,
   user_id UUID REFERENCES auth.users NOT NULL
 );
-ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Can view own jobs data" ON jobs FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Can update own jobs data" ON jobs FOR UPDATE USING (auth.uid() = user_id);
 
 -- Realtime subscriptions
 DROP PUBLICATION IF EXISTS supabase_realtime;

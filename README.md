@@ -56,13 +56,35 @@ Clicking the Deploy button will open up a browser tab with instructions on gener
 
 You'll need to configure your Supabase project's site URL and Vercel's `NEXT_PUBLIC_SITE_URL` environment variable to secure and streamline authentication.
 
-1. In your Supabase project, navigate to `auth` > [URL configuration](https://app.supabase.com/project/_/auth/url-configuration) and enter your production URL (for example, https://your-deployment-url.vercel.app) as the site URL.
+1. In your Supabase project, navigate to `Authentication` > [URL configuration](https://app.supabase.com/project/_/auth/url-configuration) and enter your production URL (for example, https://your-deployment-url.vercel.app) as the site URL.
 
 2. In Vercel, under your project's deployment settings, create a new Production environment variable called `NEXT_PUBLIC_SITE_URL` and set it to your production URL. Make sure you uncheck the options for preview and development environments to maintain the correct operation for preview branches and local development.
 
 ### 3. Configure Storage
 
-TODO: Add details for setting up storage in supabase
+After that, you'll need to create a new storage bucket within your Supabase project to store video and audio files.
+
+1. In your Supabase project, navigate to `Storage` and click the `New bucket` button.
+   
+2. Enter `translation` as the name for your new bucket and toggel `Public bucket` to on.
+
+3. Click `Create Bucket`
+
+4. Still in the `Storage` section of your Supabase project, click `Policies` and add the below policies:
+
+  - Within the section called `translation` (the name of your bucket) click `New policy` then `For full costumization` and fill it in as shown below:
+
+    [![Screenshot of translation storage bucket policy](./public/supabase-translation-bucket-policy.png)](https://translation-phi.vercel.app/)
+
+  - Within the section called `Other policies under storage.objects` add the following three policies:
+
+    [![Screenshot of storage bucket insert policy](./public/supabase-storage-insert-policy.png)](https://translation-phi.vercel.app/)
+
+    [![Screenshot of storage bucket select policy](./public/supabase-storage-select-policy.png)](https://translation-phi.vercel.app/)
+
+    [![Screenshot of storage bucket update policy](./public/supabase-storage-update-policy.png)](https://translation-phi.vercel.app/)
+
+
 
 ### 4. Configure Stripe
 
