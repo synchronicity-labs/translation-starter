@@ -107,10 +107,16 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
         //   break;
         case 'transcribing':
           if (job.transcript && job.transcription_id) {
+            console.log(
+              "in transcribing case before updating job status to translating'"
+            );
             updateJob(
               job.id,
               { status: 'translating' },
               'Failed to update job status to translating'
+            );
+            console.log(
+              'in transcribing case after updating job status to translating'
             );
             translateAndSynthesize(job);
           }
@@ -173,6 +179,7 @@ export default function RealTimeJobGrid({ data }: { data: Job[] }) {
   }
 
   async function translateAndSynthesize(job: Job) {
+    console.log('in translateAndSynthesize');
     const transcript = job.transcript! as Transcript;
 
     console.log('transcript: ', transcript);
