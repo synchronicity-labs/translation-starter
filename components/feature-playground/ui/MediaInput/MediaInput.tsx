@@ -24,7 +24,6 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { Session } from '@supabase/auth-helpers-nextjs';
 import { FC, useCallback, useEffect, useState, useRef } from 'react';
 import { HiSparkles } from 'react-icons/hi';
-import { v4 as uuidV4 } from 'uuid';
 
 interface Language {
   name: string;
@@ -45,8 +44,6 @@ const MediaInput: FC<Props> = ({ session }) => {
   const [language, setLanguage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const [status, setStatus] = useState('Idle');
 
   const submitDisabled = !url || !language;
   const inputOptions = ['upload', 'url'];
@@ -134,7 +131,6 @@ const MediaInput: FC<Props> = ({ session }) => {
 
   const handleJobFailed = async (errorMessage: string, jobId?: string) => {
     setLoading(false);
-    setStatus('Idle');
     setVideo(null);
     setUrl(null);
     setLanguage(null);
@@ -245,6 +241,8 @@ const MediaInput: FC<Props> = ({ session }) => {
     }
 
     setLoading(false);
+    setVideo(null);
+    setUrl(null);
   };
 
   // Function for updating video state when file is added
@@ -313,7 +311,7 @@ const MediaInput: FC<Props> = ({ session }) => {
               <Button
                 type="submit"
                 isLoading={loading}
-                loadingText={status}
+                loadingText={'Submitting'}
                 isDisabled={submitDisabled}
                 leftIcon={<HiSparkles />}
               >
