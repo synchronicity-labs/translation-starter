@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   console.log('videoUrl: ', videoUrl);
   console.log('audioUrl: ', audioUrl);
 
-  const response = await fetch(`https://staging-api.synclabs.org/video`, {
+  const response = await fetch(`https://api.synclabs.so/video`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
