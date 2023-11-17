@@ -34,7 +34,6 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         transcriptionId: result.request_id,
         updatedFields: {
-          status: 'translating',
           transcript
         }
       })
