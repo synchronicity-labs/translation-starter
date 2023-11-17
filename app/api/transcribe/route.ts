@@ -11,12 +11,13 @@ export async function POST(req: Request) {
 
   const { url } = await req.json();
 
+  const webhook_url =
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/transcribe/webhook` ||
+    `https://9e5a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`;
+
   const form = new FormData();
   form.append('audio_url', url);
-  form.append(
-    'webhook_url',
-    `https://9e5a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`
-  );
+  form.append('webhook_url', webhook_url);
 
   const response = await fetch(
     'https://api.gladia.io/audio/text/audio-transcription/',
