@@ -137,7 +137,7 @@ export default function RealTimeUsageTable({ data }: { data: Job[] }) {
                     <Td>
                       <StatusTag status={job.status! as JobStatus} />
                     </Td>
-                    <Td isNumeric>{job.credits}</Td>
+                    <Td isNumeric>{job.credits || 0}</Td>
                   </Tr>
                 );
               })}
