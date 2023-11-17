@@ -8,11 +8,12 @@ Translation AI is an open-source tool for translating spoken language in video c
 ## How it works
 
 - [Sync Labs](https://synclabs.so) for perfectly synchronized lip movements
-- [Open AI](https://openai.com/) for transcribing and translating
-- [Eleven Labs](https://elevenlabs.io/) for voice synthesis
+- [Gladia](https://www.gladia.io/) for transcribing and diarization
+- [Open AI](https://openai.com/) for translating
+- [Eleven Labs](https://elevenlabs.io/) for voice cloning and speech synthesis
 - [Next.js](https://nextjs.org) for web app
 - [Vercel](https://vercel.com) for deployment
-- [Supabase](https://supabase.io) for db and auth
+- [Supabase](https://supabase.io) for db, auth and storage
 - [Stripe](https://stripe.com) for billing
 
 
@@ -47,6 +48,7 @@ Clicking the Deploy button will open up a browser tab with instructions on gener
 
     - [Sync Labs API Key](https://docs.synclabs.so/authentication)
     - [Open AI](https://platform.openai.com/docs/api-reference/authentication)
+    - [Gladia](https://docs.gladia.io/reference/overview#getting-your-api-key)
     - [Eleven Labs](https://elevenlabs.io/docs/api-reference/authentication)
     - [Stripe](https://stripe.com/docs/api/authentication)
 
@@ -58,7 +60,11 @@ You'll need to configure your Supabase project's site URL and Vercel's `NEXT_PUB
 
 2. In Vercel, under your project's deployment settings, create a new Production environment variable called `NEXT_PUBLIC_SITE_URL` and set it to your production URL. Make sure you uncheck the options for preview and development environments to maintain the correct operation for preview branches and local development.
 
-### 3. Configure Stripe
+### 3. Configure Storage
+
+TODO: Add details for setting up storage in supabase
+
+### 4. Configure Stripe
 
 Next, you'll need to configure [Stripe](https://stripe.com/) in order to handle test payments.
 
@@ -113,7 +119,7 @@ vercel env pull .env.local
 ```
 This command will create a new `.env.local` file in your project folder.
 
-### 4. Test webhooks using the `Stripe CLI`
+### 5. Test webhooks using the `Stripe CLI`
 
 - Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
 - [Link](https://stripe.com/docs/stripe-cli#login-account) your Stripe account.
@@ -126,7 +132,7 @@ stripe listen --forward-to=localhost:3000/api/webhooks
 
 Running this Stripe command will print a webhook secret (`whsec_***`), to the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env.local` file.
 
-### 5. Install dependencies and run the project
+### 6. Install dependencies and run the project
 
 In a separate terminal, navigate to your project's root directory and run the following commands to install dependencies and start the dev server
 
@@ -135,7 +141,7 @@ yarn
 yarn dev
 ```
 
-### 6. You've done it!
+### 7. You've done it!
 
 Open your web browser and visit http://localhost:3000 to view your application.
 
