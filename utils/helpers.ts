@@ -1,4 +1,4 @@
-import { Price } from '@/types_db';
+import { Price } from '@/types/db';
 
 export const getURL = () => {
   let url =
