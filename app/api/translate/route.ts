@@ -27,8 +27,9 @@ export async function POST(req: Request) {
         }
       ]
     });
-    console.log('translation - completion: ', completion);
     const translation = completion.choices[0].message.content;
+
+    console.log('translation: ', translation);
     return new Response(JSON.stringify({ data: translation }), {
       status: 200
     });
