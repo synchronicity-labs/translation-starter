@@ -23,6 +23,8 @@ export type Transcript = {
   channel: string;
 }[];
 
+export type OnFailedJob = (jobId: string, message: string) => void;
+
 export interface ProductWithPrices extends Product {
   prices: Price[];
 }

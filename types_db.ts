@@ -46,6 +46,7 @@ export interface Database {
           transcript: Json | null
           transcription_id: string | null
           translated_audio_url: string | null
+          translated_text: string | null
           updated_at: string
           user_id: string
           video_url: string | null
@@ -63,6 +64,7 @@ export interface Database {
           transcript?: Json | null
           transcription_id?: string | null
           translated_audio_url?: string | null
+          translated_text?: string | null
           updated_at?: string
           user_id: string
           video_url?: string | null
@@ -80,6 +82,7 @@ export interface Database {
           transcript?: Json | null
           transcription_id?: string | null
           translated_audio_url?: string | null
+          translated_text?: string | null
           updated_at?: string
           user_id?: string
           video_url?: string | null
