@@ -95,6 +95,7 @@ export default function useJobData(userId: string): UseJobDataOutput {
       switch (job.status) {
         case 'uploading':
           if (job.original_video_url && job.original_audio_url) {
+            console.log('about to update job status to transcribing');
             updateJob(job, { status: 'transcribing' }, () =>
               handleJobFailed(job.id, 'Failed to update job to transcribing')
             );
