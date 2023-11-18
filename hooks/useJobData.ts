@@ -1,6 +1,8 @@
 'use client';
 
 import { Job, JobStatus } from '@/types/db';
+import cloneVoice from '@/utils/clone-voice';
+import deleteVoice from '@/utils/deleteVoice';
 import supabase from '@/utils/supabase';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
@@ -120,6 +122,16 @@ export default function useJobData(userId: string): UseJobDataOutput {
           break;
         case 'translating':
           if (job.translated_text) {
+            updateJob(job, { status: 'cloning' }, () =>
+              handleJobFailed(job.id, 'Failed to update job status to cloning')
+            );
+            cloneVoice(job, () =>
+              handleJobFailed(job.id, 'Failed to clone voice')
+            );
+          }
+          break;
+        case 'cloning':
+          if (job.voice_id) {
             updateJob(job, { status: 'synthesizing' }, () =>
               handleJobFailed(
                 job.id,
@@ -154,6 +166,11 @@ export default function useJobData(userId: string): UseJobDataOutput {
             );
           }
           break;
+        case 'completed':
+        case 'failed':
+          if (job.voice_id) {
+            deleteVoice(job);
+          }
         default:
           break;
       }
