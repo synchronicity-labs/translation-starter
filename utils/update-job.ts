@@ -3,7 +3,7 @@ import { Job, OnFailedJob } from '@/types/db';
 export default async function updateJob(
   job: Job,
   updatedFields: any,
-  onFail: OnFailedJob
+  onFail?: OnFailedJob
 ) {
   console.log('in update-job.ts');
   const updateJob = await fetch('/api/db/update-job', {
@@ -15,7 +15,7 @@ export default async function updateJob(
   });
   if (!updateJob.ok) {
     console.log('failed to update job.');
-    onFail(job.id, `Failed to update job`);
+    onFail && onFail(job.id, `Failed to update job`);
     return;
   }
 
