@@ -1,12 +1,10 @@
 'use client';
 
-import RealTimeUsageTable from './RealTimeUsageTable';
 import StatusTag from '@/components/ui/Display/StatusTag';
 import PageNavigator from '@/components/ui/PageNavigator';
 import useJobData from '@/hooks/useJobData';
 import { Job, JobStatus } from '@/types/db';
 import { sortByCreatedAt } from '@/utils/helpers';
-import supabase from '@/utils/supabase';
 import {
   Button,
   Flex,
