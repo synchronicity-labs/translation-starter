@@ -21,7 +21,7 @@ import {
   Tr
 } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 
 interface Props {
   userId: string;
@@ -45,7 +45,7 @@ const NoUsageView = () => {
 const UsageTable: FC<Props> = ({ userId }) => {
   const { jobs, loading, error } = useJobData(userId);
 
-  const pageSize = 6;
+  const pageSize = 10;
   const [offset, setOffset] = useState(0);
 
   if (loading) {
