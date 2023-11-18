@@ -239,7 +239,6 @@ const MediaInput: FC<Props> = ({ session }) => {
         updatedFields: {
           original_video_url: videoUrl,
           original_audio_url: audioUrl
-          // status: 'transcribing' as JobStatus
         }
       })
     });
