@@ -10,16 +10,6 @@ export default async function transcribe(job: Job, onFail: OnFailedJob) {
       url: job.original_audio_url
     });
 
-    // await fetch('/api/db/update-job', {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     jobId: job.id,
-    //     updatedFields: {
-    //       transcription_id: transcription.request_id
-    //     }
-    //   })
-    // });
-
     const updatedFields = {
       transcription_id: transcription.request_id
     };
