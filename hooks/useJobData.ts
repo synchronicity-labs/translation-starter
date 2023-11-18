@@ -176,6 +176,7 @@ export default function useJobData(userId: string): UseJobDataOutput {
       duration: null,
       isClosable: true
     });
+    throw new Error(errorMessage);
   };
 
   return { jobs, loading, error };
