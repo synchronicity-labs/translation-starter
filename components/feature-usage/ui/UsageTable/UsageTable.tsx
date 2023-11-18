@@ -1,40 +1,120 @@
 'use client';
 
 import RealTimeUsageTable from './RealTimeUsageTable';
-import { Job } from '@/types/db';
+import StatusTag from '@/components/ui/Display/StatusTag';
+import PageNavigator from '@/components/ui/PageNavigator';
+import useJobData from '@/hooks/useJobData';
+import { Job, JobStatus } from '@/types/db';
+import { sortByCreatedAt } from '@/utils/helpers';
 import supabase from '@/utils/supabase';
+import {
+  Button,
+  Flex,
+  Link,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr
+} from '@chakra-ui/react';
+import { DateTime } from 'luxon';
 import { FC, useState, useEffect } from 'react';
 
 interface Props {
   userId: string;
 }
+
+const NoUsageView = () => {
+  const message = `You haven't translated any videos yet`;
+  const buttonLabel = `Translate your first video`;
+  return (
+    <Stack alignItems="center" gap={4}>
+      <Text fontSize="2xl" fontWeight="medium">
+        {message}
+      </Text>
+      <Button>
+        <Link href="/">{buttonLabel}</Link>
+      </Button>
+    </Stack>
+  );
+};
+
 const UsageTable: FC<Props> = ({ userId }) => {
-  const [data, setData] = useState<Job[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { jobs, loading, error } = useJobData(userId);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: fetchedData, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('user_id', userId);
-
-      if (error) {
-        console.error('Error fetching jobs:', error);
-      } else {
-        setData(fetchedData || []);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
+  const pageSize = 6;
+  const [offset, setOffset] = useState(0);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  return <RealTimeUsageTable data={data} />;
+  if (error) {
+    return <div>Error fetching jobs: {error.message}</div>;
+  }
+
+  if (!jobs.length) {
+    return <NoUsageView />;
+  }
+
+  const numJobs = jobs.length;
+  const pages = Math.ceil(numJobs / pageSize);
+
+  return (
+    <Stack w="full">
+      <Flex justifyContent={'end'}>
+        {pages > 1 && (
+          <PageNavigator
+            offset={offset}
+            setOffset={setOffset}
+            pageSize={pageSize}
+            pages={pages}
+          />
+        )}
+      </Flex>
+      <TableContainer>
+        <Table colorScheme={'whiteAlpha'}>
+          <Thead>
+            <Tr>
+              <Th>Date</Th>
+              <Th>Status</Th>
+              <Th isNumeric>Credits</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {sortByCreatedAt(jobs)
+              .slice(offset, offset + pageSize)
+              .map((job: Job) => {
+                const createdAt = DateTime.fromJSDate(
+                  new Date(job.created_at)
+                ).toFormat("MMM. d, yyyy 'at' h:mm a");
+                const createdDate = DateTime.fromJSDate(
+                  new Date(job.created_at)
+                ).toFormat('MMM. d, yyyy');
+                return (
+                  <Tr key={job.id}>
+                    <Td>
+                      <Tooltip hasArrow label={createdAt}>
+                        {createdDate}
+                      </Tooltip>
+                    </Td>
+                    <Td>
+                      <StatusTag status={job.status! as JobStatus} />
+                    </Td>
+                    <Td isNumeric>{job.credits || 0}</Td>
+                  </Tr>
+                );
+              })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Stack>
+  );
 };
 
 export default UsageTable;
