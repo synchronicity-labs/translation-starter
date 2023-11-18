@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       synergize: true,
       webhookUrl:
         `${process.env.NEXT_PUBLIC_SITE_URL}/api/lip-sync/webhook` ||
-        `https://6ba6-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`
+        `https://c23a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`
     })
   });
 
