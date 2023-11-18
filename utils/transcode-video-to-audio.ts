@@ -19,30 +19,6 @@ function removeFileExtension(file_name: string) {
   return file_name; // No file extension found
 }
 
-// export default async function transcodeVideoToAudio(
-//   ffmpeg: FFmpeg,
-//   videoFile: File
-// ): Promise<{ blob: Blob; output: string }> {
-//   const input = getFileExtension(videoFile.name);
-//   const output = removeFileExtension(videoFile.name) + '.mp3';
-
-//   console.log('transcodeVideoToAudio - input: ', input);
-//   console.log('transcodeVideoToAudio - output: ', output);
-//   ffmpeg.writeFile(input, await fetchFile(videoFile));
-
-//   const ffmpeg_cmd = ['-i', input, output];
-
-//   // execute cmd
-//   await ffmpeg.exec(ffmpeg_cmd);
-
-//   const data = (await ffmpeg.readFile(output)) as any;
-//   console.log('transcodeVideoToAudio - data: ', data);
-//   const blob = new Blob([data], { type: 'audio/mp3' });
-//   const url = URL.createObjectURL(blob);
-//   console.log('url ', url);
-//   return { blob, output };
-// }
-
 export default async function transcodeVideoToAudio(
   ffmpeg: FFmpeg,
   videoInput: File | string
