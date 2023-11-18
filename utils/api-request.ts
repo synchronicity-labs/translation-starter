@@ -1,6 +1,10 @@
-export default async function apiRequest(url: string, data: Object) {
+export default async function apiRequest(
+  url: string,
+  data: Object,
+  method?: string
+) {
   const response = await fetch(url, {
-    method: 'POST',
+    method: method || 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
