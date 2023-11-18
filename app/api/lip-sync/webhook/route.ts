@@ -3,7 +3,9 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
-    return NextResponse.json({ success: false, message: `Method not allowed` });
+    return new Response(JSON.stringify({ message: `Method not allowed` }), {
+      status: 500
+    });
   }
 
   console.log('req: ', req);
@@ -34,23 +36,27 @@ export async function POST(req: Request) {
       console.error(
         `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
       );
-      return NextResponse.json({
-        success: false,
-        message: `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
-      });
+      return new Response(
+        JSON.stringify({
+          message: `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
+        }),
+        {
+          status: 500
+        }
+      );
     }
 
     const jobData = await updateJobResponse.json();
 
     console.log('webhook - jobData: ', jobData);
 
-    return NextResponse.json({ success: true, data: jobData });
+    return new Response(JSON.stringify({ data: jobData }), {
+      status: 200
+    });
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({
-      success: false,
-      message: `Error creating job`,
-      error
+    return new Response(JSON.stringify({ message: `Error creating job` }), {
+      status: 500
     });
   }
 }
