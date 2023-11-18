@@ -8,7 +8,7 @@ export default async function synthesisSpeech(job: Job, onFail: OnFailedJob) {
     const path = '/api/speech-synthesis';
     const synthesis = await apiRequest(path, {
       text: job.translated_text,
-      voiceId: '21m00Tcm4TlvDq8ikWAM'
+      voiceId: job.voice_id
     });
 
     const { data: translatedAudioUrl } = await synthesis;
