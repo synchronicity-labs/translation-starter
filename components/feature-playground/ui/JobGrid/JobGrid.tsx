@@ -1,43 +1,65 @@
 'use client';
 
+import JobGridItem from './JobGridItem';
 import JobGridLoading from './JobGridLoading';
-import RealTimeJobGrid from './RealTimeJobGrid';
+import PageNavigator from '@/components/ui/PageNavigator';
+import useJobData from '@/hooks/useJobData';
 import { Job } from '@/types/db';
-import supabase from '@/utils/supabase';
-import { FC, useState, useEffect } from 'react';
+import { sortByCreatedAt } from '@/utils/helpers';
+import { Stack, Flex, Grid } from '@chakra-ui/react';
+import { FC, useState } from 'react';
 
 interface Props {
   userId: string;
 }
+
 const JobGrid: FC<Props> = ({ userId }) => {
-  const [data, setData] = useState<Job[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { jobs, loading, error } = useJobData(userId);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: fetchedData, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('user_id', userId) // Ensure `userId` is defined in your component
-        .neq('is_deleted', true)
-        .neq('status', 'failed');
-
-      if (error) {
-        console.error('Error fetching jobs:', error);
-      } else {
-        setData(fetchedData || []);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
+  const pageSize = 6;
+  const [offset, setOffset] = useState(0);
 
   if (loading) {
     return <JobGridLoading />;
   }
 
-  return <RealTimeJobGrid data={data} />;
+  if (error) {
+    return <div>Error fetching jobs: {error.message}</div>;
+  }
+
+  const numJobs = jobs.length;
+  const pages = Math.ceil(numJobs / pageSize);
+
+  return (
+    <Stack w="full">
+      <Flex justifyContent={'end'}>
+        {pages > 1 && (
+          <PageNavigator
+            offset={offset}
+            setOffset={setOffset}
+            pageSize={pageSize}
+            pages={pages}
+          />
+        )}
+      </Flex>
+      <Grid
+        templateColumns={[
+          'repeat(1, 1fr)',
+          'repeat(2, 1fr)',
+          'repeat(2, 1fr)',
+          'repeat(3, 1fr)'
+        ]}
+        gap={4}
+        w={'100%'}
+      >
+        {sortByCreatedAt(jobs)
+          .slice(offset, offset + pageSize)
+          .map((job: Job) => {
+            return <JobGridItem key={job.id} job={job} />;
+          })}
+      </Grid>
+    </Stack>
+  );
 };
 
 export default JobGrid;
