@@ -10,6 +10,9 @@ export async function POST(req: Request) {
   console.log('videoUrl: ', videoUrl);
   console.log('audioUrl: ', audioUrl);
 
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://c23a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app';
   const response = await fetch(`https://api.synclabs.so/video`, {
     method: 'POST',
     headers: {
@@ -20,9 +23,7 @@ export async function POST(req: Request) {
       audioUrl,
       videoUrl,
       synergize: true,
-      webhookUrl:
-        `${process.env.NEXT_PUBLIC_SITE_URL}/api/lip-sync/webhook` ||
-        `https://c23a-2601-19c-4400-f7f0-00-4b36.ngrok-free.app/api/transcribe/webhook`
+      webhookUrl: `${baseUrl}/api/lip-sync/webhook`
     })
   });
 
