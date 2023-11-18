@@ -28,7 +28,9 @@ export async function POST(req: Request) {
   const transcript = result.payload.prediction;
 
   const updateJobResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/db/update-job-by-transcription-id`,
+    `${
+      process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    }/api/db/update-job-by-transcription-id`,
     {
       method: 'POST',
       body: JSON.stringify({
