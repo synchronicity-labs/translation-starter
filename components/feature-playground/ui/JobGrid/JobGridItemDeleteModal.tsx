@@ -8,14 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spinner,
   Text,
-  Tooltip,
-  useDisclosure,
   useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FaTrash } from 'react-icons/fa';
 
 const JobGridItemDeleteModal = ({
   jobId,
@@ -44,6 +40,7 @@ const JobGridItemDeleteModal = ({
           }
         })
       });
+
       setLoading(false);
       onClose();
       toast({
