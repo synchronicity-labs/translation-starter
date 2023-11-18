@@ -6,8 +6,7 @@ export default async function updateJob(
   onFail: OnFailedJob
 ) {
   console.log('in update-job.ts');
-  const path = '/api/db/update-job';
-  const updateJob = await fetch(path, {
+  const updateJob = await fetch('/api/db/update-job', {
     method: 'POST',
     body: JSON.stringify({
       jobId: job.id,

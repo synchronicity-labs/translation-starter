@@ -1,4 +1,5 @@
 import apiRequest from './api-request';
+import updateJob from './update-job';
 import { Job, OnFailedJob, Transcript } from '@/types/db';
 
 export default async function translate(job: Job, onFail: OnFailedJob) {
@@ -9,23 +10,25 @@ export default async function translate(job: Job, onFail: OnFailedJob) {
       .map((item: { transcription: string }) => item.transcription.trim())
       .join(' ');
 
+    console.log('utils/translate - text: ', text);
+
     const path = '/api/translate';
     const translation = await apiRequest(path, {
-      method: 'POST',
-      body: { text, language: job.target_language }
+      text,
+      language: job.target_language
     });
 
-    const { data: translatedText } = await translation.json();
+    console.log('utils/translate - translation: ', translation);
 
-    await apiRequest('/api/db/update-job', {
-      method: 'POST',
-      body: {
-        jobId: job.id,
-        updatedFields: {
-          translated_text: translatedText
-        }
-      }
-    });
+    const { data: translatedText } = translation;
+
+    console.log('translatedText: ', translatedText);
+
+    const updatedFields = {
+      translated_text: translatedText
+    };
+
+    await updateJob(job, updatedFields, onFail);
   } catch (error) {
     const errorMessage =
       (error as Error).message || 'An unknown error occurred';
