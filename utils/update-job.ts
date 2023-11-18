@@ -15,6 +15,7 @@ export default async function updateJob(
     })
   });
   if (!updateJob.ok) {
+    console.log('failed to update job.');
     onFail(job.id, `Failed to update job`);
     return;
   }
