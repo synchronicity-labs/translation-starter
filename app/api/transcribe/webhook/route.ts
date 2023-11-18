@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 
 export async function OPTIONS(req: Request) {
   const data = await req.text();
-  console.log('transcribe/webhook - OPTIONS - data: ', data);
   return new Response(JSON.stringify({ data }), {
     status: 200
   });
