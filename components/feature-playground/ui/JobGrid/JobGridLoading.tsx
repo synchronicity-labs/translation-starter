@@ -1,12 +1,4 @@
-import {
-  AspectRatio,
-  Box,
-  Flex,
-  Grid,
-  Spinner,
-  Stack,
-  Text
-} from '@chakra-ui/react';
+import { AspectRatio, Box, Grid, Stack } from '@chakra-ui/react';
 
 export default function JobGridLoading() {
   return (
