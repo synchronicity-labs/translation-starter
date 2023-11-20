@@ -2,34 +2,18 @@
 
 Translation AI is an open-source tool for translating spoken language in video content with accurate lip synchronization. The purpose of this repo is to help developers quickly integrate multilingual support into video-based apps. This project provides essential APIs and documentation to facilitate the development of applications requiring video translation with lip-sync capabilities.
 
-<!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain) -->
-
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain" target="_blank"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
-
-
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
 
 ## How it works
 
-<!-- - [Sync Labs](https://synclabs.so) for perfectly synchronized lip movements
+- [Sync Labs](https://synclabs.so) for perfectly synchronized lip movements
 - [Gladia](https://www.gladia.io/) for transcribing and diarization
 - [Open AI](https://openai.com/) for translating
 - [Eleven Labs](https://elevenlabs.io/) for voice cloning and speech synthesis
 - [Next.js](https://nextjs.org) for web app
 - [Vercel](https://vercel.com) for deployment
 - [Supabase](https://supabase.io) for db, auth and storage
-- [Stripe](https://stripe.com) for billing -->
-
-<ul>
-  <li><a href="https://synclabs.so" target="_blank">Sync Labs</a> for perfectly synchronized lip movements</li>
-  <li><a href="https://www.gladia.io/" target="_blank">Gladia</a> for transcribing and diarization</li>
-  <li><a href="https://openai.com/" target="_blank">Open AI</a> for translating</li>
-  <li><a href="https://elevenlabs.io/" target="_blank">Eleven Labs</a> for voice cloning and speech synthesis</li>
-  <li><a href="https://nextjs.org" target="_blank">Next.js</a> for web app</li>
-  <li><a href="https://vercel.com" target="_blank">Vercel</a> for deployment</li>
-  <li><a href="https://supabase.io" target="_blank">Supabase</a> for db, auth, and storage</li>
-  <li><a href="https://stripe.com" target="_blank">Stripe</a> for billing</li>
-</ul>
-
+- [Stripe](https://stripe.com) for billing
 
 ### [Live demo](https://translation-starter-khaki.vercel.app/)
 
@@ -41,9 +25,7 @@ To successfully deploy the template, execute the following steps in order:
 
 ### 1. Initiate Deployment
 
-<!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain) -->
-
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain" target="_blank"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
 
 Clicking the Deploy button will open up a browser tab with instructions on generating a new GitHub repository from this template and creating a corrseponding project in Supabase for `auth` and `storage`. Below are the steps you'll walk through:
 
@@ -54,10 +36,7 @@ Clicking the Deploy button will open up a browser tab with instructions on gener
 
 2. Add Integrations
 
-    <!-- The [Supabase Vercel Deploy Integration](https://vercel.com/integrations/supabase-v2) handles configuration of environment variables and initiates the [SQL migrations](./supabase/migrations/20230530034630_init.sql) to construct your database schema. You can view the resulting tables in your project's [Table editor](https://app.supabase.com/project/_/editor). -->
-
-    The <a href="https://vercel.com/integrations/supabase-v2" target="_blank">Supabase Vercel Deploy Integration</a> handles configuration of environment variables and initiates the <a href="./supabase/migrations/20230530034630_init.sql" target="_blank">SQL migrations</a> to construct your database schema. You can view the resulting tables in your project's <a href="https://app.supabase.com/project/_/editor" target="_blank">Table editor</a>.
-
+    The [Supabase Vercel Deploy Integration](https://vercel.com/integrations/supabase-v2) handles configuration of environment variables and initiates the [SQL migrations](./supabase/migrations/20230530034630_init.sql) to construct your database schema. You can view the resulting tables in your project's [Table editor](https://app.supabase.com/project/_/editor).
 
     - Click `Add` in the Supabase integration and fill out the form that pops up.
 
@@ -65,28 +44,17 @@ Clicking the Deploy button will open up a browser tab with instructions on gener
 
     Enter the environment variables required for this project. Below are links to documentation on how to obtain an API key for each of the required services to ensure full functionality.
 
-    <!-- - [Sync Labs API Key](https://docs.synclabs.so/authentication)
+    - [Sync Labs API Key](https://docs.synclabs.so/authentication)
     - [Open AI](https://platform.openai.com/docs/api-reference/authentication)
     - [Gladia](https://docs.gladia.io/reference/overview#getting-your-api-key)
     - [Eleven Labs](https://elevenlabs.io/docs/api-reference/authentication)
-    - [Stripe](https://stripe.com/docs/api/authentication) -->
-
-    <ul>
-      <li><a href="https://docs.synclabs.so/authentication" target="_blank">Sync Labs API Key</a></li>
-      <li><a href="https://platform.openai.com/docs/api-reference/authentication" target="_blank">Open AI</a></li>
-      <li><a href="https://docs.gladia.io/reference/overview#getting-your-api-key" target="_blank">Gladia</a></li>
-      <li><a href="https://elevenlabs.io/docs/api-reference/authentication" target="_blank">Eleven Labs</a></li>
-      <li><a href="https://stripe.com/docs/api/authentication" target="_blank">Stripe</a></li>
-    </ul>
-
+    - [Stripe](https://stripe.com/docs/api/authentication)
 
 ### 2. Configure Auth
 
 You'll need to configure your Supabase project's site URL and Vercel's `NEXT_PUBLIC_SITE_URL` environment variable to secure and streamline authentication.
 
-<!-- 1. In your Supabase project, navigate to `Authentication` > [URL configuration](https://app.supabase.com/project/_/auth/url-configuration) and enter your production URL (for example, https://your-deployment-url.vercel.app) as the site URL. -->
-1. In your Supabase project, navigate to <code>Authentication</code> > <a href="https://app.supabase.com/project/_/auth/url-configuration" target="_blank">URL configuration</a> and enter your production URL (for example, <a href="https://your-deployment-url.vercel.app" target="_blank">https://your-deployment-url.vercel.app</a>) as the site URL.
-
+1. In your Supabase project, navigate to `Authentication` > [URL configuration](https://app.supabase.com/project/_/auth/url-configuration) and enter your production URL (for example, https://your-deployment-url.vercel.app) as the site URL.
 
 2. In Vercel, under your project's deployment settings, create a new Production environment variable called `NEXT_PUBLIC_SITE_URL` and set it to your production URL. Make sure you uncheck the options for preview and development environments to maintain the correct operation for preview branches and local development.
 
@@ -118,26 +86,16 @@ After that, you'll need to create a new storage bucket within your Supabase proj
 
 ### 4. Configure Stripe
 
-<!-- Next, you'll need to configure [Stripe](https://stripe.com/) in order to handle test payments. -->
-
-Next, you'll need to configure <a href="https://stripe.com/" target="_blank">Stripe</a> in order to handle test payments.
-
+Next, you'll need to configure [Stripe](https://stripe.com/) in order to handle test payments.
 
 #### Initial setup
 
-<!-- 1. Create a [Stripe](https://stripe.com/) account if you don't have one yet
-2. Ensure you are in ["Test Mode"](https://stripe.com/docs/testing) by toggling the `Test Mode` switch at the top of the dashboard to the `ON` position. -->
-
-<ol>
-  <li>Create a <a href="https://stripe.com/" target="_blank">Stripe</a> account if you don't have one yet.</li>
-  <li>Ensure you are in <a href="https://stripe.com/docs/testing" target="_blank">"Test Mode"</a> by toggling the <code>Test Mode</code> switch at the top of the dashboard to the <code>ON</code> position.</li>
-</ol>
-
+1. Create a [Stripe](https://stripe.com/) account if you don't have one yet
+2. Ensure you are in ["Test Mode"](https://stripe.com/docs/testing) by toggling the `Test Mode` switch at the top of the dashboard to the `ON` position.
   
 #### Create a webhook
 
-<!-- 1. In Stripe's `Developers` section, navigate to the [Webhooks](https://dashboard.stripe.com/test/webhooks) tab and click `Add endpoint` -->
-1. In Stripe's <code>Developers</code> section, navigate to the <a href="https://dashboard.stripe.com/test/webhooks" target="_blank">Webhooks</a> tab and click <code>Add endpoint</code>.
+1. In Stripe's `Developers` section, navigate to the [Webhooks](https://dashboard.stripe.com/test/webhooks) tab and click `Add endpoint`
 2. Under `Endpoint URL` enter your deployment URL with `/api/webhooks` appended to the end (e.g., `https://your-deployment-url.vercel.app/api/webhooks`).
 3. Under `Select events to listen to` choose `Select events`, toggle on `Select all events` and then click `Add events`
 4. Scroll to the bottom of the form and select `Add endpoint`
@@ -150,21 +108,12 @@ Redeploy your application in Vercel for the new environment variables to activat
 
 #### Create product(s)
 
-<!-- With the Stripe webhook setup, you can start creating your products in the [Stripe Dashboard](https://dashboard.stripe.com/test/products). Stripe Checkout supports billing a set amount at regular intervals. It does not support complex pricing structures like tiered pricing or per-seat billing. -->
-
-With the Stripe webhook setup, you can start creating your products in the <a href="https://dashboard.stripe.com/test/products" target="_blank">Stripe Dashboard</a>. Stripe Checkout supports billing a set amount at regular intervals. It does not support complex pricing structures like tiered pricing or per-seat billing.
-
+With the Stripe webhook setup, you can start creating your products in the [Stripe Dashboard](https://dashboard.stripe.com/test/products). Stripe Checkout supports billing a set amount at regular intervals. It does not support complex pricing structures like tiered pricing or per-seat billing.
 
 #### Configure the customer portal
 
-<!-- - Set up branding in the [Branding settings](https://dashboard.stripe.com/settings/branding)
-- Set up the customer portal in the [Customer Portal settings](https://dashboard.stripe.com/test/settings/billing/portal) -->
-
-<ul>
-  <li>Set up branding in the <a href="https://dashboard.stripe.com/settings/branding" target="_blank">Branding settings</a></li>
-  <li>Set up the customer portal in the <a href="https://dashboard.stripe.com/test/settings/billing/portal" target="_blank">Customer Portal settings</a></li>
-</ul>
-
+- Set up branding in the [Branding settings](https://dashboard.stripe.com/settings/branding)
+- Set up the customer portal in the [Customer Portal settings](https://dashboard.stripe.com/test/settings/billing/portal)
 
 ## Running locally
 
@@ -192,14 +141,8 @@ This command will create a new `.env.local` file in your project folder.
 
 ### 5. Test webhooks using the `Stripe CLI`
 
-<!-- - Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
-- [Link](https://stripe.com/docs/stripe-cli#login-account) your Stripe account. -->
-
-<ul>
-  <li>Install the <a href="https://stripe.com/docs/stripe-cli" target="_blank">Stripe CLI</a></li>
-  <li><a href="https://stripe.com/docs/stripe-cli#login-account" target="_blank">Link</a> your Stripe account.</li>
-</ul>
-
+- Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
+- [Link](https://stripe.com/docs/stripe-cli#login-account) your Stripe account.
 
 In a seperate terminal, run the below command to initiate local webhook forwarding
 
@@ -237,17 +180,9 @@ Your contributions are highly appreciated!
 
 ## Resources
 
-<!-- - Sync Labs [Slack Community](https://syncbetatesters.slack.com/ssb/redirect#/shared-invite/email)
-- Sync Labs [Docs](https://docs.synclabs.so/) -->
-
-<ul>
-  <li>Sync Labs <a href="https://syncbetatesters.slack.com/ssb/redirect#/shared-invite/email" target="_blank">Slack Community</a></li>
-  <li>Sync Labs <a href="https://docs.synclabs.so/" target="_blank">Docs</a></li>
-</ul>
-
+- Sync Labs [Slack Community](https://syncbetatesters.slack.com/ssb/redirect#/shared-invite/email)
+- Sync Labs [Docs](https://docs.synclabs.so/)
 
 ## License
 
-<!-- Translation AI is released under the [MIT License](https://choosealicense.com/licenses/mit/). -->
-
-Translation AI is released under the <a href="https://choosealicense.com/licenses/mit/" target="_blank">MIT License</a>.
+Translation AI is released under the [MIT License](https://choosealicense.com/licenses/mit/).
