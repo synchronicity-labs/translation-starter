@@ -1,3 +1,4 @@
+import { exists } from '@/utils/helpers';
 import supabase from '@/utils/supabase';
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
 import fetch from 'node-fetch';
@@ -6,17 +7,41 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: Request) {
+  // Ensure the API key is set
+  const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
+  if (!elevenLabsApiKey) {
+    return new Response(
+      JSON.stringify({
+        error: { statusCode: 500, message: 'Server configuration error' }
+      }),
+      { status: 500 }
+    );
+  }
+
+  // Ensure the method is POST
   if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', {
-      headers: { Allow: 'POST' },
-      status: 405
-    });
+    return new Response(
+      JSON.stringify({
+        error: { statusCode: 405, message: 'Method Not Allowed' }
+      }),
+      { status: 405 }
+    );
   }
 
   const { text, voiceId } = await req.json();
 
-  console.log('speech synthesis - text: ', text);
-  console.log('speech synthesis - voiceId: ', voiceId);
+  // Check if the values exist
+  if (!exists(text) || !exists(voiceId)) {
+    return new Response(
+      JSON.stringify({
+        error: {
+          statusCode: 400,
+          message: 'Missing text or voiceId in the request body.'
+        }
+      }),
+      { status: 400 }
+    );
+  }
 
   try {
     console.log(`starting speech synthesis on: ${text}`);
@@ -27,31 +52,37 @@ export async function POST(req: Request) {
         headers: {
           accept: 'audio.mpeg',
           'content-type': 'application/json',
-          'xi-api-key': process.env.ELEVEN_LABS_API_KEY as string
+          'xi-api-key': elevenLabsApiKey
         },
         body: JSON.stringify({
           text: text,
-          model_id: 'eleven_monolingual_v1',
+          model_id: 'eleven_multilingual_v2',
           voice_settings: {
-            stability: 0,
-            similarity_boost: 0,
-            style: 0,
+            stability: 0.5,
+            similarity_boost: 0.5,
             use_speaker_boost: true
           }
         })
       }
     );
 
+    // Handle errors
     if (!response.ok || !response.body) {
+      const errorText = await response.text();
       console.error(
-        `Failed to convert text to speech: ${response.status} ${response.statusText}`
+        `Failed to convert text to speech: ${response.status} ${errorText}`
       );
-      return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
-        status: 500
-      });
+      return new Response(
+        JSON.stringify({
+          error: {
+            statusCode: response.status,
+            message: errorText
+          }
+        }),
+        { status: response.status }
+      );
     }
-    console.log('response: ', response.body);
-    console.log('response.buffer: ', response.buffer);
+
     const data = response.body;
 
     const uuid = uuidv4();
@@ -60,12 +91,12 @@ export async function POST(req: Request) {
       process.env.NEXT_PUBLIC_SITE_URL !== 'http://localhost:3000'
         ? os.tmpdir()
         : path.resolve('./temp');
+
     await fsPromises.mkdir(tempDir, { recursive: true });
     const tempFilePath = path.join(tempDir, `translated-audio-${uuid}.mp3`);
     const fileStream = createWriteStream(tempFilePath);
 
     for await (const chunk of data) {
-      console.log('chunk: ', chunk);
       fileStream.write(chunk);
     }
     fileStream.end();
@@ -75,7 +106,6 @@ export async function POST(req: Request) {
         try {
           const audioData = readFileSync(tempFilePath);
           const filePath = `public/output-audio-${Date.now()}.mp3`;
-          console.log('speech-synthesis - audioData: ', audioData);
           const { data, error } = await supabase.storage
             .from('translation')
             .upload(filePath, audioData, {
