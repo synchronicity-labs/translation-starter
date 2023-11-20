@@ -53,7 +53,7 @@ export default function Footer() {
             const showSeperator = index !== builtWith.length - 1;
             return (
               <Flex>
-                <Link href={link}>
+                <Link href={link} target="_blank" rel="noopener noreferrer">
                   <Text _hover={{ textDecoration: 'underline', color: 'blue' }}>
                     {label}
                   </Text>
@@ -65,12 +65,20 @@ export default function Footer() {
         </Flex>
       </Flex>
       <Flex gap={4} fontSize={['md', 'lg', 'xl']}>
-        <Link href="https://twitter.com/synclabs_ai">
+        <Link
+          href="https://twitter.com/synclabs_ai"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Box color="white">
             <FaXTwitter />
           </Box>
         </Link>
-        <Link href="https://github.com/nozma-knows/nextjs-saas-starter">
+        <Link
+          href="https://github.com/synchronicity-labs/translation-starter"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Box color="white">
             <FaGithub />
           </Box>
