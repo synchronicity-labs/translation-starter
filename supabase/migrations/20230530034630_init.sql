@@ -99,9 +99,11 @@ CREATE TABLE jobs (
   source_language TEXT,
   target_language TEXT,
   transcript JSON,
+  transcription_id TEXT,
+  translated_text: TEXT,
+  voice_id: TEXT,
   credits INT,
   is_deleted BOOLEAN DEFAULT FALSE,
-  transcription_id TEXT,
   user_id UUID REFERENCES auth.users NOT NULL
 );
 
