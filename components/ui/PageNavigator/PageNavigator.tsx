@@ -47,7 +47,7 @@ const PageNavigator: FC<Props> = ({ offset, setOffset, pageSize, pages }) => {
           Page
         </Text>
         <Flex
-          w="50px"
+          minW="50px"
           justifyContent={'center'}
           bgColor="RGBA(0,0,0,0.4)"
           rounded="md"
