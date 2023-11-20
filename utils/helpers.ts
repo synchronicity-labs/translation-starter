@@ -69,3 +69,16 @@ export const sortByCreatedAt = (array: any[]) => {
     return dateB.getTime() - dateA.getTime();
   });
 };
+
+export const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const exists = (value: any) => {
+  return value !== undefined && value !== null && value.trim() !== '';
+};
