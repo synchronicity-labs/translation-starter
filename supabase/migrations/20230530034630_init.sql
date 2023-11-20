@@ -91,7 +91,7 @@ CREATE TABLE jobs (
   id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
   created_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
-  status TEXT,
+  status job_status,
   video_url TEXT,
   original_video_url TEXT,
   original_audio_url TEXT,
