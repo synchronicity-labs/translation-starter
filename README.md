@@ -66,9 +66,9 @@ After that, you'll need to create a new storage bucket within your Supabase proj
    
 2. Enter `translation` as the name for your new bucket and toggle `Public bucket` to on.
 
-3. Click `Create Bucket`
+3. Click `Save`
 
-4. Still in the `Storage` section of your Supabase project, click `Policies` and add the below policies:
+4. Still in the `Storage` section of your Supabase project, click `Policies` and add the below policy:
 
   - Within the section called `translation` (the name of your bucket) click `New policy` then `For full costumization` and fill it in as shown below:
 

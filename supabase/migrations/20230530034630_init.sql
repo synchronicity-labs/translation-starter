@@ -100,8 +100,8 @@ CREATE TABLE jobs (
   target_language TEXT,
   transcript JSON,
   transcription_id TEXT,
-  translated_text: TEXT,
-  voice_id: TEXT,
+  translated_text TEXT,
+  voice_id TEXT,
   credits INT,
   is_deleted BOOLEAN DEFAULT FALSE,
   user_id UUID REFERENCES auth.users NOT NULL
