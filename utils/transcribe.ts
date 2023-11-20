@@ -10,8 +10,10 @@ export default async function transcribe(job: Job, onFail: OnFailedJob) {
       url: job.original_audio_url
     });
 
+    const { data } = await transcription;
+
     const updatedFields = {
-      transcription_id: transcription.request_id
+      transcription_id: data.request_id
     };
 
     await updateJob(job, updatedFields, onFail);
