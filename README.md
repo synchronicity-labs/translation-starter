@@ -64,7 +64,7 @@ After that, you'll need to create a new storage bucket within your Supabase proj
 
 1. In your Supabase project, navigate to `Storage` and click the `New bucket` button.
    
-2. Enter `translation` as the name for your new bucket and toggel `Public bucket` to on.
+2. Enter `translation` as the name for your new bucket and toggle `Public bucket` to on.
 
 3. Click `Create Bucket`
 
@@ -139,7 +139,7 @@ vercel env pull .env.local
 ```
 This command will create a new `.env.local` file in your project folder.
 
-### 5. Test webhooks using the `Stripe CLI`
+### 4. Test webhooks using the `Stripe CLI`
 
 - Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
 - [Link](https://stripe.com/docs/stripe-cli#login-account) your Stripe account.
@@ -152,7 +152,7 @@ stripe listen --forward-to=localhost:3000/api/webhooks
 
 Running this Stripe command will print a webhook secret (`whsec_***`), to the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env.local` file.
 
-### 6. Install dependencies and run the project
+### 5. Install dependencies and run the project
 
 In a separate terminal, navigate to your project's root directory and run the following commands to install dependencies and start the dev server
 
@@ -161,7 +161,7 @@ yarn
 yarn dev
 ```
 
-### 7. You've done it!
+### 6. You've done it!
 
 Open your web browser and visit http://localhost:3000 to view your application.
 
