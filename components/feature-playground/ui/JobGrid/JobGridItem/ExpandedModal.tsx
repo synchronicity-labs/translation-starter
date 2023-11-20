@@ -1,4 +1,4 @@
-import JobGridItemDeleteModal from './JobGridItemDeleteModal';
+import DeleteModal from './DeleteModal';
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { Job } from '@/types/db';
 import {
@@ -62,7 +62,7 @@ const Detail = (props: { title: string; value: string }) => {
   );
 };
 
-const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
+const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
   const [show, setShow] = useState('translated-video');
   const [url, setUrl] = useState(job.video_url);
   const timeStamp = DateTime.fromJSDate(new Date(job.created_at)).toFormat(
@@ -190,7 +190,7 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
           </Stack>
         </ModalBody>
       </ModalContent>
-      <JobGridItemDeleteModal
+      <DeleteModal
         jobId={job.id}
         isOpen={deleteIsOpen}
         onClose={deleteOnClose}
@@ -199,4 +199,4 @@ const JobGridItemExpandedModal = ({ job, isOpen, onClose }: Props) => {
   );
 };
 
-export default JobGridItemExpandedModal;
+export default ExpandedModal;

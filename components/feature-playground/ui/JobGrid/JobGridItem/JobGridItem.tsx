@@ -1,6 +1,6 @@
 'use client';
 
-import JobGridItemExpandedModal from './JobGridItemExpandedModal';
+import ExpandedModal from './ExpandedModal';
 import StatusTag from '@/components/ui/Display/StatusTag';
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { Job, JobStatus } from '@/types/db';
@@ -24,11 +24,9 @@ interface Props {
 const JobGridItem: FC<Props> = ({ job }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [hovering, setHovering] = useState(false);
+  const videoUrl = job.video_url || job.original_video_url || '';
 
-  const url = job.video_url || job.original_video_url || '';
   // Time since job was created
-
   const elapsedTime = DateTime.fromJSDate(
     new Date(job.created_at)
   ).toRelative();
@@ -40,8 +38,6 @@ const JobGridItem: FC<Props> = ({ job }) => {
       cursor={'pointer'}
       rounded={'md'}
       position={'relative'}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
       onClick={isOpen ? onClose : onOpen}
     >
       <Stack
@@ -56,41 +52,46 @@ const JobGridItem: FC<Props> = ({ job }) => {
         w="full"
       >
         {['completed', 'failed'].includes(job.status as JobStatus) ? (
-          <VideoPlayer url={url} preview />
+          <VideoPlayer url={videoUrl} preview />
         ) : (
-          <Box width={'full'}>
-            <AspectRatio ratio={16 / 9}>
-              <Stack
-                w="full"
-                h="full"
-                p={4}
-                justifyContent={'start'}
-                aspectRatio={'16/9'}
-                bgColor={'blackAlpha.400'}
-                bgGradient="linear(to-b, whiteAlpha.200, transparent)"
-              >
-                <Text fontWeight="bold" fontSize="sm">
-                  Please wait while we generate your video.
-                </Text>
-                <Flex
-                  w="full"
-                  h="full"
-                  justifyContent="center"
-                  alignItems="center"
-                  rounded="md"
-                >
-                  <Spinner />
-                </Flex>
-              </Stack>
-            </AspectRatio>
-          </Box>
+          <LoadingView />
         )}
         <Text fontSize={'sm'}>{`Created ${elapsedTime}`}</Text>
         {job.status && <StatusTag status={job.status as JobStatus} />}
       </Stack>
-      <JobGridItemExpandedModal job={job} isOpen={isOpen} onClose={onClose} />
+      <ExpandedModal job={job} isOpen={isOpen} onClose={onClose} />
     </GridItem>
   );
 };
+
+// Loading view when job is not completed or failed
+const LoadingView = () => (
+  <Box width={'full'}>
+    <AspectRatio ratio={16 / 9}>
+      <Stack
+        w="full"
+        h="full"
+        p={4}
+        justifyContent={'start'}
+        aspectRatio={'16/9'}
+        bgColor={'blackAlpha.400'}
+        bgGradient="linear(to-b, whiteAlpha.200, transparent)"
+      >
+        <Text fontWeight="bold" fontSize="sm">
+          Please wait while we generate your video.
+        </Text>
+        <Flex
+          w="full"
+          h="full"
+          justifyContent="center"
+          alignItems="center"
+          rounded="md"
+        >
+          <Spinner />
+        </Flex>
+      </Stack>
+    </AspectRatio>
+  </Box>
+);
 
 export default JobGridItem;

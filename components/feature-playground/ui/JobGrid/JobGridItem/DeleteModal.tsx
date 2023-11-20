@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-const JobGridItemDeleteModal = ({
+const DeleteModal = ({
   jobId,
   isOpen,
   onClose
@@ -93,4 +93,4 @@ const JobGridItemDeleteModal = ({
   );
 };
 
-export default JobGridItemDeleteModal;
+export default DeleteModal;
