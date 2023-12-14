@@ -21,20 +21,14 @@ function removeFileExtension(file_name: string) {
 
 export default async function transcodeVideoToAudio(
   ffmpeg: FFmpeg,
-  videoInput: File | string
+  videoUrl: string
 ): Promise<any> {
-  console.log('videoInput: ', videoInput);
-  const isFile = videoInput instanceof File;
-  const fileName = isFile
-    ? videoInput.name
-    : videoInput.split('/').pop() ?? 'output';
+  const fileName = videoUrl.split('/').pop() ?? 'output';
 
-  const input = getFileExtension(fileName);
+  const input = '.mp4';
   const output = removeFileExtension(fileName) + '.mp3';
 
-  console.log('transcodeVideoToAudio - input: ', input);
-  console.log('transcodeVideoToAudio - output: ', output);
-  ffmpeg.writeFile(input, await fetchFile(videoInput));
+  ffmpeg.writeFile(input, await fetchFile(videoUrl));
 
   const ffmpeg_cmd = ['-i', input, output];
 
