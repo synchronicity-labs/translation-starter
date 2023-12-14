@@ -2,14 +2,17 @@
 
 import Requirements from './Requirements';
 import UrlInput from './UrlInput';
+import YoutubeInput from './YoutubeInput';
 import Info from '@/components/ui/Display/Info';
 import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
 import { Job, JobStatus } from '@/types/db';
 import loadFfmpeg from '@/utils/load-ffmpeg';
+import { checkIfValidYoutubeUrl } from '@/utils/regex';
 import supabase from '@/utils/supabase';
 import transcodeVideoToAudio from '@/utils/transcode-video-to-audio';
+import uploadYoutubeToSupabase from '@/utils/upload-youtube-to-supabase';
 import {
   Button,
   Flex,
@@ -46,7 +49,7 @@ const MediaInput: FC<Props> = ({ session }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const submitDisabled = !url || !language;
-  const inputOptions = ['upload', 'url'];
+  const inputOptions = ['upload', 'youtube', 'other url'];
 
   // Initalize input type
   const [inputType, setInputType] = useState(inputOptions[0]);
@@ -57,6 +60,18 @@ const MediaInput: FC<Props> = ({ session }) => {
     items: [
       `Accepted Formats: MP4`,
       `Max video file size: 250mb`,
+      `Max resolution: 1080p`,
+      `Max frame rate: 30fps`,
+      `Avoid muliple people in the video`,
+      `Make sure there's a face in the first frame of the video`
+    ]
+  };
+
+  // Requirements for youtube url
+  const youtubeRequirements = {
+    label: `Video Requirements`,
+    items: [
+      `Max video length: 5min`,
       `Max resolution: 1080p`,
       `Max frame rate: 30fps`,
       `Avoid muliple people in the video`,
@@ -103,6 +118,28 @@ const MediaInput: FC<Props> = ({ session }) => {
     const ffmpeg_response: FFmpeg = await loadFfmpeg();
     ffmpegRef.current = ffmpeg_response;
   };
+
+  async function getUploadUrl(
+    fileOrUrl: File | string | undefined,
+    pathPrefix: string
+  ) {
+    try {
+      if (typeof fileOrUrl === 'string') {
+        if (checkIfValidYoutubeUrl(fileOrUrl)) {
+          const response = await uploadYoutubeToSupabase(fileOrUrl, pathPrefix);
+          return response.data.url;
+        } else {
+          return fileOrUrl;
+        }
+      } else if (fileOrUrl instanceof File) {
+        return await uploadFile(fileOrUrl, `${pathPrefix}.mp4`);
+      } else {
+        throw new Error('Invalid file or URL provided');
+      }
+    } catch (error: any) {
+      throw new Error('Error in getUploadUrl: ' + error.message);
+    }
+  }
 
   async function uploadFile(file: File, filePath: string) {
     console.log('in uploadFile - file: ', file);
@@ -204,19 +241,17 @@ const MediaInput: FC<Props> = ({ session }) => {
       return;
     }
 
-    // TODO: Add logic for creating local file for transcode function
-
-    // 1. Transcode video to audio
-    const videoInput = video || url;
-    const { blob, output } = await transcodeVideoToAudio(
-      ffmpegRef.current,
-      videoInput!
+    // Upload video to supabase storage
+    const videoUrl = await getUploadUrl(
+      video || url,
+      `public/input-video-${job.id}`
     );
 
-    // 2. Upload video and audio to Supabase storage
-    const videoUrl = video
-      ? await uploadFile(video!, `public/input-video-${job.id}-${video!.name}`)
-      : url;
+    // Transcode video to audio
+    const { blob, output } = await transcodeVideoToAudio(
+      ffmpegRef.current,
+      videoUrl
+    );
 
     const audioUrl = await uploadFile(
       blob,
@@ -284,7 +319,17 @@ const MediaInput: FC<Props> = ({ session }) => {
                 </Flex>
               </FileDrop>
             )}
-            {inputType === 'url' && (
+            {inputType === 'youtube' && (
+              <YoutubeInput
+                url={url}
+                setUrl={setUrl}
+                disabled={loading}
+                requirements={
+                  <Requirements requirements={[youtubeRequirements]} />
+                }
+              />
+            )}
+            {inputType === 'other url' && (
               <UrlInput
                 url={url}
                 setUrl={setUrl}
