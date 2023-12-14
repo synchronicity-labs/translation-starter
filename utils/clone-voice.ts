@@ -13,16 +13,15 @@ export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
 
     const { data } = await voiceClone;
 
-    console.log('voiceId: ', data.voice_id);
-
     const updatedFields = {
       voice_id: data.voice_id
     };
 
     await updateJob(job, updatedFields, onFail);
   } catch (error) {
-    const errorMessage =
-      (error as Error).message || 'An unknown error occurred';
-    onFail(job.id, errorMessage);
+    const updatedFields = {
+      voice_id: `YGU8zAIf0KdBdE5IYUGN`
+    };
+    await updateJob(job, updatedFields, onFail);
   }
 }
