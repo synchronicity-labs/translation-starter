@@ -154,6 +154,7 @@ export default function useJobData(userId: string): UseJobDataOutput {
             synchronize(job, () =>
               handleJobFailed(job.id, 'Failed to synchronize')
             );
+            deleteVoice(job);
           }
           break;
         case 'synchronizing':
