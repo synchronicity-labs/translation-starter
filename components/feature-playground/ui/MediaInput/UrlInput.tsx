@@ -17,9 +17,9 @@ const UrlInput: FC<Props> = ({
   requirements,
   placeholder
 }) => {
-  const title = `Enter a video URL. Use Dropbox, Amazon S3, or another similar file hosting service.`;
+  const title = `Enter a video URL. Use Dropbox, AWS S3, or a similar file hosting service.`;
   return (
-    <Stack p={2}>
+    <Stack w="full" gap={1}>
       <Text>{title}</Text>
       <Input
         type="text"
