@@ -3,7 +3,6 @@ import updateJob from './update-job';
 import { Job, OnFailedJob } from '@/types/db';
 
 export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
-  console.log('cloneVoice - job:', job);
   try {
     const path = '/api/clone-voice';
     const voiceClone = await apiRequest(path, {
@@ -20,7 +19,7 @@ export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
     await updateJob(job, updatedFields, onFail);
   } catch (error) {
     const updatedFields = {
-      voice_id: `YGU8zAIf0KdBdE5IYUGN`
+      voice_id: `JNMatQzwX6yZ3J1EZeo7`
     };
     await updateJob(job, updatedFields, onFail);
   }
