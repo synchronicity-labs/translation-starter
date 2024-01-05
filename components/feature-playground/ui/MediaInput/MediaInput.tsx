@@ -35,9 +35,10 @@ interface Language {
 
 interface Props {
   session: Session | null;
+  creditsAvailable: boolean;
 }
 
-const MediaInput: FC<Props> = ({ session }) => {
+const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
   const ffmpegRef = useRef<any>(null);
 
   const toast = useToast();
@@ -203,12 +204,14 @@ const MediaInput: FC<Props> = ({ session }) => {
       return;
     }
 
-    console.log('MediaInput - video: ', video);
-    console.log('MediaInput - url: ', url);
-
     // If no video is selected, show error
     if (!video && !url) {
       handleJobFailed('Video file or url is required');
+      return;
+    }
+
+    if (!creditsAvailable) {
+      handleJobFailed('You do not have enough credits to create a video');
       return;
     }
 
@@ -257,9 +260,6 @@ const MediaInput: FC<Props> = ({ session }) => {
       blob,
       `public/input-audio-${job.id}-${output}`
     );
-
-    console.log('MediaInput - videoUrl: ', videoUrl);
-    console.log('MediaInput - audioUrl: ', audioUrl);
 
     if (!videoUrl || !audioUrl) {
       handleJobFailed(`Failed to upload video and audio to Supabase storage`);
