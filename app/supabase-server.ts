@@ -74,12 +74,10 @@ export const getActiveProductsWithPrices = async () => {
 
 export async function getJobs() {
   const supabase = createServerSupabaseClient();
-  const user = await getUserDetails();
   try {
     const { data: jobs } = await supabase
       .from('jobs')
       .select('*')
-      .eq('user_id', user?.id as string)
       .order('created_at', { ascending: false });
     return jobs;
   } catch (error) {
@@ -127,7 +125,6 @@ export async function getJobsBetweenDates(
 }
 
 export async function getCreditBalance() {
-  const user = await getUserDetails();
   const subscription = await getSubscription();
   if (subscription) {
     const metadata: Metadata = subscription?.prices?.products

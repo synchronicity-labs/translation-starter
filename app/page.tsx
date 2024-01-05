@@ -19,6 +19,8 @@ export default async function HomePage() {
 
   const creditsAvailable = creditBalance.remaining > 0;
 
+  const jobsToDisplay = jobs?.filter((job) => !job.is_deleted);
+
   return (
     <Flex
       w="full"
@@ -36,7 +38,7 @@ export default async function HomePage() {
           className="items-center text-center"
         />
         <MediaInput session={session} creditsAvailable={creditsAvailable} />
-        {session && jobs && <JobGrid jobs={jobs} />}
+        {session && jobsToDisplay && <JobGrid jobs={jobsToDisplay} />}
       </Stack>
     </Flex>
   );
