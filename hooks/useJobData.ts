@@ -10,44 +10,44 @@ import transcribe from '@/utils/transcribe';
 import translate from '@/utils/translate';
 import updateJob from '@/utils/update-job';
 import { useToast } from '@chakra-ui/react';
-import { PostgrestError } from '@supabase/supabase-js';
 import { useState, useEffect } from 'react';
 
 interface UseJobDataOutput {
   jobs: Job[];
   loading: boolean;
-  error: PostgrestError | null;
+  error: unknown | null;
 }
 
 export default function useJobData(userId: string): UseJobDataOutput {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<PostgrestError | null>(null);
+  const [error, setError] = useState<unknown | null>(null);
 
   const toast = useToast();
 
+  // Fetch jobs from database
   useEffect(() => {
     async function fetchJobs() {
       setLoading(true);
       setError(null);
-      const { data: fetchedJobs, error: fetchError } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('user_id', userId) // Ensure `userId` is defined in your component
-        .neq('is_deleted', true);
 
-      if (fetchError) {
-        console.error('Error fetching jobs:', error);
-        setError(fetchError);
-      } else {
+      try {
+        const response = await fetch('/api/db/jobs');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const { data: fetchedJobs } = await response.json();
         setJobs(fetchedJobs || []);
+      } catch (fetchError) {
+        console.error('Error fetching jobs:', fetchError);
+        setError(fetchError);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
     fetchJobs();
   }, [userId]);
 
+  // Subscribe to changes to jobs table
   useEffect(() => {
     const channel = supabase
       .channel('realtime jobs')
@@ -90,18 +90,17 @@ export default function useJobData(userId: string): UseJobDataOutput {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, jobs, setJobs]);
+  }, [supabase, jobs]);
 
+  // Handle job status changes / logic
   useEffect(() => {
     for (const job of jobs) {
       switch (job.status) {
         case 'uploading':
           if (job.original_video_url && job.original_audio_url) {
-            console.log('about to update job status to transcribing');
             updateJob(job, { status: 'transcribing' }, () =>
               handleJobFailed(job.id, 'Failed to update job to transcribing')
             );
-            console.log('intiating transcription');
             transcribe(job, () =>
               handleJobFailed(job.id, 'Failed to transcribe')
             );
