@@ -34,7 +34,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         transcriptionId: result.request_id,
         updatedFields: {
-          transcript
+          transcript,
+          source_language: transcript[0].language
         }
       })
     }
