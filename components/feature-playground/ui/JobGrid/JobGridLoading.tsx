@@ -13,7 +13,7 @@ export default function JobGridLoading() {
       w={'100%'}
       maxW={'1200'}
     >
-      {[...Array(8)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <Stack
           key={i}
           bgColor="blackAlpha.400"
