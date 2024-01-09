@@ -70,6 +70,10 @@ export const sortByCreatedAt = (array: any[]) => {
   });
 };
 
+export const removeEdgeParentheses = (s: string): string => {
+  return s.replace(/^\(|\)$/g, '');
+};
+
 export const isValidUrl = (url: string) => {
   try {
     new URL(url);
