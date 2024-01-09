@@ -8,18 +8,19 @@ export async function GET(req: Request) {
   }
 
   try {
-    const jobs = await getJobs();
+    const response = await getJobs();
 
-    console.log('api/db/jobs: ', jobs?.length);
-
-    if (!jobs) {
+    if (!response.success) {
       return NextResponse.json({
         success: false,
-        message: `Error fetching jobs`
+        message: `Error fetching jobs`,
+        error: response.error
       });
     }
 
-    const jobsToReturn = jobs.filter((job) => !job.is_deleted);
+    const jobs = response.data;
+
+    const jobsToReturn = jobs ? jobs.filter((job) => !job.is_deleted) : jobs;
 
     return NextResponse.json({
       success: true,

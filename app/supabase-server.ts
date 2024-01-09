@@ -84,10 +84,16 @@ export async function getJobs() {
       .from('jobs')
       .select('*')
       .order('created_at', { ascending: false });
-    return jobs;
+    return {
+      success: true,
+      data: jobs
+    };
   } catch (error) {
     console.error('Error:', error);
-    return null;
+    return {
+      success: false,
+      error
+    };
   }
 }
 
@@ -150,7 +156,7 @@ export async function getCreditBalance() {
   }
 
   const credits = 300;
-  const jobs = await getJobs();
+  const { data: jobs } = await getJobs();
   const creditsSpent = jobs
     ? jobs.reduce((sum, job) => sum + (job.credits || 0), 0)
     : 0;
