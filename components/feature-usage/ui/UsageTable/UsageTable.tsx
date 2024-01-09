@@ -53,7 +53,7 @@ const UsageTable: FC<Props> = ({ userId }) => {
   }
 
   if (error) {
-    return <div>Error fetching jobs: {error.message}</div>;
+    return <div>Error fetching jobs</div>;
   }
 
   if (!jobs.length) {
