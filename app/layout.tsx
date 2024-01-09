@@ -5,8 +5,6 @@ import { ChakraProvider, Flex, Stack } from '@chakra-ui/react';
 import { PropsWithChildren } from 'react';
 import '@/styles/main.css';
 
-export const dynamic = 'force-dynamic';
-
 const meta = {
   title: 'Translation AI',
   description: 'Brought to you by Sync Labs',

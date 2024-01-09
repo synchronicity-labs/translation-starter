@@ -14,6 +14,10 @@ export const createServerSupabaseClient = cache(() => {
   return createServerComponentClient<Database>({ cookies: () => cookieStore });
 });
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
 export async function getSession() {
   const supabase = createServerSupabaseClient();
   try {
@@ -74,8 +78,8 @@ export const getActiveProductsWithPrices = async () => {
 };
 
 export async function getJobs() {
-  const supabase = createServerSupabaseClient();
   try {
+    const supabase = createServerSupabaseClient();
     const { data: jobs } = await supabase
       .from('jobs')
       .select('*')
@@ -177,8 +181,8 @@ export async function insertJob() {
 }
 
 export async function updateJob(jobId: string, updatedFields: any) {
-  const supabase = createServerSupabaseClient();
   try {
+    const supabase = createServerSupabaseClient();
     const { data: updatedJob } = await supabase
       .from('jobs')
       .update({ ...updatedFields })
@@ -195,10 +199,6 @@ export async function updateJobByOriginalVideoUrl(
   originalVideoUrl: string,
   updatedFields: any
 ) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-  const supabaseServiceRoleKey = process.env
-    .SUPABASE_SERVICE_ROLE_KEY as string;
-  const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
   const { data, error } = await supabase
     .from('jobs')
     .update({ ...updatedFields })
@@ -215,11 +215,11 @@ export async function updateJobByTranscriptionId(
   transcriptionId: string,
   updatedFields: any
 ) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-  const supabaseServiceRoleKey = process.env
-    .SUPABASE_SERVICE_ROLE_KEY as string;
-  const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+    const supabaseServiceRoleKey = process.env
+      .SUPABASE_SERVICE_ROLE_KEY as string;
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
     const { data: updatedJob } = await supabase
       .from('jobs')
       .update({ ...updatedFields })
