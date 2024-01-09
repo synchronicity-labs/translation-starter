@@ -1,4 +1,8 @@
-import { getCreditBalance, getSession, getJobs } from '@/app/supabase-server';
+import {
+  getCreditBalance,
+  getSession,
+  getUserDetails
+} from '@/app/supabase-server';
 import JobGrid from '@/components/feature-playground/ui/JobGrid';
 import MediaInput from '@/components/feature-playground/ui/MediaInput';
 import PageHeader from '@/components/ui/Display/PageHeader';
@@ -6,10 +10,10 @@ import { Flex, Stack } from '@chakra-ui/react';
 
 export default async function HomePage() {
   // Grab data from db
-  const [session, creditBalance, jobs] = await Promise.all([
+  const [session, creditBalance, user] = await Promise.all([
     getSession(),
     getCreditBalance(),
-    getJobs()
+    getUserDetails()
   ]);
 
   // Page content
@@ -18,8 +22,6 @@ export default async function HomePage() {
   const tag = `Beta`;
 
   const creditsAvailable = creditBalance.remaining > 0;
-
-  const jobsToDisplay = jobs?.filter((job) => !job.is_deleted);
 
   return (
     <Flex
@@ -38,7 +40,7 @@ export default async function HomePage() {
           className="items-center text-center"
         />
         <MediaInput session={session} creditsAvailable={creditsAvailable} />
-        {session && jobsToDisplay && <JobGrid jobs={jobsToDisplay} />}
+        {session && user && <JobGrid userId={user.id} />}
       </Stack>
     </Flex>
   );
