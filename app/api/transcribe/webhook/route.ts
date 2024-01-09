@@ -8,7 +8,6 @@ export async function OPTIONS(req: Request) {
 }
 
 export async function POST(req: Request) {
-  console.log('in transcribe/webhook');
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', {
       headers: { Allow: 'POST' },
