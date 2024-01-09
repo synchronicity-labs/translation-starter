@@ -3,16 +3,22 @@ import { Database } from '@/types_db';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { cache } from 'react';
+
+// import { cache } from 'react';
 
 type Metadata = {
   credits: string;
 };
 
-export const createServerSupabaseClient = cache(() => {
+// export const createServerSupabaseClient = cache(() => {
+//   const cookieStore = cookies();
+//   return createServerComponentClient<Database>({ cookies: () => cookieStore });
+// });
+
+export const createServerSupabaseClient = () => {
   const cookieStore = cookies();
   return createServerComponentClient<Database>({ cookies: () => cookieStore });
-});
+};
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
