@@ -9,12 +9,12 @@ export async function POST(req: Request) {
   const { transcriptionId, updatedFields } = await req.json();
 
   try {
-    const jobs = await updateJobByTranscriptionId(
+    const updatedJob = await updateJobByTranscriptionId(
       transcriptionId,
       updatedFields
     );
 
-    if (!jobs || jobs.length === 0) {
+    if (!updatedJob || updatedJob.length === 0) {
       return NextResponse.json({
         success: false
       });
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      data: jobs[0]
+      data: updatedJob[0]
     });
   } catch (error) {
     console.error('Error:', error);
