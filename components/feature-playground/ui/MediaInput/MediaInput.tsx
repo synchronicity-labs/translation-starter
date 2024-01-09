@@ -143,7 +143,6 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
   }
 
   async function uploadFile(file: File, filePath: string) {
-    console.log('in uploadFile - file: ', file);
     const { data, error } = await supabase.storage
       .from('translation')
       .upload(filePath, file, {
@@ -159,8 +158,6 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       console.error('No data returned from upload');
       return;
     }
-
-    console.log('data: ', data);
 
     const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/translation/${data.path}`;
 
