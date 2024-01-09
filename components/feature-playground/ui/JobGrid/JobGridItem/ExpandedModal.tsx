@@ -2,6 +2,7 @@ import DeleteModal from './DeleteModal';
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { languages } from '@/data/languages';
 import { Job, Transcript } from '@/types/db';
+import { removeEdgeParentheses } from '@/utils/helpers';
 import {
   Modal,
   ModalContent,
@@ -115,6 +116,11 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
     (language) => language.code === job.target_language
   );
 
+  const showTranscript =
+    show === 'original-video'
+      ? Boolean(extractedTranscript)
+      : Boolean(job.translated_text);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent
@@ -220,18 +226,20 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
                 </Text>
               </Flex>
             )}
-            <Stack p={4} bgColor="blackAlpha.200" rounded="md">
-              <Text fontWeight="bold" fontSize="md">
-                Transcript
-              </Text>
-              <Flex maxH={120} overflow={'scroll'}>
-                <Text fontSize="sm">
-                  {show === 'original-video'
-                    ? extractedTranscript
-                    : job.translated_text}
+            {showTranscript && (
+              <Stack p={4} bgColor="blackAlpha.200" rounded="md">
+                <Text fontWeight="bold" fontSize="md">
+                  Transcript
                 </Text>
-              </Flex>
-            </Stack>
+                <Flex maxH={120} overflow={'scroll'}>
+                  <Text fontSize="sm">
+                    {show === 'original-video'
+                      ? extractedTranscript
+                      : removeEdgeParentheses(job.translated_text || '')}
+                  </Text>
+                </Flex>
+              </Stack>
+            )}
           </Stack>
         </ModalBody>
       </ModalContent>
