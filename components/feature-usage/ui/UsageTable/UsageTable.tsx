@@ -1,5 +1,6 @@
 'use client';
 
+import UsageTableLoading from './UsageTableLoading';
 import StatusTag from '@/components/ui/Display/StatusTag';
 import PageNavigator from '@/components/ui/PageNavigator';
 import useJobData from '@/hooks/useJobData';
@@ -49,7 +50,7 @@ const UsageTable: FC<Props> = ({ userId }) => {
   const [offset, setOffset] = useState(0);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <UsageTableLoading />;
   }
 
   if (error) {
