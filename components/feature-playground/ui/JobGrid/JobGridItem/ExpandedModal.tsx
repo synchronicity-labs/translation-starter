@@ -1,6 +1,8 @@
 import DeleteModal from './DeleteModal';
 import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Job } from '@/types/db';
+import { languages } from '@/data/languages';
+import { Job, Transcript } from '@/types/db';
+import { removeEdgeParentheses } from '@/utils/helpers';
 import {
   Modal,
   ModalContent,
@@ -33,7 +35,6 @@ const Detail = (props: { title: string; value: string }) => {
     fallback: false // return false on the server, and re-evaluate on the client side
   });
 
-  console.log('props: ', props);
   return (
     <Flex
       direction={isLargerThan640 ? 'row' : 'column'}
@@ -101,6 +102,25 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
     fallback: false // return false on the server, and re-evaluate on the client side
   });
 
+  const transcript = job.transcript as Transcript;
+
+  const extractedTranscript = transcript
+    ? transcript.map((item) => item.transcription).join(' ')
+    : '';
+
+  const sourceLanguage = languages.find(
+    (language) => language.code === job.source_language
+  );
+
+  const targetLanguage = languages.find(
+    (language) => language.code === job.target_language
+  );
+
+  const showTranscript =
+    show === 'original-video'
+      ? Boolean(extractedTranscript)
+      : Boolean(job.translated_text);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent
@@ -119,11 +139,29 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
               <Detail title="Created" value={timeStamp} />
               <Detail title="Job ID" value={job.id} />
             </Flex>
+            <Flex gap={4}>
+              <Detail
+                title="Source Language"
+                value={
+                  sourceLanguage
+                    ? sourceLanguage.name
+                    : (job.source_language as string)
+                }
+              />
+              <Detail
+                title="Target Language"
+                value={
+                  targetLanguage
+                    ? targetLanguage.name
+                    : (job.target_language as string)
+                }
+              />
+            </Flex>
             <Flex justifyContent={'space-between'}>
               <Flex gap={'2'}>
                 <Button
                   onClick={() => setShow('translated-video')}
-                  variant={show === 'translated-video' ? 'outline' : 'solid'}
+                  variant={show === 'original-video' ? 'solid' : 'outline'}
                 >
                   <Tooltip hasArrow label="Lip synced video">
                     <Flex w="full" h="full" alignItems="center">
@@ -169,6 +207,7 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
                 </Tooltip>
               </Button>
             </Flex>
+            <Flex></Flex>
             {url ? (
               <VideoPlayer key={`${job.id}-${url}`} url={url} />
             ) : (
@@ -186,6 +225,20 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
                   Media not found.
                 </Text>
               </Flex>
+            )}
+            {showTranscript && (
+              <Stack p={4} bgColor="blackAlpha.200" rounded="md">
+                <Text fontWeight="bold" fontSize="md">
+                  Transcript
+                </Text>
+                <Flex maxH={120} overflow={'scroll'}>
+                  <Text fontSize="sm">
+                    {show === 'original-video'
+                      ? extractedTranscript
+                      : removeEdgeParentheses(job.translated_text || '')}
+                  </Text>
+                </Flex>
+              </Stack>
             )}
           </Stack>
         </ModalBody>

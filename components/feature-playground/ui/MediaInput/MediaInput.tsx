@@ -7,6 +7,7 @@ import Info from '@/components/ui/Display/Info';
 import FileDrop from '@/components/ui/Input/FileDrop';
 import Selector from '@/components/ui/Input/Selector';
 import { SignUpModal } from '@/components/ui/Modals';
+import { languages } from '@/data/languages';
 import { Job, JobStatus } from '@/types/db';
 import loadFfmpeg from '@/utils/load-ffmpeg';
 import { checkIfValidYoutubeUrl } from '@/utils/regex';
@@ -27,11 +28,6 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { Session } from '@supabase/auth-helpers-nextjs';
 import { FC, useCallback, useEffect, useState, useRef } from 'react';
 import { HiSparkles } from 'react-icons/hi';
-
-interface Language {
-  name: string;
-  code: string;
-}
 
 interface Props {
   session: Session | null;
@@ -80,29 +76,6 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
     ]
   };
 
-  const languages: Language[] = [
-    { name: 'Mandarin Chinese', code: 'zh' },
-    { name: 'Spanish', code: 'es' },
-    { name: 'English', code: 'en' },
-    { name: 'Hindi', code: 'hi' },
-    { name: 'Arabic', code: 'ar' },
-    { name: 'Portuguese', code: 'pt' },
-    { name: 'Bengali (Bangla)', code: 'bn' },
-    { name: 'Russian', code: 'ru' },
-    { name: 'Urdu', code: 'ur' },
-    { name: 'French', code: 'fr' },
-    { name: 'Punjabi', code: 'pa' },
-    { name: 'Japanese', code: 'ja' },
-    { name: 'German', code: 'de' },
-    { name: 'Javanese', code: 'jv' },
-    { name: 'Wu Chinese (Shanghainese)', code: 'wuu' },
-    { name: 'Telugu', code: 'te' },
-    { name: 'Vietnamese', code: 'vi' },
-    { name: 'Marathi', code: 'mr' },
-    { name: 'Tamil', code: 'ta' },
-    { name: 'Turkish', code: 'tr' }
-  ];
-
   // Close sign up modal if user is signed in
   useEffect(() => {
     if (session && isOpen) {
@@ -143,7 +116,6 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
   }
 
   async function uploadFile(file: File, filePath: string) {
-    console.log('in uploadFile - file: ', file);
     const { data, error } = await supabase.storage
       .from('translation')
       .upload(filePath, file, {
@@ -159,8 +131,6 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       console.error('No data returned from upload');
       return;
     }
-
-    console.log('data: ', data);
 
     const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/translation/${data.path}`;
 

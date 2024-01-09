@@ -106,6 +106,10 @@ CREATE TABLE jobs (
   is_deleted BOOLEAN DEFAULT FALSE,
   user_id UUID REFERENCES auth.users NOT NULL
 );
+ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Enable select for authenticated users" ON jobs FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Enable update for authenticated users" ON jobs FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Enable insert for authenticated users" ON jobs FOR INSERT USING (auth.uid() = user_id);
 
 -- Realtime subscriptions
 DROP PUBLICATION IF EXISTS supabase_realtime;

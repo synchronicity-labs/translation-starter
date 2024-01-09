@@ -1,19 +1,31 @@
 'use client';
 
 import JobGridItem from './JobGridItem';
+import JobGridLoading from './JobGridLoading';
 import PageNavigator from '@/components/ui/PageNavigator';
+import useJobData from '@/hooks/useJobData';
 import { Job } from '@/types/db';
 import { sortByCreatedAt } from '@/utils/helpers';
 import { Stack, Flex, Grid } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 
 interface Props {
-  jobs: Job[];
+  userId: string;
 }
 
-const JobGrid: FC<Props> = ({ jobs }) => {
+const JobGrid: FC<Props> = ({ userId }) => {
+  const { jobs, loading, error } = useJobData(userId);
+
   const pageSize = 6;
   const [offset, setOffset] = useState(0);
+
+  if (loading) {
+    return <JobGridLoading />;
+  }
+
+  if (error) {
+    return <div>Error fetching jobs</div>;
+  }
 
   const numJobs = jobs.length;
   const pages = Math.ceil(numJobs / pageSize);

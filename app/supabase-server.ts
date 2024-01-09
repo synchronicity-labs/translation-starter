@@ -1,6 +1,7 @@
 import { JobStatus } from '@/types/db';
 import { Database } from '@/types_db';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 
@@ -177,24 +178,27 @@ export async function insertJob() {
 
 export async function updateJob(jobId: string, updatedFields: any) {
   const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from('jobs')
-    .update({ ...updatedFields })
-    .eq('id', jobId)
-    .select();
-
-  if (error) {
-    console.log(error.message);
+  try {
+    const { data: updatedJob } = await supabase
+      .from('jobs')
+      .update({ ...updatedFields })
+      .eq('id', jobId)
+      .select();
+    return updatedJob;
+  } catch (error) {
+    console.log('Error: ', error);
+    return [];
   }
-  console.log('data: ', data);
-  return data ?? [];
 }
 
 export async function updateJobByOriginalVideoUrl(
   originalVideoUrl: string,
   updatedFields: any
 ) {
-  const supabase = createServerSupabaseClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const supabaseServiceRoleKey = process.env
+    .SUPABASE_SERVICE_ROLE_KEY as string;
+  const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
   const { data, error } = await supabase
     .from('jobs')
     .update({ ...updatedFields })
@@ -204,7 +208,6 @@ export async function updateJobByOriginalVideoUrl(
   if (error) {
     console.log(error.message);
   }
-  console.log('data: ', data);
   return data ?? [];
 }
 
@@ -212,16 +215,20 @@ export async function updateJobByTranscriptionId(
   transcriptionId: string,
   updatedFields: any
 ) {
-  const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from('jobs')
-    .update({ ...updatedFields })
-    .eq('transcription_id', transcriptionId)
-    .select();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const supabaseServiceRoleKey = process.env
+    .SUPABASE_SERVICE_ROLE_KEY as string;
+  const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+  try {
+    const { data: updatedJob } = await supabase
+      .from('jobs')
+      .update({ ...updatedFields })
+      .eq('transcription_id', transcriptionId)
+      .select();
 
-  if (error) {
-    console.log(error.message);
+    return updatedJob;
+  } catch (error) {
+    console.log('Error: ', error);
+    return [];
   }
-  console.log('data: ', data);
-  return data ?? [];
 }

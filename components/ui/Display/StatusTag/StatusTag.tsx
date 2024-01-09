@@ -18,9 +18,7 @@ const StatusBox: FC<Props> = ({ status }) => {
     case 'cloning':
     case 'synthesizing':
     case 'synchronizing':
-    case 'completed':
-    case 'failed':
-      color = 'yellow.900';
+      color = 'yellow.600';
       break;
     case 'completed':
       color = 'green.600';
