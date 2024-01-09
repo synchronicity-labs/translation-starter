@@ -19,7 +19,7 @@ export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
     await updateJob(job, updatedFields, onFail);
   } catch (error) {
     const updatedFields = {
-      voice_id: `JNMatQzwX6yZ3J1EZeo7`
+      voice_id: `9F4C8ztpNUmXkdDDbz3J`
     };
     await updateJob(job, updatedFields, onFail);
   }
