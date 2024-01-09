@@ -9,8 +9,6 @@ export async function POST(req: Request) {
   const { jobId, updatedFields } = await req.json();
 
   try {
-    console.log('updating job: ', { jobId, updatedFields });
-
     const jobs = await updateJob(jobId, updatedFields);
 
     if (!jobs || jobs.length === 0) {
