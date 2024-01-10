@@ -143,7 +143,8 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error(`Failed to convert text to speech: `, error);
     return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
-      status: 500
+      status: 500,
+      statusText: `Failed to convert text to speech: ${error}`
     });
   }
 }
