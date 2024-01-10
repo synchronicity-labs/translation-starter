@@ -9,6 +9,8 @@ import { sortByCreatedAt } from '@/utils/helpers';
 import { Stack, Flex, Grid } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   userId: string;
 }

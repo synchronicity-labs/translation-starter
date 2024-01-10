@@ -8,6 +8,8 @@ import MediaInput from '@/components/feature-playground/ui/MediaInput';
 import PageHeader from '@/components/ui/Display/PageHeader';
 import { Flex, Stack } from '@chakra-ui/react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   // Grab data from db
   const [session, creditBalance, user] = await Promise.all([
