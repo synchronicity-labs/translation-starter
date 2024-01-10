@@ -31,49 +31,27 @@ export default function useJobData(userId: string): UseJobDataOutput {
 
   const toast = useToast();
 
-  // Fetch jobs from database
   useEffect(() => {
     async function fetchJobs() {
       setLoading(true);
       setError(null);
+      const { data: fetchedJobs, error: fetchError } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('user_id', userId) // Ensure `userId` is defined in your component
+        .neq('is_deleted', true);
 
-      try {
-        const response = await fetch('/api/db/jobs');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const { data: fetchedJobs } = await response.json();
-        setJobs(fetchedJobs || []);
-      } catch (fetchError) {
-        console.error('Error fetching jobs:', fetchError);
+      if (fetchError) {
+        console.error('Error fetching jobs:', error);
         setError(fetchError);
-      } finally {
-        setLoading(false);
+      } else {
+        setJobs(fetchedJobs || []);
       }
+      setLoading(false);
     }
 
     fetchJobs();
   }, [userId]);
-
-  // useEffect(() => {
-  //   async function fetchJobs() {
-  //     setLoading(true);
-  //     setError(null);
-  //     const { data: fetchedJobs, error: fetchError } = await supabase
-  //       .from('jobs')
-  //       .select('*')
-  //       .eq('user_id', userId) // Ensure `userId` is defined in your component
-  //       .neq('is_deleted', true);
-
-  //     if (fetchError) {
-  //       console.error('Error fetching jobs:', error);
-  //       setError(fetchError);
-  //     } else {
-  //       setJobs(fetchedJobs || []);
-  //     }
-  //     setLoading(false);
-  //   }
-
-  //   fetchJobs();
-  // }, [userId]);
 
   // Subscribe to changes to jobs table
   useEffect(() => {
