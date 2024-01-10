@@ -1,5 +1,4 @@
 import { getJobs } from '@/app/supabase-server';
-import { Job } from '@/types/db';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
