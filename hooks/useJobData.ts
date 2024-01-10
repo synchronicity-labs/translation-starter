@@ -3,14 +3,13 @@
 import { Job, JobStatus } from '@/types/db';
 import cloneVoice from '@/utils/clone-voice';
 import deleteVoice from '@/utils/deleteVoice';
-// import supabase from '@/utils/supabase';
+import supabase from '@/utils/supabase';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
 import transcribe from '@/utils/transcribe';
 import translate from '@/utils/translate';
 import updateJob from '@/utils/update-job';
 import { useToast } from '@chakra-ui/react';
-import { createClient } from '@supabase/supabase-js';
 import { useState, useEffect } from 'react';
 
 interface UseJobDataOutput {
@@ -20,11 +19,6 @@ interface UseJobDataOutput {
 }
 
 export default function useJobData(userId: string): UseJobDataOutput {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
-
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown | null>(null);
