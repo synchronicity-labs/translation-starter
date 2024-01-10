@@ -5,7 +5,6 @@ export default async function updateJob(
   updatedFields: any,
   onFail?: OnFailedJob
 ) {
-  console.log('in update-job.ts');
   const updateJob = await fetch('/api/db/update-job', {
     method: 'POST',
     body: JSON.stringify({
@@ -14,10 +13,7 @@ export default async function updateJob(
     })
   });
   if (!updateJob.ok) {
-    console.log('failed to update job.');
     onFail && onFail(job.id, `Failed to update job`);
     return;
   }
-
-  console.log('job updated: ', updatedFields);
 }

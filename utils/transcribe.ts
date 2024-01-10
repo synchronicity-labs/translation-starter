@@ -3,7 +3,6 @@ import updateJob from './update-job';
 import { Job, OnFailedJob } from '@/types/db';
 
 export default async function transcribe(job: Job, onFail: OnFailedJob) {
-  console.log('in transcribe.ts - job: ', job);
   try {
     const path = '/api/transcribe';
     const transcription = await apiRequest(path, {

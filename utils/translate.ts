@@ -10,19 +10,13 @@ export default async function translate(job: Job, onFail: OnFailedJob) {
       .map((item: { transcription: string }) => item.transcription.trim())
       .join(' ');
 
-    console.log('utils/translate - text: ', text);
-
     const path = '/api/translate';
     const translation = await apiRequest(path, {
       text,
       language: job.target_language
     });
 
-    console.log('utils/translate - translation: ', translation);
-
     const { data: translatedText } = translation;
-
-    console.log('translatedText: ', translatedText);
 
     const updatedFields = {
       translated_text: translatedText

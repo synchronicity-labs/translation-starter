@@ -31,8 +31,6 @@ export async function POST(req: Request) {
 
     const data = await deletedVoice.json();
 
-    console.log('deleted-voice: ', data);
-
     return new Response(JSON.stringify({ data }), {
       status: 200
     });

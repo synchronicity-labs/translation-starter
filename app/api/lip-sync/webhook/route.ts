@@ -8,15 +8,9 @@ export async function POST(req: Request) {
     });
   }
 
-  console.log('req: ', req);
-
   const { result } = await req.json();
 
-  console.log('result: ', result);
-
   try {
-    console.log('in sync labs webhook');
-
     const updateJobResponse = await fetch(
       `${
         process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'

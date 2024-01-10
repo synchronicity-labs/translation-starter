@@ -52,8 +52,6 @@ export async function POST(req: Request) {
 
     const data = await voiceClone.json();
 
-    console.log('clone-voice: ', data);
-
     return new Response(JSON.stringify({ data }), {
       status: 200
     });

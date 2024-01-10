@@ -44,7 +44,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    console.log(`starting speech synthesis on: ${text}`);
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
       {
