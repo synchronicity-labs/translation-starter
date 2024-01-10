@@ -17,7 +17,7 @@ Translation AI is an open-source tool for translating spoken language in video c
 
 ### [Live demo](https://translation-starter-khaki.vercel.app/)
 
-[![Screenshot of demo](./public/demo.png)](https://translation-starter-khaki.vercel.app/)
+[![Screenshot of demo](./public/demo.png)](https://translate.synclabs.so/)
 
 ## Getting set up
 
