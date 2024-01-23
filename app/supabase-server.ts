@@ -155,7 +155,7 @@ export async function getCreditBalance() {
     };
   }
 
-  const credits = 300;
+  const credits = 7500;
   const { data: jobs } = await getJobs();
   const creditsSpent = jobs
     ? jobs.reduce((sum, job) => sum + (job.credits || 0), 0)
