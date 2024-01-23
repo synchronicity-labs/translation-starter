@@ -67,7 +67,8 @@ export async function POST(req: Request) {
         audioUrl,
         videoUrl,
         synergize: true,
-        webhookUrl: `${baseUrl}/api/lip-sync/webhook`
+        webhookUrl: `${baseUrl}/api/lip-sync/webhook`,
+        model: 'sync-1.5-beta'
       })
     });
 
