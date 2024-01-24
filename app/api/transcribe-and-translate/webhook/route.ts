@@ -1,7 +1,7 @@
+import { languagesIso639 } from '@/data/iso-639-1-language-codes';
 import { NextResponse } from 'next/server';
 
 export async function OPTIONS(req: Request) {
-  console.log('transcribe-and-translate webhook - options');
   const data = await req.text();
   return new Response(JSON.stringify({ data }), {
     status: 200
@@ -9,7 +9,6 @@ export async function OPTIONS(req: Request) {
 }
 
 export async function POST(req: Request) {
-  console.log('transcribe-and-translate webhook - post');
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', {
       headers: { Allow: 'POST' },
@@ -24,17 +23,19 @@ export async function POST(req: Request) {
       status: 500
     });
   }
-  console.log('result: ', result);
 
   const transcript = result.payload.prediction;
-
-  console.log('transcript: ', transcript);
 
   const transalatedText = transcript
     .map((item: { transcription: string }) => item.transcription.trim())
     .join(' ');
 
-  console.log('transalatedText: ', transalatedText);
+  const sourceLanaugeCode = transcript[0].original_language;
+  const sourceLanauge = languagesIso639.find(
+    (item) => item.code === sourceLanaugeCode
+  );
+  const sourceLanguageName = sourceLanauge?.name || sourceLanaugeCode;
+
   const updateJobResponse = await fetch(
     `${
       process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
         transcriptionId: result.request_id,
         updatedFields: {
           transcript,
-          source_language: transcript[0].language,
+          source_language: sourceLanguageName,
           translated_text: transalatedText
         }
       })
