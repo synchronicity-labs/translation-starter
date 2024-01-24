@@ -2,11 +2,9 @@ import { exists, isValidUrl } from '@/utils/helpers';
 import fetch, { FormData } from 'node-fetch';
 
 export async function POST(req: Request) {
-  console.log('in transcribe-and-translate route');
   // Ensure the API key is set
   const gladiaApiKey = process.env.GLADIA_API_KEY;
   if (!gladiaApiKey) {
-    console.log('no api key');
     return new Response(
       JSON.stringify({
         error: { statusCode: 500, message: 'Server configuration error' }
@@ -58,8 +56,6 @@ export async function POST(req: Request) {
     'https://f3d5-2600-1702-c20-21a0-829-3e5e-6fc3-5c35.ngrok-free.app';
 
   const webhook_url = `${baseUrl}/api/transcribe-and-translate/webhook`;
-
-  console.log('webhook_url: ', webhook_url);
 
   // Try to send the request to Gladia
   try {
