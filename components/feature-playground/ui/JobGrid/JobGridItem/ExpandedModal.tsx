@@ -105,7 +105,16 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
   const transcript = job.transcript as Transcript;
 
   const extractedTranscript = transcript
-    ? transcript.map((item) => item.transcription).join(' ')
+    ? transcript
+        .reduce((acc: string, segment) => {
+          const segmentString = segment.words
+            .reduce((innerAcc: string, wordDetail) => {
+              return innerAcc + wordDetail.word + ' ';
+            }, '')
+            .trim();
+          return acc + segmentString + ' ';
+        }, '')
+        .trim()
     : '';
 
   const sourceLanguage = languages.find(
