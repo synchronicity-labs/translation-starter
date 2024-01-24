@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         transcriptionId: result.request_id,
         updatedFields: {
+          transcript,
           translated_text: text,
           source_language: transcript[0].original_language,
         }

@@ -21,6 +21,7 @@ export default async function transcribeAndTranslateAudio(job: Job, onFail: OnFa
       };
   
     await updateJob(job, updatedFields, onFail);
+    
   } catch (error) {
     const errorMessage =
       (error as Error).message || 'An unknown error occurred';
