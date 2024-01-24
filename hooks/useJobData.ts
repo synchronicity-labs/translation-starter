@@ -9,6 +9,7 @@ import synthesisSpeech from '@/utils/sythesis-speech';
 import transcribe from '@/utils/transcribe';
 import translate from '@/utils/translate';
 import updateJob from '@/utils/update-job';
+import transcribeAndTranslate from '@/utils/transcribe-translate';
 import { useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 
@@ -114,6 +115,7 @@ export default function useJobData(userId: string): UseJobDataOutput {
                 'Failed to update job status to translating'
               )
             );
+            
             translate(job, () =>
               handleJobFailed(job.id, 'Failed to translate')
             );
@@ -127,6 +129,9 @@ export default function useJobData(userId: string): UseJobDataOutput {
             cloneVoice(job, () =>
               handleJobFailed(job.id, 'Failed to clone voice')
             );
+            // transcribeAndTranslate(job, () =>
+            //   handleJobFailed(job.id, 'Failed to transcribe and translate')
+            // );
           }
           break;
         case 'cloning':
