@@ -1,3 +1,4 @@
+import { languagesIso639 } from '@/data/iso-639-1-language-codes';
 import { NextResponse } from 'next/server';
 
 export async function OPTIONS(req: Request) {
@@ -25,6 +26,16 @@ export async function POST(req: Request) {
 
   const transcript = result.payload.prediction;
 
+  const transalatedText = transcript
+    .map((item: { transcription: string }) => item.transcription.trim())
+    .join(' ');
+
+  const sourceLanaugeCode = transcript[0].original_language;
+  const sourceLanauge = languagesIso639.find(
+    (item) => item.code === sourceLanaugeCode
+  );
+  const sourceLanguageName = sourceLanauge?.name || sourceLanaugeCode;
+
   const updateJobResponse = await fetch(
     `${
       process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
@@ -35,7 +46,8 @@ export async function POST(req: Request) {
         transcriptionId: result.request_id,
         updatedFields: {
           transcript,
-          source_language: transcript[0].language
+          source_language: sourceLanguageName,
+          translated_text: transalatedText
         }
       })
     }

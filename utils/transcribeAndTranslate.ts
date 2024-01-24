@@ -2,14 +2,18 @@ import apiRequest from './api-request';
 import updateJob from './update-job';
 import { Job, OnFailedJob } from '@/types/db';
 
-export default async function transcribe(job: Job, onFail: OnFailedJob) {
+export default async function transcribeAndTranslate(
+  job: Job,
+  onFail: OnFailedJob
+) {
   try {
-    const path = '/api/transcribe';
-    const transcription = await apiRequest(path, {
-      url: job.original_audio_url
+    const path = '/api/transcribe-and-translate';
+    const result = await apiRequest(path, {
+      url: job.original_audio_url,
+      targetLanguage: job.target_language
     });
 
-    const { data } = await transcription;
+    const { data } = await result;
 
     const updatedFields = {
       transcription_id: data.request_id

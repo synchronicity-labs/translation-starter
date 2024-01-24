@@ -23,10 +23,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const { url } = await req.json();
+  const { url, targetLanguage } = await req.json();
 
-  // Check if the values exist
-  if (!exists(url)) {
+  // Check if the input values exist
+  if (!exists(url) || !exists(targetLanguage)) {
     return new Response(
       JSON.stringify({
         error: {
@@ -53,14 +53,16 @@ export async function POST(req: Request) {
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://c2fa-2601-19c-4400-f7f0-00-3822.ngrok-free.app';
+    'https://f3d5-2600-1702-c20-21a0-829-3e5e-6fc3-5c35.ngrok-free.app';
 
-  const webhook_url = `${baseUrl}/api/transcribe/webhook`;
+  const webhook_url = `${baseUrl}/api/transcribe-and-translate/webhook`;
 
   // Try to send the request to Gladia
   try {
     const form = new FormData();
     form.append('audio_url', url);
+    form.append('target_translation_language', targetLanguage);
+    form.append('toggle_direct_translate', 'true');
     form.append('webhook_url', webhook_url);
 
     // Send the request to Gladia

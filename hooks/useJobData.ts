@@ -6,8 +6,7 @@ import deleteVoice from '@/utils/deleteVoice';
 import supabase from '@/utils/supabase';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
-import transcribe from '@/utils/transcribe';
-import translate from '@/utils/translate';
+import transcribeAndTranslate from '@/utils/transcribeAndTranslate';
 import updateJob from '@/utils/update-job';
 import { useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
@@ -101,32 +100,24 @@ export default function useJobData(userId: string): UseJobDataOutput {
             updateJob(job, { status: 'transcribing' }, () =>
               handleJobFailed(job.id, 'Failed to update job to transcribing')
             );
-            transcribe(job, () =>
-              handleJobFailed(job.id, 'Failed to transcribe')
+            transcribeAndTranslate(job, () =>
+              handleJobFailed(job.id, 'Failed to transcribe and translate')
             );
           }
           break;
         case 'transcribing':
           if (job.transcript && job.transcription_id) {
-            updateJob(job, { status: 'translating' }, () =>
-              handleJobFailed(
-                job.id,
-                'Failed to update job status to translating'
-              )
-            );
-            translate(job, () =>
-              handleJobFailed(job.id, 'Failed to translate')
-            );
-          }
-          break;
-        case 'translating':
-          if (job.translated_text) {
-            updateJob(job, { status: 'cloning' }, () =>
-              handleJobFailed(job.id, 'Failed to update job status to cloning')
-            );
-            cloneVoice(job, () =>
-              handleJobFailed(job.id, 'Failed to clone voice')
-            );
+            if (job.translated_text) {
+              updateJob(job, { status: 'cloning' }, () =>
+                handleJobFailed(
+                  job.id,
+                  'Failed to update job status to cloning'
+                )
+              );
+              cloneVoice(job, () =>
+                handleJobFailed(job.id, 'Failed to clone voice')
+              );
+            }
           }
           break;
         case 'cloning':

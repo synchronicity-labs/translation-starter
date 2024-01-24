@@ -42,8 +42,6 @@ export async function POST(req: Request) {
 
     const jobData = await updateJobResponse.json();
 
-    console.log('webhook - jobData: ', jobData);
-
     return new Response(JSON.stringify({ data: jobData }), {
       status: 200
     });
