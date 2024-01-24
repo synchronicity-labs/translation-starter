@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://c2fa-2601-19c-4400-f7f0-00-3822.ngrok-free.app';
+    'https://f3d5-2600-1702-c20-21a0-829-3e5e-6fc3-5c35.ngrok-free.app';
 
   const webhook_url = `${baseUrl}/api/transcribe/webhook`;
 
