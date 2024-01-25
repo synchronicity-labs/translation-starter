@@ -3,16 +3,5 @@
     "app/api/**/**.ts": {
       "maxDuration": 120
     }
-  },
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; connect-src 'self' https://api.github.com"
-        }
-      ]
-    }
-  ]
+  }
 }
