@@ -107,9 +107,12 @@ CREATE TABLE jobs (
   user_id UUID REFERENCES auth.users NOT NULL
 );
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable insert own data for authenticated users" ON jobs FOR INSERT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "Enable update own data for authenticated users" ON jobs FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Enable insert for authenticated users" ON jobs FOR INSERT TO authenticated WITH CHECK true;
+
+CREATE POLICY "Enable update own data for authenticated users" ON jobs FOR UPDATE TO authenticated WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Enable read own data for authenticated users" ON jobs FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
 CREATE POLICY "Enable read data for anon" ON jobs FOR SELECT TO anon USING (true);
 
 -- Realtime subscriptions
