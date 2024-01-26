@@ -103,6 +103,9 @@ export async function POST(req: Request) {
     const allChunkMetadata: ChunkMetadata[][] = [];
 
     for (let i = 0; i < newArray.length; i++) {
+      if (!allChunkMetadata[i]) {
+        allChunkMetadata[i] = [];
+      }
       const speakerChunks = await createAudioChunks(newArray[i], i);
       allChunkMetadata.push(speakerChunks);
   }
