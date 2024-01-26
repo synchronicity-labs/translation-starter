@@ -1,23 +1,22 @@
 'use client';
 
 import { useSupabase } from '@/app/supabase-provider';
+import { SubscriptionWithProduct } from '@/types/db';
 import { useState, useEffect } from 'react';
-
-interface Job {
-  deduction: number;
-  // Other job properties
-}
 
 interface CreditBalance {
   balance: number;
   outOf: number;
 }
 
-export const useCreditBalance = (): {
+export const useCreditBalance = (
+  subscription: SubscriptionWithProduct
+): {
   creditBalance: CreditBalance;
   loading: boolean;
   error: any;
 } => {
+  console.log('subscription: ', subscription);
   const { supabase } = useSupabase();
   const [creditBalance, setCreditBalance] = useState<CreditBalance>({
     balance: 0,
@@ -27,29 +26,15 @@ export const useCreditBalance = (): {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isCancelled = false;
-
     const calculateBalance = async () => {
+      let subscriptionCredits = 7500;
+      if (subscription) {
+        const metadata = subscription.prices?.products?.metadata as {
+          credits: number;
+        };
+        subscriptionCredits = metadata?.credits || 7500;
+      }
       try {
-        // Fetch subscription
-        const { data: subscriptionData, error: subscriptionError } =
-          await supabase
-            .from('subscriptions')
-            .select('*, prices(*, products(*))')
-            .in('status', ['trialing', 'active']);
-
-        if (subscriptionError) throw subscriptionError;
-
-        const subscription = subscriptionData[0] || null;
-
-        console.log('subscription: ', subscription);
-        let periodStart: Date;
-        let periodEnd: Date;
-
-        const subscriptionCredits = subscription
-          ? subscription.prices?.unit_amount || 0
-          : 7500;
-
         // Fetch jobs
         const { data: jobs, error: jobsError } = subscription
           ? await supabase
@@ -66,30 +51,19 @@ export const useCreditBalance = (): {
           0
         );
 
-        if (!isCancelled) {
-          setCreditBalance({
-            balance: subscriptionCredits - totalDeductions,
-            outOf: subscriptionCredits
-          });
-        }
+        setCreditBalance({
+          balance: subscriptionCredits - totalDeductions,
+          outOf: subscriptionCredits
+        });
       } catch (error: any) {
-        if (!isCancelled) {
-          setError(error);
-          console.error('Error:', error);
-        }
+        setError(error);
+        console.error('Error:', error);
       } finally {
-        if (!isCancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     calculateBalance();
-
-    // Cleanup function to set isCancelled to true if the component unmounts
-    return () => {
-      isCancelled = true;
-    };
   }, [supabase]);
 
   return { creditBalance, loading, error };

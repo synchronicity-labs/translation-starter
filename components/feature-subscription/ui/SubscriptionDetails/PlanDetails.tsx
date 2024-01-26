@@ -1,36 +1,22 @@
-import { useSubscription } from '@/hooks/useSubscription';
-import { Badge, Box, Flex } from '@chakra-ui/react';
+import { SubscriptionWithProduct } from '@/types/db';
+import { Badge, Box, Flex, Spinner } from '@chakra-ui/react';
 import { FC } from 'react';
 
-interface Props {}
+interface Props {
+  subscription: SubscriptionWithProduct;
+}
 
-const PlanDetails: FC<Props> = () => {
-  const {
-    subscription,
-    loading: subscriptionLoading,
-    error: subscriptionError
-  } = useSubscription();
-
-  if (subscriptionError) {
-    return <Flex>Error loading subscription</Flex>;
-  }
-
+const PlanDetails: FC<Props> = ({ subscription }) => {
   return (
-    <Flex>
+    <Flex w="full">
       <Flex w="full" fontSize={'lg'} alignItems="center">
         Plan
       </Flex>
-      <Flex w="full">
-        <Flex alignItems="center">
-          {subscriptionLoading ? (
-            <Flex>Loading...</Flex>
-          ) : (
-            <Badge colorScheme="purple">
-              {subscription?.prices?.products?.name || 'free'}
-            </Badge>
-          )}
-        </Flex>
-      </Flex>
+      <Box w="full">
+        <Badge colorScheme="purple">
+          {subscription?.prices?.products?.name || 'free'}
+        </Badge>
+      </Box>
     </Flex>
   );
 };

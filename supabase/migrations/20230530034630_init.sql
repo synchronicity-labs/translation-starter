@@ -113,8 +113,6 @@ CREATE POLICY "Enable update own data for authenticated users" ON jobs FOR UPDAT
 
 CREATE POLICY "Enable read own data for authenticated users" ON jobs FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
-CREATE POLICY "Enable read data for anon" ON jobs FOR SELECT TO anon USING (true);
-
 -- Realtime subscriptions
 DROP PUBLICATION IF EXISTS supabase_realtime;
 CREATE PUBLICATION supabase_realtime FOR TABLE products, prices, jobs;
