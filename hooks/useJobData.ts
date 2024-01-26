@@ -1,9 +1,9 @@
 'use client';
 
+import { useSupabase } from '@/app/supabase-provider';
 import { Job, JobStatus } from '@/types/db';
 import cloneVoice from '@/utils/clone-voice';
 import deleteVoice from '@/utils/deleteVoice';
-import supabase from '@/utils/supabase';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
 import transcribeAndTranslate from '@/utils/transcribeAndTranslate';
@@ -17,10 +17,12 @@ interface UseJobDataOutput {
   error: unknown | null;
 }
 
-export default function useJobData(userId: string): UseJobDataOutput {
+export default function useJobData(): UseJobDataOutput {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown | null>(null);
+
+  const { supabase } = useSupabase();
 
   const toast = useToast();
 
@@ -31,7 +33,6 @@ export default function useJobData(userId: string): UseJobDataOutput {
       const { data: fetchedJobs, error: fetchError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('user_id', userId) // Ensure `userId` is defined in your component
         .neq('is_deleted', true);
 
       if (fetchError) {
@@ -44,7 +45,7 @@ export default function useJobData(userId: string): UseJobDataOutput {
     }
 
     fetchJobs();
-  }, [userId]);
+  }, []);
 
   // Subscribe to changes to jobs table
   useEffect(() => {
