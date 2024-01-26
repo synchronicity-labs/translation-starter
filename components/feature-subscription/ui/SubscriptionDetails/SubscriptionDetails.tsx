@@ -2,17 +2,10 @@
 
 import CreditsDetails from './CreditsDetails';
 import PlanDetails from './PlanDetails';
+import RenewalDetails from './RenewalDetails';
 import ManageSubscriptionButton from '@/app/subscription/ManageSubscriptionButton';
 import { useSubscription } from '@/hooks/useSubscription';
-import {
-  Stack,
-  Flex,
-  Badge,
-  Divider,
-  Progress,
-  Spinner,
-  Text
-} from '@chakra-ui/react';
+import { Stack, Flex, Divider, Text, Spinner } from '@chakra-ui/react';
 import { Session } from '@supabase/supabase-js';
 import { FC } from 'react';
 
@@ -22,6 +15,20 @@ interface Props {
 
 // TODO: Abstract this component
 const SubscriptionDetails: FC<Props> = ({ session }) => {
+  const {
+    subscription,
+    loading: subscriptionLoading,
+    error: subscriptionError
+  } = useSubscription();
+
+  if (subscriptionError) {
+    return <Flex>Error loading subscription</Flex>;
+  }
+
+  if (subscriptionLoading) {
+    return <Spinner />;
+  }
+
   return (
     <Stack
       bg="blackAlpha.400"
@@ -40,27 +47,15 @@ const SubscriptionDetails: FC<Props> = ({ session }) => {
         </Flex>
       </Flex>
       <Divider />
-      <PlanDetails />
+      <PlanDetails subscription={subscription} />
       <Divider />
-      <CreditsDetails />
-      {/* {daysUntilRenewal && (
+      <CreditsDetails subscription={subscription} />
+      {subscription && (
         <>
           <Divider />
-          <Flex>
-            <Flex w="full" fontSize={'lg'} alignItems="center">
-              next billing period starts in
-            </Flex>
-
-            <Flex w="full">
-              <Text fontSize="lg">
-                {daysUntilRenewal !== 0
-                  ? `${daysUntilRenewal} days`
-                  : `Billing Today`}
-              </Text>
-            </Flex>
-          </Flex>
+          <RenewalDetails subscription={subscription} />
         </>
-      )} */}
+      )}
     </Stack>
   );
 };
