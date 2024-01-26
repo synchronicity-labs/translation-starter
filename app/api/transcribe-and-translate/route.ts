@@ -64,7 +64,8 @@ export async function POST(req: Request) {
     form.append('target_translation_language', targetLanguage);
     form.append('toggle_direct_translate', 'true');
     form.append('webhook_url', webhook_url);
-
+    form.append('toggle_diarization', 'true');
+    
     // Send the request to Gladia
     const response = await fetch(
       'https://api.gladia.io/audio/text/audio-transcription/',
