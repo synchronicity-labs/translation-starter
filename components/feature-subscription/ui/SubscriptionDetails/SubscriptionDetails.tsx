@@ -1,9 +1,14 @@
+'use client';
+
+import CreditsDetails from './CreditsDetails';
+import PlanDetails from './PlanDetails';
 import ManageSubscriptionButton from '@/app/subscription/ManageSubscriptionButton';
+import { useSubscription } from '@/hooks/useSubscription';
 import {
   Stack,
   Flex,
-  Divider,
   Badge,
+  Divider,
   Progress,
   Spinner,
   Text
@@ -13,22 +18,10 @@ import { FC } from 'react';
 
 interface Props {
   session: Session;
-  plan: string;
-  balance: number;
-  outOf: number;
-  daysUntilRenewal: number | null;
 }
 
 // TODO: Abstract this component
-const SubscriptionDetails: FC<Props> = ({
-  session,
-  plan,
-  balance,
-  outOf,
-  daysUntilRenewal
-}) => {
-  const creditsUsed = outOf - balance;
-
+const SubscriptionDetails: FC<Props> = ({ session }) => {
   return (
     <Stack
       bg="blackAlpha.400"
@@ -47,43 +40,10 @@ const SubscriptionDetails: FC<Props> = ({
         </Flex>
       </Flex>
       <Divider />
-      <Flex>
-        <Flex w="full" fontSize={'lg'} alignItems="center">
-          Plan
-        </Flex>
-        <Flex w="full">
-          <Flex alignItems="center">
-            <Badge colorScheme="purple">{plan}</Badge>
-          </Flex>
-        </Flex>
-      </Flex>
+      <PlanDetails />
       <Divider />
-      <Flex>
-        <Flex w="full" fontSize={'lg'} alignItems="center">
-          Credits Used
-        </Flex>
-        {balance !== null && outOf !== null ? (
-          <Stack w="full">
-            <Text
-              fontWeight="bold"
-              fontSize="lg"
-            >{`${creditsUsed} credits / ${outOf} credits`}</Text>
-            <Flex w="full" alignItems="center">
-              <Progress
-                value={(creditsUsed / outOf) * 100}
-                w="full"
-                rounded="full"
-              />
-            </Flex>
-          </Stack>
-        ) : (
-          <Flex justifyContent={'flex-start'} w="full">
-            <Spinner />
-          </Flex>
-        )}
-      </Flex>
-
-      {daysUntilRenewal && (
+      <CreditsDetails />
+      {/* {daysUntilRenewal && (
         <>
           <Divider />
           <Flex>
@@ -100,7 +60,7 @@ const SubscriptionDetails: FC<Props> = ({
             </Flex>
           </Flex>
         </>
-      )}
+      )} */}
     </Stack>
   );
 };
