@@ -11,12 +11,10 @@ import { FC, useState } from 'react';
 
 export const dynamic = 'force-dynamic';
 
-interface Props {
-  userId: string;
-}
+interface Props {}
 
-const JobGrid: FC<Props> = ({ userId }) => {
-  const { jobs, loading, error } = useJobData(userId);
+const JobGrid: FC<Props> = () => {
+  const { jobs, loading, error } = useJobData();
 
   const pageSize = 6;
   const [offset, setOffset] = useState(0);
