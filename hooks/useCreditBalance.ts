@@ -16,6 +16,7 @@ export const useCreditBalance = (
   loading: boolean;
   error: any;
 } => {
+  console.log('subscription: ', subscription);
   const { supabase } = useSupabase();
   const [creditBalance, setCreditBalance] = useState<CreditBalance>({
     balance: 0,
@@ -26,11 +27,14 @@ export const useCreditBalance = (
 
   useEffect(() => {
     const calculateBalance = async () => {
+      let subscriptionCredits = 7500;
+      if (subscription) {
+        const metadata = subscription.prices?.products?.metadata as {
+          credits: number;
+        };
+        subscriptionCredits = metadata?.credits || 7500;
+      }
       try {
-        const subscriptionCredits = subscription
-          ? subscription.prices?.unit_amount || 0
-          : 7500;
-
         // Fetch jobs
         const { data: jobs, error: jobsError } = subscription
           ? await supabase
