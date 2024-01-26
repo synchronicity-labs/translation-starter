@@ -7,9 +7,9 @@ import { promisify } from 'util';
 const exec = promisify(child_process.exec);
 
 interface ChunkMetadata {
-    startTime: number;
-    endTime: number;
-    filePath: string;
+  startTime: number;
+  endTime: number;
+  filePath: string;
 }
 
 interface Element {
@@ -27,33 +27,81 @@ interface SpeakerElement {
 
 const tempFolder = './temp'; // Adjust the path as needed
 if (!fs.existsSync(tempFolder)) {
-    fs.mkdirSync(tempFolder);
+  fs.mkdirSync(tempFolder);
 }
 
+
+/*
+Input:
+speakerData: Array of all chunks corresponding to each speaker 
+speakerIndex: Index of each speaker
+
+Return:
+chunkMetadata : Details of each chunk i.e. startTime,endTime, filePath
+*/
 async function createAudioChunks(speakerData: SpeakerElement[], speakerIndex: number): Promise<ChunkMetadata[]> {
   // Randomly select up to 20 sentences
-  const selectedSentences = speakerData.length > 20 
-      ? speakerData.sort(() => 0.5 - Math.random()).slice(0, 20)
-      : speakerData;
+  const selectedSentences = speakerData.length > 20
+    ? speakerData.sort(() => 0.5 - Math.random()).slice(0, 20)
+    : speakerData;
 
   const chunkMetadata: ChunkMetadata[] = [];
 
   for (const sentence of selectedSentences) {
-      const chunkFileName = `speaker_${speakerIndex}_${sentence.time_begin}-${sentence.time_end}.mp3`;
-      const chunkFilePath = `${tempFolder}/${chunkFileName}`;
+    const chunkFileName = `speaker_${speakerIndex}_${sentence.time_begin}-${sentence.time_end}.mp3`;
+    const chunkFilePath = `${tempFolder}/${chunkFileName}`;
 
-      // Use ffmpeg to create a chunk from the original audio file
-      const command = `ffmpeg -i your_audio_file.mp3 -ss ${sentence.time_begin} -to ${sentence.time_end} -c copy ${chunkFilePath}`;
-      await exec(command);
+    // Use ffmpeg to create a chunk from the original audio file
+    const command = `ffmpeg -i your_audio_file.mp3 -ss ${sentence.time_begin} -to ${sentence.time_end} -c copy ${chunkFilePath}`;
+    await exec(command);
 
-      chunkMetadata.push({
-          startTime: sentence.time_begin,
-          endTime: sentence.time_end,
-          filePath: chunkFilePath
-      });
+    chunkMetadata.push({
+      startTime: sentence.time_begin,
+      endTime: sentence.time_end,
+      filePath: chunkFilePath
+    });
   }
 
   return chunkMetadata;
+}
+
+
+/*
+Input:
+Chunks: Array of all chunks corresponding to each speaker 
+Id: Job ID of each speaker
+
+
+Return:
+responseData : 11Labs API response for each speaker
+*/
+async function trainModelForSpeaker(chunks: ChunkMetadata[], id: string): Promise<any> {
+  const form = new FormData();
+
+  // Set other fields like description, labels, and name as required
+  form.append('name', `voice-${id}`);
+  form.append('description', `Voice for job ${id}`);
+
+  // Append each audio file to the form
+  chunks.forEach(chunk => {
+    // Assuming the filePath points to an actual file
+    form.append("files", fs.createReadStream(chunk.filePath));
+  });
+
+  const options = {
+    method: 'POST',
+    body: form,
+    // Note: 'Content-Type' should not be set manually when using FormData
+  };
+
+  try {
+    const response = await fetch('https://api.elevenlabs.io/v1/voices/add', options);
+    const responseData = await response.json();
+    return responseData;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
 
@@ -108,46 +156,19 @@ export async function POST(req: Request) {
       }
       const speakerChunks = await createAudioChunks(newArray[i], i);
       allChunkMetadata.push(speakerChunks);
-  }
+    }
 
-  // allChunkMetadata now contains the metadata for all chunks
-  console.log(allChunkMetadata);
+    // allChunkMetadata now contains the metadata for all chunks
+    console.log(allChunkMetadata);
+    let modelTrainingResponses = [];
+
+    for (const speakerChunks of allChunkMetadata) {
+      const response = await trainModelForSpeaker(speakerChunks, id);
+      modelTrainingResponses.push(response);
+    }
+    
 
 
-
-
-    // const formData = new FormData();
-    // formData.append('name', `voice-${id}`);
-    // formData.append('description', `Voice for job ${id}`);
-    // formData.append('files', audioFile.body, {
-    //   filename: `voice-${id}.mp3`,
-    //   contentType: 'audio/mp3'
-    // });
-
-    // const voiceClone = await fetch('https://api.elevenlabs.io/v1/voices/add', {
-    //   method: 'POST',
-    //   headers: {
-    //     'xi-api-key': process.env.ELEVEN_LABS_API_KEY as string
-    //   },
-    //   body: formData
-    // });
-
-    // if (!voiceClone.ok) {
-    //   const errorResponse = await voiceClone.text(); // Get the detailed error message
-    //   console.error(
-    //     `Failed to clone voice: ${voiceClone.status} ${voiceClone.statusText}`
-    //   );
-    //   console.error(`Error response body: ${errorResponse}`);
-    //   throw new Error(
-    //     `Eleven Labs API call failed with status: ${voiceClone.status}, body: ${errorResponse}`
-    //   );
-    // }
-
-    // const data = await voiceClone.json();
-
-    // return new Response(JSON.stringify({ data }), {
-    //   status: 200
-    // });
   } catch (error) {
     console.error(`Failed to clone voice: `, error);
     return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
