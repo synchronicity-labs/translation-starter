@@ -1,19 +1,17 @@
 'use client';
 
 import { useSupabase } from '@/app/supabase-provider';
+import { SubscriptionWithProduct } from '@/types/db';
 import { useState, useEffect } from 'react';
-
-interface Job {
-  deduction: number;
-  // Other job properties
-}
 
 interface CreditBalance {
   balance: number;
   outOf: number;
 }
 
-export const useCreditBalance = (): {
+export const useCreditBalance = (
+  subscription: SubscriptionWithProduct
+): {
   creditBalance: CreditBalance;
   loading: boolean;
   error: any;
@@ -27,25 +25,8 @@ export const useCreditBalance = (): {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isCancelled = false;
-
     const calculateBalance = async () => {
       try {
-        // Fetch subscription
-        const { data: subscriptionData, error: subscriptionError } =
-          await supabase
-            .from('subscriptions')
-            .select('*, prices(*, products(*))')
-            .in('status', ['trialing', 'active']);
-
-        if (subscriptionError) throw subscriptionError;
-
-        const subscription = subscriptionData[0] || null;
-
-        console.log('subscription: ', subscription);
-        let periodStart: Date;
-        let periodEnd: Date;
-
         const subscriptionCredits = subscription
           ? subscription.prices?.unit_amount || 0
           : 7500;
@@ -66,30 +47,19 @@ export const useCreditBalance = (): {
           0
         );
 
-        if (!isCancelled) {
-          setCreditBalance({
-            balance: subscriptionCredits - totalDeductions,
-            outOf: subscriptionCredits
-          });
-        }
+        setCreditBalance({
+          balance: subscriptionCredits - totalDeductions,
+          outOf: subscriptionCredits
+        });
       } catch (error: any) {
-        if (!isCancelled) {
-          setError(error);
-          console.error('Error:', error);
-        }
+        setError(error);
+        console.error('Error:', error);
       } finally {
-        if (!isCancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     calculateBalance();
-
-    // Cleanup function to set isCancelled to true if the component unmounts
-    return () => {
-      isCancelled = true;
-    };
   }, [supabase]);
 
   return { creditBalance, loading, error };
