@@ -1,16 +1,15 @@
 # Translation AI by [Sync Labs](https://synclabs.so)
 
 Translation AI is an open-source tool for translating spoken language in video content with accurate lip synchronization. The purpose of this repo is to help developers quickly integrate multilingual support into video-based apps. This project provides essential APIs and documentation to facilitate the development of applications requiring video translation with lip-sync capabilities.
+<!-- 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain) -->
 
-<!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain) -->
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
 
 ## How it works
 
 - [Sync Labs](https://synclabs.so) for perfectly synchronized lip movements
-- [Gladia](https://www.gladia.io/) for transcribing and diarization
-- [Open AI](https://openai.com/) for translating
+- [Gladia](https://www.gladia.io/) for transcribing and translating
 - [Eleven Labs](https://elevenlabs.io/) for voice cloning and speech synthesis
 - [Next.js](https://nextjs.org) for web app
 - [Vercel](https://vercel.com) for deployment
@@ -25,18 +24,13 @@ Translation AI is an open-source tool for translating spoken language in video c
 
 To successfully deploy the template, execute the following steps in order:
 
-### 1. Initiate Deployment
+<!-- ### 1. Initiate Deployment -->
 
 <!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain) -->
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
+<!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain) -->
 
-Clicking the Deploy button will open up a browser tab with instructions on generating a new GitHub repository from this template and creating a corrseponding project in Supabase for `auth` and `storage`. Below are the steps you'll walk through:
-
-1. Create Git Repository
-
-    - Under `Git Scope` select the account you'd like to deploy the repo to.
-    - Under `Repository Name` give your new repo a name.
+<!-- 
 
 2. Add Integrations
 
@@ -52,7 +46,45 @@ Clicking the Deploy button will open up a browser tab with instructions on gener
     - [Open AI](https://platform.openai.com/docs/api-reference/authentication)
     - [Gladia](https://docs.gladia.io/reference/overview#getting-your-api-key)
     - [Eleven Labs](https://elevenlabs.io/docs/api-reference/authentication)
-    - [Stripe](https://stripe.com/docs/api/authentication)
+    - [Stripe](https://stripe.com/docs/api/authentication) -->
+### 1. Initiate Deployment
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
+
+Clicking the Deploy button will open up a browser tab with instructions on generating a new GitHub repository from this template and deploying it to Vercel.
+
+1. Create Git Repository
+
+    - Under `Git Scope` select the account you'd like to deploy the repo to.
+    - Under `Repository Name` give your new repo a name.
+  
+2. Configure Project
+
+    Next we need to enter the environment variables we'll need for the app to function. In order to do this, we'll need to create a new Supabase project, and accounts for all the third party tools we'll be using:
+
+    1. Head over to [Supabase](https://supabase.com/) and either create an account or sign in
+   
+    2. Once you are in your Supabase account, click the `New project` button and choose the organization you want this project to live under.
+   
+    3. Enter details for your project and click `Create new project`.
+
+    4. Once your project is done initializing, find the environment variables we'll need to set and fill them in the `Configure Project` section of the Vercel Deployment:
+
+      - NEXT_PUBLIC_SUPABASE_URL
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY
+      - SUPABASE_SERVICE_ROLE_KEY
+
+    5. Create accounts with all third party tools, and aquire API keys.
+
+        Below are guides on how to get API keys for all the third party tools we'll be using. Once you get your API keys, come back to the `Vercel Deployment` and enter them in the remaining fields within the `Configure Project` section.
+
+         - [Sync Labs API Key](https://docs.synclabs.so/authentication)
+         - [Open AI](https://platform.openai.com/docs/api-reference/authentication)
+         - [Gladia](https://docs.gladia.io/reference/overview#getting-your-api-key)
+         - [Eleven Labs](https://elevenlabs.io/docs/api-reference/authentication)
+         - [Stripe](https://stripe.com/docs/api/authentication)
+
+    6. Click `Deploy` and wait for your project to deploy to Vercel
 
 ### 2. Configure Auth
 
@@ -86,9 +118,15 @@ After that, you'll need to create a new storage bucket within your Supabase proj
 
     [![Screenshot of storage bucket update policy](./public/supabase-storage-update-policy.png)](https://translation-phi.vercel.app/)
 
+### 4. Run migration file to set up tables and permissions in Supabase
 
+1. Head to your new Github repo and find the migrations file (supabase > migrations > 20230530034630_init.sql)
+  
+2. Copy the contents of the migrations file and head back to Supabase.
 
-### 4. Configure Stripe
+3. From your projects home page, navigate to the `SQL Editor` and paste in the contents of the migrations file.
+
+### 5. Configure Stripe
 
 Next, you'll need to configure [Stripe](https://stripe.com/) in order to handle test payments.
 
@@ -114,10 +152,18 @@ Redeploy your application in Vercel for the new environment variables to activat
 
 With the Stripe webhook setup, you can start creating your products in the [Stripe Dashboard](https://dashboard.stripe.com/test/products). Stripe Checkout supports billing a set amount at regular intervals. It does not support complex pricing structures like tiered pricing or per-seat billing.
 
+Note - When creating products in Stripe, make sure you add a key/value pair with a key of `credits` and a value equal to the credit allowance for this product.
+
+
 #### Configure the customer portal
 
 - Set up branding in the [Branding settings](https://dashboard.stripe.com/settings/branding)
 - Set up the customer portal in the [Customer Portal settings](https://dashboard.stripe.com/test/settings/billing/portal)
+
+
+### 6. (Optional) Set up Github as a OAuth provider in Supabase
+
+### 7. (Optional) Set up Upload from Youtube
 
 ## Running locally
 
