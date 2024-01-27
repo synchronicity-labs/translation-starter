@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://f3d5-2600-1702-c20-21a0-829-3e5e-6fc3-5c35.ngrok-free.app';
+    'https://5cd5-2600-1702-c20-21a0-809b-ce25-115d-6af0.ngrok-free.app';
 
   // Try to send the request to SyncLabs
   try {

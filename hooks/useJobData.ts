@@ -93,81 +93,81 @@ export default function useJobData(): UseJobDataOutput {
   }, [supabase, jobs]);
 
   // Handle job status changes / logic
-  useEffect(() => {
-    for (const job of jobs) {
-      switch (job.status) {
-        case 'uploading':
-          if (job.original_video_url && job.original_audio_url) {
-            updateJob(job, { status: 'transcribing' }, () =>
-              handleJobFailed(job.id, 'Failed to update job to transcribing')
-            );
-            transcribeAndTranslate(job, () =>
-              handleJobFailed(job.id, 'Failed to transcribe and translate')
-            );
-          }
-          break;
-        case 'transcribing':
-          if (job.transcript && job.transcription_id) {
-            if (job.translated_text) {
-              updateJob(job, { status: 'cloning' }, () =>
-                handleJobFailed(
-                  job.id,
-                  'Failed to update job status to cloning'
-                )
-              );
-              cloneVoice(job, () =>
-                handleJobFailed(job.id, 'Failed to clone voice')
-              );
-            }
-          }
-          break;
-        case 'cloning':
-          if (job.voice_id) {
-            updateJob(job, { status: 'synthesizing' }, () =>
-              handleJobFailed(
-                job.id,
-                'Failed to update job status to synthesizing'
-              )
-            );
-            synthesisSpeech(job, () =>
-              handleJobFailed(job.id, 'Failed to synthesize speech')
-            );
-          }
-          break;
-        case 'synthesizing':
-          if (job.translated_audio_url) {
-            updateJob(job, { status: 'synchronizing' }, () =>
-              handleJobFailed(
-                job.id,
-                'Failed to update job status to synchronizing'
-              )
-            );
-            synchronize(job, () =>
-              handleJobFailed(job.id, 'Failed to synchronize')
-            );
-            deleteVoice(job);
-          }
-          break;
-        case 'synchronizing':
-          if (job.video_url) {
-            updateJob(job, { status: 'completed' }, () =>
-              handleJobFailed(
-                job.id,
-                'Failed to update job status to completed'
-              )
-            );
-          }
-          break;
-        case 'completed':
-        case 'failed':
-          if (job.voice_id) {
-            deleteVoice(job);
-          }
-        default:
-          break;
-      }
-    }
-  }, [jobs]);
+  // useEffect(() => {
+  //   for (const job of jobs) {
+  //     switch (job.status) {
+  //       case 'uploading':
+  //         if (job.original_video_url && job.original_audio_url) {
+  //           updateJob(job, { status: 'transcribing' }, () =>
+  //             handleJobFailed(job.id, 'Failed to update job to transcribing')
+  //           );
+  //           transcribeAndTranslate(job, () =>
+  //             handleJobFailed(job.id, 'Failed to transcribe and translate')
+  //           );
+  //         }
+  //         break;
+  //       case 'transcribing':
+  //         if (job.transcript && job.transcription_id) {
+  //           if (job.translated_text) {
+  //             updateJob(job, { status: 'cloning' }, () =>
+  //               handleJobFailed(
+  //                 job.id,
+  //                 'Failed to update job status to cloning'
+  //               )
+  //             );
+  //             cloneVoice(job, () =>
+  //               handleJobFailed(job.id, 'Failed to clone voice')
+  //             );
+  //           }
+  //         }
+  //         break;
+  //       case 'cloning':
+  //         if (job.voice_id) {
+  //           updateJob(job, { status: 'synthesizing' }, () =>
+  //             handleJobFailed(
+  //               job.id,
+  //               'Failed to update job status to synthesizing'
+  //             )
+  //           );
+  //           synthesisSpeech(job, () =>
+  //             handleJobFailed(job.id, 'Failed to synthesize speech')
+  //           );
+  //         }
+  //         break;
+  //       case 'synthesizing':
+  //         if (job.translated_audio_url) {
+  //           await updateJob(job, { status: 'synchronizing' }, () =>
+  //             handleJobFailed(
+  //               job.id,
+  //               'Failed to update job status to synchronizing'
+  //             )
+  //           );
+  //           synchronize(job, () =>
+  //             handleJobFailed(job.id, 'Failed to synchronize')
+  //           );
+  //           deleteVoice(job);
+  //         }
+  //         break;
+  //       case 'synchronizing':
+  //         if (job.video_url) {
+  //           updateJob(job, { status: 'completed' }, () =>
+  //             handleJobFailed(
+  //               job.id,
+  //               'Failed to update job status to completed'
+  //             )
+  //           );
+  //         }
+  //         break;
+  //       case 'completed':
+  //       case 'failed':
+  //         if (job.voice_id) {
+  //           deleteVoice(job);
+  //         }
+  //       default:
+  //         break;
+  //     }
+  //   }
+  // }, [jobs]);
 
   const handleJobFailed = async (jobId: string, errorMessage: string) => {
     await fetch('/api/db/update-job', {
@@ -188,6 +188,83 @@ export default function useJobData(): UseJobDataOutput {
     });
     throw new Error(errorMessage);
   };
+
+  useEffect(() => {
+    const handleJobUpdate = async (job: Job, updatedFields: Partial<Job>) => {
+      await updateJob(job, updatedFields);
+    };
+
+    const processJobs = async () => {
+      for (const job of jobs) {
+        try {
+          switch (job.status) {
+            case 'uploading':
+              if (job.original_video_url && job.original_audio_url) {
+                await handleJobUpdate(job, { status: 'transcribing' });
+                await transcribeAndTranslate(job, () =>
+                  handleJobFailed(job.id, 'Failed to transcribe and translate')
+                );
+              }
+              break;
+            case 'transcribing':
+              if (
+                job.transcript &&
+                job.transcription_id &&
+                job.translated_text
+              ) {
+                await handleJobUpdate(job, { status: 'cloning' });
+                await cloneVoice(job, () =>
+                  handleJobFailed(job.id, 'Failed to clone voice')
+                );
+              }
+              break;
+            case 'cloning':
+              if (job.voice_id) {
+                await handleJobUpdate(job, { status: 'synthesizing' });
+                await synthesisSpeech(job, () =>
+                  handleJobFailed(job.id, 'Failed to synthesize speech')
+                );
+              }
+              break;
+            case 'synthesizing':
+              if (job.translated_audio_url) {
+                await handleJobUpdate(job, { status: 'synchronizing' });
+                await synchronize(job, () =>
+                  handleJobFailed(job.id, 'Failed to synchronize')
+                );
+                await deleteVoice(job);
+              }
+              break;
+            case 'synchronizing':
+              if (job.video_url) {
+                await handleJobUpdate(job, { status: 'completed' });
+              }
+              break;
+            case 'completed':
+            case 'failed':
+              if (job.voice_id) {
+                await deleteVoice(job);
+              }
+              break;
+          }
+        } catch (error) {
+          // Error handling logic here if needed
+        }
+      }
+    };
+
+    processJobs();
+  }, [
+    jobs,
+    handleJobFailed,
+    updateJob,
+    synchronize,
+    deleteVoice,
+    transcribeAndTranslate,
+    cloneVoice,
+    synthesisSpeech,
+    toast
+  ]);
 
   return { jobs, loading, error };
 }
