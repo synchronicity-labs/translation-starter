@@ -167,8 +167,9 @@ export async function POST(req: Request) {
       modelTrainingResponses.push(response);
     }
     
-
-
+    return new Response(JSON.stringify({ modelTrainingResponses }), {
+      status: 200
+    });
   } catch (error) {
     console.error(`Failed to clone voice: `, error);
     return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
