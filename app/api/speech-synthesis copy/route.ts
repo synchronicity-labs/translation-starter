@@ -11,6 +11,10 @@ import fs from 'fs';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import { Readable } from 'stream';
 
+/*
+
+*/
+
 async function fetchAudioFrom11Labs(voiceId: string, text: string, start: number ,apiKey:string, blankAudioPath: string): Promise<any> {
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
@@ -54,6 +58,51 @@ async function fetchAudioFrom11Labs(voiceId: string, text: string, start: number
   fileStream.end();
 }
 
+/*
+
+
+
+*/
+async function createBlankAudio(originalAudioUrl: string, outputPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Get the duration of the original audio
+    ffmpeg.ffprobe(originalAudioUrl, (err, metadata) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      const duration = metadata.format.duration;
+      if(!duration) {
+        reject('No duration found');
+        return;
+      }
+      // Create a blank audio file with the same duration
+      ffmpeg()
+        .input('anullsrc=channel_layout=stereo:sample_rate=44100')
+        .inputFormat('lavfi')
+        .audioCodec('pcm_s16le')
+        .audioChannels(2)
+        .audioFrequency(44100)
+        .duration(duration)
+        .output(outputPath)
+        .on('end', () => {
+          console.log('Blank audio file created successfully.');
+          resolve();
+        })
+        .on('error', (err) => {
+          reject(err);
+        })
+        .run();
+    });
+  });
+}
+
+
+
+
+
+
 export async function POST(req: Request) {
   // Ensure the API key is set
   const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
@@ -76,7 +125,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { transcript, voiceId } = await req.json();
+  const { transcript, voiceId, originalAudioUrl } = await req.json();
 
   
 
@@ -105,6 +154,15 @@ export async function POST(req: Request) {
 
     await fsPromises.mkdir(tempDir, { recursive: true });
     const tempFilePath = path.join(tempDir, `translated-audio-${uuid}.mp3`);
+
+    try {
+      await fsPromises.access(tempDir);
+    } catch (error) {
+      await fsPromises.mkdir(tempDir);
+    }
+
+    // Create a blank audio file
+    await createBlankAudio(originalAudioUrl, tempFilePath);
 
     for (const element of transcript) {
       const { time_begin, speaker, transcription } = element;
