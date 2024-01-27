@@ -11,10 +11,63 @@ import fs from 'fs';
 import { FfmpegCommand } from 'fluent-ffmpeg';
 import { Readable } from 'stream';
 
+interface AudioSection {
+  startTime: number;
+  duration: number;
+  filePath: string;
+}
+
 /*
 
 */
+async function replaceAudioSection(originalAudioPath: string, newAudioSection: AudioSection): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const { startTime, duration, filePath } = newAudioSection;
 
+    ffmpeg()
+      .input(originalAudioPath)
+      .input(filePath)
+      .complexFilter([
+        `[0:a]atrim=end=${startTime}[audio1]`, // Trim original audio up to the start time
+        `[1:a]atrim=start=0:end=${duration}[audio2]`, // Trim new audio from the beginning up to the specified duration
+        `[audio1][audio2]concat=n=2:v=0:a=1[out]`, // Concatenate the two audio streams
+      ])
+      .map('[out]')
+      .audioCodec('aac')
+      .output(originalAudioPath)
+      .on('end', () => {
+        console.log('Audio section replaced successfully.');
+        resolve();
+      })
+      .on('error', (err) => {
+        reject(err);
+      })
+      .run();
+  });
+}
+
+/*
+
+
+*/
+function getAudioDuration(filePath: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      const duration = metadata.format.duration;
+      resolve(duration || 0);
+    });
+  });
+}
+
+/*
+
+
+*/
 async function fetchAudioFrom11Labs(voiceId: string, text: string, start: number ,apiKey:string, blankAudioPath: string): Promise<any> {
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
@@ -56,10 +109,15 @@ async function fetchAudioFrom11Labs(voiceId: string, text: string, start: number
     fileStream.write(chunk);
   }
   fileStream.end();
+  const duration = await getAudioDuration(tempFilePath);
+  await replaceAudioSection(blankAudioPath, {
+    startTime: start,
+    duration,
+    filePath: tempFilePath,
+  });
 }
 
 /*
-
 
 
 */
@@ -98,11 +156,6 @@ async function createBlankAudio(originalAudioUrl: string, outputPath: string): P
   });
 }
 
-
-
-
-
-
 export async function POST(req: Request) {
   // Ensure the API key is set
   const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
@@ -126,10 +179,6 @@ export async function POST(req: Request) {
   }
 
   const { transcript, voiceId, originalAudioUrl } = await req.json();
-
-  
-
-
 
   // Check if the values exist
   if (!exists(transcript) || !exists(voiceId)) {
@@ -181,13 +230,8 @@ export async function POST(req: Request) {
           { status: res.status }
         );
       }
-      
     }
 
-
-
-
-    
     
     const fileStream = createWriteStream(tempFilePath);
     const url = await new Promise<string>(async (resolve, reject) => {
