@@ -59,7 +59,7 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       `Max video file size: 250mb`,
       `Max resolution: 1080p`,
       `Max frame rate: 30fps`,
-      `Avoid muliple people in the video`,
+      `Avoid multiple people in the video`,
       `Make sure there's a face in the first frame of the video`
     ]
   };
@@ -71,7 +71,7 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       `Max video length: 5min`,
       `Max resolution: 1080p`,
       `Max frame rate: 30fps`,
-      `Avoid muliple people in the video`,
+      `Avoid multiple people in the video`,
       `Make sure there's a face in the first frame of the video`
     ]
   };
