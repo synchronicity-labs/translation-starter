@@ -7,10 +7,6 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import ffmpeg from 'fluent-ffmpeg';
 
-import fs from 'fs';
-import { FfmpegCommand } from 'fluent-ffmpeg';
-import { Readable } from 'stream';
-
 interface AudioSection {
   startTime: number;
   duration: number;
@@ -18,7 +14,11 @@ interface AudioSection {
 }
 
 /*
+input:
+originalAudioPath: The orginial audio that was generated to overlay
+originalAudioPath: Details of the chunk that need to be replaced
 
+output
 */
 async function replaceAudioSection(originalAudioPath: string, newAudioSection: AudioSection): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -47,9 +47,13 @@ async function replaceAudioSection(originalAudioPath: string, newAudioSection: A
 }
 
 /*
+input:
+filePath: The orginial audio that was generated to overlay
 
-
+output:
+duration: The duration of the audio in seconds
 */
+
 function getAudioDuration(filePath: string): Promise<number> {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, metadata) => {
@@ -65,6 +69,13 @@ function getAudioDuration(filePath: string): Promise<number> {
 }
 
 /*
+input:
+voiceId: The voiceId to use for the text to speech
+text: Text-to-speech
+start: The start time in seconds
+blankAudioPath: The path to the blank audio file
+
+output:
 
 
 */
@@ -118,6 +129,11 @@ async function fetchAudioFrom11Labs(voiceId: string, text: string, start: number
 }
 
 /*
+input: 
+origionalAudioUrl: original audio that contains actual audio of video
+outputPath:path to which audio needs to be stored
+
+output:
 
 
 */
