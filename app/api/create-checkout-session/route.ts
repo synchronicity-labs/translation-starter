@@ -10,10 +10,6 @@ export async function POST(req: Request) {
     // 1. Destructure the price and quantity from the POST body
     const { price, quantity = 1, metadata = {} } = await req.json();
 
-    console.log('price', price);
-    console.log('quantity', quantity);
-    console.log('metadata', metadata);
-
     try {
       // 2. Get the user from Supabase auth
       const supabase = createRouteHandlerClient<Database>({ cookies });
@@ -21,15 +17,11 @@ export async function POST(req: Request) {
         data: { user }
       } = await supabase.auth.getUser();
 
-      console.log('user: ', user);
-
       // 3. Retrieve or create the customer in Stripe
       const customer = await createOrRetrieveCustomer({
         uuid: user?.id || '',
         email: user?.email || ''
       });
-
-      console.log('customer: ', customer);
 
       // 4. Create a checkout session in Stripe
       let session;
