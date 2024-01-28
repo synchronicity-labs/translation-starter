@@ -1,14 +1,41 @@
-# Translation AI by [Sync Labs](https://synclabs.so)
+<h1>Translation AI by [Sync Labs](https://synclabs.so)</h1>
 
 Translation AI is an open-source tool for translating spoken language in video content with accurate lip synchronization. The purpose of this repo is to help developers quickly integrate multilingual support into video-based apps. This project provides essential APIs and documentation to facilitate the development of applications requiring video translation with lip-sync capabilities.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,OPENAI_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
 
-## How it works
+- [How its built](#how-its-built)
+  - [High Level Diagram](#high-level-diagram)
+  - [What its built with](#what-its-built-with)
+  - [Live demo](#live-demo)
+- [Deploying the production-ready app](#deploying-the-production-ready-app)
+  - [1. Initiate Deployment](#1-initiate-deployment)
+  - [2. Configure Auth](#2-configure-auth)
+  - [3. Configure Storage](#3-configure-storage)
+  - [4. Configure Stripe (Optional)](#4-configure-stripe-optional)
+- [Running the NextJS app locally](#running-the-nextjs-app-locally)
+  - [1. Clone your GitHub repository to your local machine](#1-clone-your-github-repository-to-your-local-machine)
+  - [2. Set up local environment variables](#2-set-up-local-environment-variables)
+  - [4. Test webhooks using the `Stripe CLI` (optional)](#4-test-webhooks-using-the-stripe-cli-optional)
+  - [5. Install dependencies and run the project](#5-install-dependencies-and-run-the-project)
+- [FAQ](#faq)
+  - [How to Contribute](#how-to-contribute)
+  - [Additional Resources](#additional-resources)
+  - [License](#license)
+  - [Common Problems](#common-problems)
+
+
+
+## How its built
+
+### High Level Diagram
+
+<!-- TODO: @Noah -- put in a high level diagram of the customer flow using Figjam (in Figma) -->
+
+### What its built with
 
 - [Sync Labs](https://synclabs.so) for perfectly synchronized lip movements
-- [Gladia](https://www.gladia.io/) for transcribing and diarization
-- [Open AI](https://openai.com/) for translating
+- [Gladia](https://www.gladia.io/) for transcribing
 - [Eleven Labs](https://elevenlabs.io/) for voice cloning and speech synthesis
 - [Next.js](https://nextjs.org) for web app
 - [Vercel](https://vercel.com) for deployment
@@ -17,11 +44,13 @@ Translation AI is an open-source tool for translating spoken language in video c
 
 ### [Live demo](https://translation-starter-khaki.vercel.app/)
 
+You can access the live demo by clicking the image below, [or by clicking here](https://translation-starter-khaki.vercel.app/).
+
 [![Screenshot of demo](./public/demo.png)](https://translate.synclabs.so/)
 
-## Getting set up
+## Deploying the production-ready app
 
-To successfully deploy the template, execute the following steps in order:
+To successfully deploy the template to production, execute the following steps in order:
 
 ### 1. Initiate Deployment
 
@@ -84,62 +113,41 @@ After that, you'll need to create a new storage bucket within your Supabase proj
 
 
 
-### 4. Configure Stripe
+### 4. Configure Stripe (Optional)
 
 Next, you'll need to configure [Stripe](https://stripe.com/) in order to handle test payments.
 
-#### Initial setup
+[Click here to view the instructions.](./docs/setup/stripe.md)
 
-1. Create a [Stripe](https://stripe.com/) account if you don't have one yet
-2. Ensure you are in ["Test Mode"](https://stripe.com/docs/testing) by toggling the `Test Mode` switch at the top of the dashboard to the `ON` position.
-  
-#### Create a webhook
 
-1. In Stripe's `Developers` section, navigate to the [Webhooks](https://dashboard.stripe.com/test/webhooks) tab and click `Add endpoint`
-2. Under `Endpoint URL` enter your deployment URL with `/api/webhooks` appended to the end (e.g., `https://your-deployment-url.vercel.app/api/webhooks`).
-3. Under `Select events to listen to` choose `Select events`, toggle on `Select all events` and then click `Add events`
-4. Scroll to the bottom of the form and select `Add endpoint`
-5. In the page that appears, under `Signing secret` click `reveal` and copy the secret.
-6. Add this `Signing secret` as the `STRIPE_WEBHOOK_SECRET` environment variable in your Vercel settings.
+## Running the NextJS app locally
 
-#### Redeploy with Updated Environment Variables
+When you innevitably want to make changes to the app, you'll need to run it locally.
 
-Redeploy your application in Vercel for the new environment variables to activate. Go to your `Vercel Dashboard`, find the `Deployments` section, and choose `Redeploy` from the overflow menu. Ensure "Use existing Build Cache" is not selected.
-
-#### Create product(s)
-
-With the Stripe webhook setup, you can start creating your products in the [Stripe Dashboard](https://dashboard.stripe.com/test/products). Stripe Checkout supports billing a set amount at regular intervals. It does not support complex pricing structures like tiered pricing or per-seat billing.
-
-#### Configure the customer portal
-
-- Set up branding in the [Branding settings](https://dashboard.stripe.com/settings/branding)
-- Set up the customer portal in the [Customer Portal settings](https://dashboard.stripe.com/test/settings/billing/portal)
-
-## Running locally
+You can deploy a second Supabase project so that you have an environment to use for local development, but this tutorial will assume you're using the Supabase project that you deployed in the top section.
 
 ### 1. Clone your GitHub repository to your local machine 
 
-### 2. Link your project using the `Vercel CLI`
+Clone the repository however you prefer.
 
-In a terminal navigate to your project's root directory and enter the following command.
+### 2. Set up local environment variables
 
+You can initialize a `.env.local` file by running:
+
+<!-- TODO @Noah: confirm this example file contains all the required variables (EMPTY) -->
 ```bash
-vercel login
-vercel link
+cp .env.local.example .env.local
 ```
 
-### 3. Set up local environment variables
+Now go back to your Vercel project and copy the following variables:
 
-### Setting up the env vars locally
+<!-- TODO @Noah: confirm what's required -->
+- `ABE`
+- `EFG`
 
-In a terminal navigate to your project's root directory and enter the following command.
+### 4. Test webhooks using the `Stripe CLI` (optional)
 
-```bash
-vercel env pull .env.local
-```
-This command will create a new `.env.local` file in your project folder.
-
-### 4. Test webhooks using the `Stripe CLI`
+If you're setting up the app to include payments, you must run the Stripe CLI to simulate the webhook events.
 
 - Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
 - [Link](https://stripe.com/docs/stripe-cli#login-account) your Stripe account.
@@ -150,7 +158,9 @@ In a seperate terminal, run the below command to initiate local webhook forwardi
 stripe listen --forward-to=localhost:3000/api/webhooks
 ```
 
-Running this Stripe command will print a webhook secret (`whsec_***`), to the console. Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env.local` file.
+> Running this Stripe command will print a webhook secret (`whsec_***`), to the console.
+> 
+> **IMPORTANT** -- Set `STRIPE_WEBHOOK_SECRET` to this value in your `.env.local` file.
 
 ### 5. Install dependencies and run the project
 
@@ -161,11 +171,11 @@ yarn
 yarn dev
 ```
 
-### 6. You've done it!
-
 Open your web browser and visit http://localhost:3000 to view your application.
 
-## How to Contribute
+## FAQ
+
+### How to Contribute
 
 We embrace the collaborative spirit of the open-source community.
 
@@ -178,11 +188,17 @@ To suggest enhancements or submit changes:
 
 Your contributions are highly appreciated!
 
-## Resources
+### Additional Resources
 
 - Sync Labs [Slack Community](https://syncbetatesters.slack.com/ssb/redirect#/shared-invite/email)
 - Sync Labs [Docs](https://docs.synclabs.so/)
 
-## License
+### License
 
 Translation AI is released under the [MIT License](https://choosealicense.com/licenses/mit/).
+
+### Common Problems
+
+If you run into **any issues**, please contact us in the `#translation-app` channel in our Slack (click here to quickly join the channel).
+
+You can also submit an issue to this repo.
