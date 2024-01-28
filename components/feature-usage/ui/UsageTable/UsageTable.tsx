@@ -44,7 +44,7 @@ const NoUsageView = () => {
 };
 
 const UsageTable: FC<Props> = ({ userId }) => {
-  const { jobs, loading, error } = useJobData(userId);
+  const { jobs, loading, error } = useJobData();
 
   const pageSize = 10;
   const [offset, setOffset] = useState(0);

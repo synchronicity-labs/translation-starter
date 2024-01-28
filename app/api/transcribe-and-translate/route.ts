@@ -52,8 +52,7 @@ export async function POST(req: Request) {
   }
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://f3d5-2600-1702-c20-21a0-829-3e5e-6fc3-5c35.ngrok-free.app';
+    'https://ae94-106-208-110-34.ngrok-free.app';
 
   const webhook_url = `${baseUrl}/api/transcribe-and-translate/webhook`;
 
@@ -65,7 +64,7 @@ export async function POST(req: Request) {
     form.append('toggle_direct_translate', 'true');
     form.append('webhook_url', webhook_url);
     form.append('toggle_diarization', 'true');
-    
+
     // Send the request to Gladia
     const response = await fetch(
       'https://api.gladia.io/audio/text/audio-transcription/',

@@ -28,6 +28,11 @@ export default function Pricing({
   products,
   subscription
 }: Props) {
+  console.log('Pricing - session: ', session);
+  console.log('Pricing - user: ', user);
+  console.log('Pricing - products: ', products);
+  console.log('Pricing - subscription: ', subscription);
+
   const title = `Pricing`;
 
   const intervals = Array.from(
@@ -112,6 +117,10 @@ export default function Pricing({
               currency: price.currency!,
               minimumFractionDigits: 0
             }).format((price?.unit_amount || 0) / 100);
+
+            const activeSubscription =
+              subscription?.prices?.products?.id === product.id;
+
             return (
               <Stack
                 w="full"
@@ -141,7 +150,7 @@ export default function Pricing({
                   isLoading={priceIdLoading === price.id}
                   onClick={() => handleCheckout(price)}
                 >
-                  {subscription ? 'Manage' : 'subscribe'}
+                  {activeSubscription ? 'Manage' : 'subscribe'}
                 </Button>
               </Stack>
             );

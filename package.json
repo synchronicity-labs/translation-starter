@@ -23,6 +23,10 @@
     "@supabase/supabase-js": "^2.23.0",
     "@types/luxon": "^3.3.3",
     "@types/uuid": "^9.0.6",
+    "audio-buffer": "^5.0.0",
+    "audio-generator": "^2.1.2",
+    "audioconcat": "^0.1.4",
+    "axios": "^1.6.7",
     "classnames": "^2.3.2",
     "coconutjs": "^3.0.2",
     "fluent-ffmpeg": "^2.1.2",
@@ -54,7 +58,7 @@
     "postcss": "^8.4.23",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
-    "supabase": "^1.110.1",
+    "supabase": "^1.136.3",
     "typescript": "^5.0.4"
   },
   "prettier": {
