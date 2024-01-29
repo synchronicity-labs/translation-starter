@@ -7,6 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { exists } from '@/utils/helpers';
 import supabase from '@/utils/supabase';
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
+
+const l = new SynchronicityLogger({
+  name: 'api/speech-synthesis/route'
+});
 
 export async function POST(req: Request) {
   // Ensure the API key is set
@@ -32,8 +37,13 @@ export async function POST(req: Request) {
 
   const { text, voiceId } = await req.json();
 
+  const logger = l.getSubLogger({
+    name: `voiceId-${voiceId}`
+  });
+
   // Check if the values exist
   if (!exists(text) || !exists(voiceId)) {
+    logger.error('Missing text or voiceId in the request body.');
     return new Response(
       JSON.stringify({
         error: {
@@ -46,6 +56,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    logger.log('Calling Eleven Labs API');
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
       {
@@ -83,16 +94,17 @@ export async function POST(req: Request) {
         { status: response.status }
       );
     }
+    logger.log(`Received audio data from Eleven Labs API`);
 
     const data = response.body;
 
     const uuid = uuidv4();
-
     const tempDir =
       process.env.NEXT_PUBLIC_SITE_URL !== 'http://localhost:3000'
         ? os.tmpdir()
         : path.resolve('./temp');
 
+    logger.log(`Writing audio data to temp file`);
     await fsPromises.mkdir(tempDir, { recursive: true });
     const tempFilePath = path.join(tempDir, `translated-audio-${uuid}.mp3`);
     const fileStream = createWriteStream(tempFilePath);
@@ -101,7 +113,9 @@ export async function POST(req: Request) {
       fileStream.write(chunk);
     }
     fileStream.end();
+    logger.log(`Finished writing audio data to temp file`);
 
+    logger.log(`Uploading audio to Supabase`);
     const url = await new Promise<string>(async (resolve, reject) => {
       fileStream.on('finish', async function () {
         try {
@@ -134,9 +148,12 @@ export async function POST(req: Request) {
         }
       });
     });
+    logger.log(`Finished uploading audio to Supabase, url: ${url}`);
 
     // Clean up temp files and directory
+    logger.log(`Cleaning up temp files and directory`);
     await fsPromises.unlink(tempFilePath);
+    logger.log(`Finished cleaning up temp files and directory`);
 
     return new Response(JSON.stringify({ data: url }), {
       status: 200
