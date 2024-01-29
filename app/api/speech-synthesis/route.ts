@@ -80,7 +80,7 @@ export async function POST(req: Request) {
   // Handle errors
   if (!response.ok || !response.body) {
     const errorText = await response.text();
-    console.error(
+    logger.error(
       `Failed to convert text to speech: ${response.status} ${errorText}`
     );
     return new Response(
@@ -128,12 +128,12 @@ export async function POST(req: Request) {
           });
 
         if (error) {
-          console.error('Error uploading audio to Supabase:', error);
+          logger.error('Error uploading audio to Supabase:', error);
           reject(error);
         }
 
         if (!data) {
-          console.error('No data returned from Supabase');
+          logger.error('No data returned from Supabase');
           reject('No data returned from Supabase');
         }
 
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
         }/storage/v1/object/public/translation/${data!.path}`;
         resolve(url);
       } catch (error) {
-        console.error('Error uploading audio to Supabase:', error);
+        logger.error('Error uploading audio to Supabase:', error);
         reject(error);
       }
     });
