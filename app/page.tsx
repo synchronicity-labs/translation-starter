@@ -8,14 +8,8 @@ import {
 import JobGrid from '@/components/feature-playground/ui/JobGrid';
 import MediaInput from '@/components/feature-playground/ui/MediaInput';
 import PageHeader from '@/components/ui/Display/PageHeader';
-import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 
 export const dynamic = 'force-dynamic';
-
-const logger = new SynchronicityLogger({
-  name: 'getServerSideProps'
-});
-logger.log('getServerSideProps');
 
 export default async function HomePage() {
   // Grab data from db

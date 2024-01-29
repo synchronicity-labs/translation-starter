@@ -42,7 +42,9 @@ export class SynchronicityLogger {
 
       const { message, level, ...metadata } = json;
 
-      logtail.log(message, level, metadata);
+      if (process.env.NODE_ENV === 'production') {
+        logtail.log(message, level, metadata);
+      }
     });
 
     this.name = name ? name : this.name;

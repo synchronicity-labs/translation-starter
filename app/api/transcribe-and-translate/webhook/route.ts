@@ -3,11 +3,16 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 import { languagesIso639 } from '@/data/iso-639-1-language-codes';
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
   process.env.SUPABASE_SERVICE_ROLE_KEY as string
 );
+
+const logger = new SynchronicityLogger({
+  name: 'api/transcribe-and-translate/webhook/route'
+});
 
 const getLatestJob = async (jobId: string) => {
   const { data: fetchedJobs, error: fetchError } = await supabase
@@ -17,12 +22,12 @@ const getLatestJob = async (jobId: string) => {
     .neq('is_deleted', true);
 
   if (fetchError) {
-    console.error('Failed to fetch job');
+    logger.error('Failed to fetch job');
     throw fetchError;
   }
 
   if (!fetchedJobs || fetchedJobs.length === 0) {
-    console.error('Job not found');
+    logger.error('Job not found');
     throw new Error('Job not found');
   }
 
@@ -52,7 +57,7 @@ export async function POST(req: Request) {
     });
   }
 
-  console.log('GOT RESULT IN TRANSCRIBE WEBHOOK', result);
+  logger.log('GOT RESULT IN TRANSCRIBE WEBHOOK', result.request_id);
   const transcript = result.payload.prediction;
 
   const transalatedText = transcript
@@ -76,9 +81,9 @@ export async function POST(req: Request) {
     transcript,
     source_language: sourceLanguageName,
     translated_text: transalatedText,
-    status: 'transcribed'
+    status: 'cloning'
   };
-  console.log('UPDATE', update);
+  logger.log('UPDATE', update);
   const { error } = await supabase
     .from('jobs')
     .update({
@@ -88,12 +93,12 @@ export async function POST(req: Request) {
     .select();
 
   if (error) {
-    console.log('Failed to update job', error);
+    logger.log('Failed to update job', error);
     return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
       status: 500
     });
   } else {
-    console.log('Updated job with ID', result.request_id);
+    logger.log('Updated job with ID', result.request_id);
   }
 
   return NextResponse.json({ success: true });
