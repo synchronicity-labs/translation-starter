@@ -23,8 +23,10 @@ export default async function synchronize(job: Job) {
     logger.error(
       `Failed to synchronize job (${path}) ${job.id} - ${text} - ${response.status} - ${response.statusText}`
     );
+    const err = new Error();
+    const stack = err.stack;
     throw new Error(
-      `HTTP error! Status: ${response.status} - ${response.statusText}`
+      `HTTP error! - status=${response.status} - text=${text} - stack=\n${stack}`
     );
   }
 }
