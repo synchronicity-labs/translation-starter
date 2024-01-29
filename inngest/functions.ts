@@ -64,7 +64,7 @@ export const processJob = inngest.createFunction(
   {
     id: 'process-job',
     concurrency: {
-      scope: 'env',
+      scope: 'fn',
       limit: CONRCURRENT_JOBS
     },
     retries: parseInt(process.env.MAX_JOB_RETRIES || '3') as any,
