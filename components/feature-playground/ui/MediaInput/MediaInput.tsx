@@ -143,33 +143,42 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
     [uploadFile]
   );
 
-  const handleJobFailed = useCallback(
-    async (errorMessage: string, jobId?: string) => {
-      setLoading(false);
-      setVideo(null);
-      setUrl('');
-      setLanguage(null);
-      {
-        jobId &&
-          (await fetch('/api/db/update-job', {
-            method: 'POST',
-            body: JSON.stringify({
-              jobId,
-              updatedFields: {
-                status: 'failed' as JobStatus
-              }
-            })
-          }));
-      }
+  const showErrorMessage = useCallback(
+    (message: string) => {
       toast({
         title: 'Error occured while creating video',
-        description: errorMessage,
+        description: message,
         status: 'error',
         duration: null,
         isClosable: true
       });
     },
     [toast]
+  );
+
+  const handleJobFailed = useCallback(
+    async (errorMessage: string, jobId?: string) => {
+      setLoading(false);
+      setVideo(null);
+      setUrl('');
+      setLanguage(null);
+
+      showErrorMessage(errorMessage);
+      if (!jobId) {
+        return;
+      }
+
+      await fetch('/api/db/update-job', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId,
+          updatedFields: {
+            status: 'failed' as JobStatus
+          }
+        })
+      });
+    },
+    [showErrorMessage]
   );
 
   const handleSubmit = useCallback(
@@ -186,12 +195,14 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
 
       // If no video is selected, show error
       if (!video && !url) {
-        handleJobFailed('Video file or url is required');
+        await handleJobFailed('Video file or url is required');
         return;
       }
 
       if (!creditsAvailable) {
-        handleJobFailed('You do not have enough credits to create a video');
+        await handleJobFailed(
+          'You do not have enough credits to create a video'
+        );
         return;
       }
 
@@ -201,11 +212,17 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       });
 
       if (!createJob.ok) {
-        handleJobFailed(`Failed to create job`);
+        await handleJobFailed(`Failed to create job`);
         return;
       }
 
       const { data: job } = await createJob.json();
+
+      // Upload video to supabase storage
+      const videoUrl = await getUploadUrl(
+        video || url,
+        `public/input-video-${job.id}`
+      );
 
       // Update job status to uploading
       const updateJobToUploading = await fetch('/api/db/update-job', {
@@ -215,20 +232,15 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
           updatedFields: {
             status: 'uploading' as JobStatus,
             target_language: language
-          }
+          },
+          videoUrl
         })
       });
 
       if (!updateJobToUploading.ok) {
-        handleJobFailed(`Failed to update job status to 'uploading'`);
+        await handleJobFailed(`Failed to update job status to 'uploading'`);
         return;
       }
-
-      // Upload video to supabase storage
-      const videoUrl = await getUploadUrl(
-        video || url,
-        `public/input-video-${job.id}`
-      );
 
       // Transcode video to audio
       const { blob, output } = await transcodeVideoToAudio(
@@ -242,7 +254,9 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       );
 
       if (!videoUrl || !audioUrl) {
-        handleJobFailed(`Failed to upload video and audio to Supabase storage`);
+        await handleJobFailed(
+          `Failed to upload video and audio to Supabase storage`
+        );
         return;
       }
 
@@ -260,7 +274,7 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
       });
 
       if (!updateJobToTranscribing.ok) {
-        handleJobFailed(`Failed to update job status to 'transcribing'`);
+        await handleJobFailed(`Failed to update job status to 'transcribing'`);
         return;
       }
 

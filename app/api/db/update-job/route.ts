@@ -1,5 +1,7 @@
-import { updateJob } from '@/app/supabase-server';
 import { NextResponse } from 'next/server';
+
+import { updateJob } from '@/app/supabase-server';
+import { inngest } from '@/inngest/client';
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
@@ -7,6 +9,9 @@ export async function POST(req: Request) {
   }
 
   const { jobId, updatedFields } = await req.json();
+  const { status } = updatedFields;
+
+  const { original_video_url, original_audio_url } = updatedFields;
 
   try {
     const jobs = await updateJob(jobId, updatedFields);
@@ -15,6 +20,17 @@ export async function POST(req: Request) {
       return NextResponse.json({
         success: false,
         message: `Error updating job`
+      });
+    }
+
+    if (status === 'uploaded') {
+      await inngest.send({
+        name: 'jobs.submitted',
+        data: {
+          jobId,
+          videoUrl: original_video_url,
+          audioUrl: original_audio_url
+        }
       });
     }
 
