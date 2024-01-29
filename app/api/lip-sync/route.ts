@@ -1,5 +1,14 @@
 import { isValidUrl, exists } from '@/utils/helpers';
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+if (!baseUrl) {
+  throw new Error('NEXT_PUBLIC_SITE_URL is not set');
+}
+
+const API_URL =
+  process.env.NEXT_PUBLIC_SYNC_API_URL || 'https://api.synclabs.so';
+
 export async function POST(req: Request) {
   // Ensure the API key is set
   const syncLabsApiKey = process.env.SYNC_LABS_API_KEY;
@@ -50,14 +59,11 @@ export async function POST(req: Request) {
     );
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://5cd5-2600-1702-c20-21a0-809b-ce25-115d-6af0.ngrok-free.app';
-
   // Try to send the request to SyncLabs
   try {
     // Send the request to SyncLabs
-    const response = await fetch(`https://api.synclabs.so/video`, {
+    // const response = await fetch(`https://api.synclabs.so/video`, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
