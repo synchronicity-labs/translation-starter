@@ -1,10 +1,12 @@
-import { exists } from '@/utils/helpers';
-import supabase from '@/utils/supabase';
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
-import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
+
+import fetch from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';
+
+import { exists } from '@/utils/helpers';
+import supabase from '@/utils/supabase';
 
 export async function POST(req: Request) {
   // Ensure the API key is set

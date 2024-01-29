@@ -1,6 +1,7 @@
+import { Job, OnFailedJob } from '@/types/db';
+
 import apiRequest from './api-request';
 import updateJob from './update-job';
-import { Job, OnFailedJob } from '@/types/db';
 
 export default async function transcribeAndTranslate(
   job: Job,
