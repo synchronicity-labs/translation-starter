@@ -70,12 +70,16 @@ export const processJob = inngest.createFunction(
         videoUrl: string;
         audioUrl: string;
       } = event.data.event.data;
-      logger.error('Failed to process job', data, error);
+      l.error('Failed to process job', data, error);
 
       const job = await getLatestJob(data.jobId);
-      logger.log('Deleting voice on failure');
+      l.log('Deleting voice on failure', {
+        jobId: job.id
+      });
       await deleteVoice(job);
-      logger.log('Deleted voice on failure');
+      l.log('Deleted voice on failure', {
+        jobId: job.id
+      });
     }
   },
   { event: 'jobs.submitted' },
