@@ -1,5 +1,6 @@
-import { updateJobByOriginalVideoUrl } from '@/app/supabase-server';
 import { NextResponse } from 'next/server';
+
+import { updateJobByOriginalVideoUrl } from '@/app/supabase-server';
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {

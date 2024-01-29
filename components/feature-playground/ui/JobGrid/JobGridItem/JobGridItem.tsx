@@ -1,9 +1,7 @@
 'use client';
 
-import ExpandedModal from './ExpandedModal';
-import StatusTag from '@/components/ui/Display/StatusTag';
-import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Job, JobStatus } from '@/types/db';
+import { FC, useState } from 'react';
+
 import {
   AspectRatio,
   Box,
@@ -15,7 +13,12 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
-import { FC, useState } from 'react';
+
+import StatusTag from '@/components/ui/Display/StatusTag';
+import VideoPlayer from '@/components/ui/VideoPlayer';
+import { Job, JobStatus } from '@/types/db';
+
+import ExpandedModal from './ExpandedModal';
 
 interface Props {
   job: Job;

@@ -1,11 +1,15 @@
-import Button from '../Input/Button';
-import AuthView from './AuthView';
-import { createServerSupabaseClient } from '@/app/supabase-server';
-import logo from '@/assets/logo.png';
-import { Box, Flex } from '@chakra-ui/react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { Box, Flex } from '@chakra-ui/react';
 import { FaDollarSign, FaRegWindowMaximize } from 'react-icons/fa';
+
+import logo from '@/assets/logo.png';
+import { createServerSupabaseClient } from '@/app/supabase-server';
+
+import Button from '../Input/Button';
+
+import AuthView from './AuthView';
 
 const pages = [
   {

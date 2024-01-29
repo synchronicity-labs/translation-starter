@@ -1,5 +1,6 @@
-import { Flex, Heading, Stack, Tag, Text } from '@chakra-ui/react';
 import { FC } from 'react';
+
+import { Flex, Heading, Stack, Tag, Text } from '@chakra-ui/react';
 
 interface Props {
   title: string;

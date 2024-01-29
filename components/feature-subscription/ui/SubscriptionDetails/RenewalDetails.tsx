@@ -1,7 +1,9 @@
-import { SubscriptionWithProduct } from '@/types/db';
+import { FC } from 'react';
+
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
-import { FC } from 'react';
+
+import { SubscriptionWithProduct } from '@/types/db';
 
 interface Props {
   subscription: SubscriptionWithProduct;

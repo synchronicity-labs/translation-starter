@@ -1,13 +1,16 @@
-import { JobStatus } from '@/types/db';
-import { Database } from '@/types_db';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
 import { cache } from 'react';
 
-type Metadata = {
+import { cookies } from 'next/headers';
+
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
+
+import { JobStatus } from '@/types/db';
+import { Database } from '@/types_db';
+
+interface Metadata {
   credits: string;
-};
+}
 
 export const createServerSupabaseClient = cache(() => {
   const cookieStore = cookies();

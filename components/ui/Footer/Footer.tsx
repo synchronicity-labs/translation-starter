@@ -1,5 +1,6 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
 import Link from 'next/link';
+
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
@@ -52,7 +53,7 @@ export default function Footer() {
           {builtWith.map(({ label, link }, index) => {
             const showSeperator = index !== builtWith.length - 1;
             return (
-              <Flex>
+              <Flex key={index}>
                 <Link href={link} target="_blank" rel="noopener noreferrer">
                   <Text _hover={{ textDecoration: 'underline', color: 'blue' }}>
                     {label}

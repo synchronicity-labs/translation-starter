@@ -1,6 +1,8 @@
-import { languagesIso639 } from '@/data/iso-639-1-language-codes';
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+
+import { createClient } from '@supabase/supabase-js';
+
+import { languagesIso639 } from '@/data/iso-639-1-language-codes';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,

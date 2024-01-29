@@ -1,9 +1,8 @@
-import { inngest } from './client';
-
 const CONRCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '1');
 
 import { createClient } from '@supabase/supabase-js';
 
+import { inngest } from '@/inngest/client';
 import cloneVoice from '@/utils/clone-voice';
 import deleteVoice from '@/utils/deleteVoice';
 import synchronize from '@/utils/synchronize';
@@ -47,13 +46,10 @@ export const processJob = inngest.createFunction(
   {
     id: 'process-job',
     concurrency: CONRCURRENT_JOBS,
-    retries: 0,
-
-    // TODO: decide if there should be retries
-    // retries
+    retries: parseInt(process.env.MAX_JOB_RETRIES || '3') as any,
 
     // this will be used to determine if a job is a duplicate
-    // idempotency: 'event.data.jobId'
+    idempotency: 'event.data.jobId',
 
     onFailure: async ({ event, error }) => {
       // TODO: @Noah
@@ -83,7 +79,10 @@ export const processJob = inngest.createFunction(
     console.log('Processing job:', data);
 
     let job = await getLatestJob(data.jobId);
-    console.log('job:', job);
+    if (job.status === 'completed') {
+      console.log('Job already completed');
+      return { event };
+    }
 
     // Assume job is in "uploaded" state
     try {

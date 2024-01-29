@@ -1,9 +1,12 @@
 'use client';
 
-import VideoPlayer from '@/components/ui/VideoPlayer';
-import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
 import { FC } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react';
+
+import VideoPlayer from '@/components/ui/VideoPlayer';
 
 interface Props {}
 

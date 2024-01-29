@@ -1,7 +1,9 @@
+import { FC } from 'react';
+
+import { Flex, Stack, Text } from '@chakra-ui/react';
+
 import Info from '@/components/ui/Display/Info';
 import FileDrop from '@/components/ui/Input/FileDrop';
-import { Flex, Stack, Text } from '@chakra-ui/react';
-import { FC } from 'react';
 
 interface Props {
   videoFile: File | string;

@@ -1,5 +1,6 @@
-import { JobStatus } from '@/types/db';
 import { NextResponse } from 'next/server';
+
+import { JobStatus } from '@/types/db';
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
