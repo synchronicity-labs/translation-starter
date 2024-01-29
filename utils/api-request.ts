@@ -1,3 +1,9 @@
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
+
+const logger = new SynchronicityLogger({
+  name: 'utils/apiRequest'
+});
+
 export default async function apiRequest(
   url: string,
   data: object,
@@ -11,7 +17,11 @@ export default async function apiRequest(
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+    const err = new Error();
+    const stack = err.stack;
+    throw new Error(
+      `HTTP error! Status: ${response.status} - ${text} - ${stack}`
+    );
   }
 
   return response.json();

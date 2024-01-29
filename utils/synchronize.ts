@@ -1,17 +1,28 @@
 import { Job } from '@/types/db';
 
-import apiRequest from './api-request';
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
+
+const logger = new SynchronicityLogger({
+  name: 'utils/synchronize'
+});
 
 const TRANSLATION_API = process.env.NEXT_PUBLIC_TRANSLATION_API;
 
 export default async function synchronize(job: Job) {
   const path = `${TRANSLATION_API}/api/lip-sync`;
-  const synchronization = await apiRequest(path, {
-    videoUrl: job.original_video_url,
-    audioUrl: job.translated_audio_url
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      videoUrl: job.original_video_url,
+      audioUrl: job.translated_audio_url
+    })
   });
-
-  await synchronization;
-
-  return {};
+  if (!response.ok) {
+    const text = await response.text();
+    logger.error(`Failed to synchronize job ${job.id} - ${text}`);
+    throw new Error(
+      `HTTP error! Status: ${response.status} - ${response.statusText}`
+    );
+  }
 }
