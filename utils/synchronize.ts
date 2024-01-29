@@ -8,7 +8,7 @@ const logger = new SynchronicityLogger({
 
 const TRANSLATION_API = process.env.NEXT_PUBLIC_TRANSLATION_API;
 
-export default async function ynchronize(job: Job) {
+export default async function synchronize(job: Job) {
   const path = `${TRANSLATION_API}/api/lip-sync`;
   const response = await fetch(path, {
     method: 'POST',
@@ -21,7 +21,7 @@ export default async function ynchronize(job: Job) {
   if (!response.ok) {
     const text = await response.text();
     logger.error(
-      `Failed to synchronize job ${job.id} - ${text} - ${response.status} - ${response.statusText}`
+      `Failed to synchronize job (${path}) ${job.id} - ${text} - ${response.status} - ${response.statusText}`
     );
     throw new Error(
       `HTTP error! Status: ${response.status} - ${response.statusText}`
