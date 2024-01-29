@@ -13,8 +13,6 @@ export default async function transcribeAndTranslate(job: Job) {
 
   const { data } = await result;
 
-  console.log('******transcribeAndTranslate', data);
-
   return {
     transcription_id: data.request_id
   };

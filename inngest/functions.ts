@@ -9,6 +9,7 @@ import deleteVoice from '@/utils/deleteVoice';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
 import transcribeAndTranslate from '@/utils/transcribeAndTranslate';
+import assert from 'assert';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -45,11 +46,18 @@ const getLatestJob = async (jobId: string) => {
 };
 
 const updateJob = async (jobId: string, updatedFields: any) => {
-  await supabase
+  const { error } = await supabase
     .from('jobs')
     .update({ ...updatedFields })
     .eq('id', jobId)
     .select();
+  if (error) {
+    l.error('Failed to update job', {
+      jobId,
+      error
+    });
+    throw error;
+  }
 };
 
 export const processJob = inngest.createFunction(
@@ -80,6 +88,10 @@ export const processJob = inngest.createFunction(
       l.log('Deleted voice on failure', {
         jobId: job.id
       });
+
+      await updateJob(data.jobId, {
+        status: 'failed'
+      });
     }
   },
   { event: 'jobs.submitted' },
@@ -102,91 +114,100 @@ export const processJob = inngest.createFunction(
       return { event };
     }
 
-    if (job.status === 'uploaded') {
-      // Assume job is in "uploaded" state
-      try {
-        logger.log('transcribing');
-        const { transcription_id } = await transcribeAndTranslate(job);
-        logger.log('Transcription ID', transcription_id);
+    const hasVideoAndAudio = job.original_video_url && job.original_audio_url;
+    if (!hasVideoAndAudio) {
+      logger.error('Job does not have video and audio');
+      return { event };
+    }
 
-        logger.log('updating job with transcription id');
+    const hasTranscript = job.transcript;
+    if (!hasTranscript && !job.transcription_id) {
+      logger.log('transcribing');
+      const { transcription_id } = await transcribeAndTranslate(job);
+      logger.log('Transcription ID', transcription_id);
+
+      logger.log('updating job with transcription id');
+      await updateJob(data.jobId, {
+        transcription_id,
+        status: 'transcribing'
+      });
+    }
+
+    job = await getLatestJob(data.jobId);
+    assert(job.transcription_id, 'Job does not have transcription ID');
+    if (job.transcription_id) {
+      let attempts = 0;
+      do {
+        if (attempts > 50) {
+          logger.error('Failed to get transcript');
+          throw new Error('Failed to get transcript');
+        }
+
+        logger.log('checking for transcript');
+        job = await getLatestJob(data.jobId);
+        if (job.transcript) {
+          logger.log('We got the transcript!');
+          break;
+        }
+
+        attempts += 1;
+        logger.log("not ready yet, let's wait, attempt #", attempts);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } while (true);
+    }
+
+    /**
+     * uploaded -> transcribing -> transcribed -> cloning -> synthesizing -> synchronizing -> completed
+     */
+
+    l.log(`Job is in ${job.status} state after checking for transcriptions`);
+
+    if (!job.voice_id && job.status === 'cloning') {
+      try {
+        const fields = await cloneVoice(job);
         await updateJob(data.jobId, {
-          transcription_id,
-          status: 'transcribing'
+          ...fields,
+          status: 'synthesizing'
         });
+
+        // get the voice ID and transcription in the job variable
+        job = await getLatestJob(data.jobId);
       } catch (err) {
-        logger.error('Failed to transcribe and translate');
+        logger.error('Failed to clone voice');
         throw err;
       }
     }
 
-    let attempts = 0;
-    const transcriptReady = false;
-    do {
-      logger.log('checking for transcript');
-      job = await getLatestJob(data.jobId);
-      if (job.transcript) {
-        logger.log('We got the transcript!');
-        break;
+    if (!job.translated_audio_url && job.status === 'synthesizing') {
+      try {
+        logger.log('synthesizing speech', job);
+        const fields = await synthesisSpeech(job);
+        await updateJob(data.jobId, {
+          ...fields,
+          status: 'synchronizing'
+        });
+
+        job = await getLatestJob(data.jobId);
+      } catch (err) {
+        logger.error('Failed to synthesize speech');
+        throw err;
       }
-
-      attempts += 1;
-      logger.log("not ready yet, let's wait, attempt #", attempts);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    } while (!transcriptReady);
-
-    logger.log('transcribed');
-
-    logger.log('Updating state to cloning');
-    await updateJob(data.jobId, {
-      status: 'cloning'
-    });
-    logger.log('Updated state to cloning');
-
-    job = await getLatestJob(data.jobId);
-
-    try {
-      const fields = await cloneVoice(job);
-      await updateJob(data.jobId, fields);
-    } catch (err) {
-      logger.error('Failed to clone voice');
-      throw err;
     }
 
-    await updateJob(data.jobId, {
-      status: 'synthesizing'
-    });
-
-    // get the voice ID and transcription in the job variable
-    job = await getLatestJob(data.jobId);
-
-    try {
-      logger.log('synthesizing speech', job);
-      const fields = await synthesisSpeech(job);
-      await updateJob(data.jobId, fields);
-    } catch (err) {
-      logger.error('Failed to synthesize speech');
-      throw err;
+    if (job.status === 'synchronizing') {
+      try {
+        await synchronize(job);
+      } catch (err) {
+        logger.error('Failed to synchronize');
+        throw err;
+      }
     }
 
-    await updateJob(data.jobId, {
-      status: 'synchronizing'
-    });
+    logger.log(`Job is in ${job.status} state, cleaning up`);
 
-    job = await getLatestJob(data.jobId);
-    try {
-      await synchronize(job);
-    } catch (err) {
-      logger.error('Failed to synchronize');
-      throw err;
+    if (job.voice_id) {
+      await deleteVoice(job);
     }
-
-    await updateJob(data.jobId, {
-      status: 'completed'
-    });
-
-    await deleteVoice(job);
-
     return { event };
   }
 );

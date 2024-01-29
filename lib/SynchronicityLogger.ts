@@ -26,6 +26,7 @@ export class SynchronicityLogger {
   constructor({ name }: { name?: string }) {
     this.level = this.getLogLevel(LOG_LEVEL ? LOG_LEVEL : 'info');
     this.format = LOG_FORMAT ? (LOG_FORMAT as 'pretty' | 'json') : 'json';
+    this.name = name ? name : this.name;
 
     this.logger = new Logger({
       name: this.name,
@@ -38,10 +39,11 @@ export class SynchronicityLogger {
     });
 
     this.logger.attachTransport((logObj) => {
+      if (process.env.NODE_ENV !== 'production') {
+        return;
+      }
       const json = SynchronicityLogger.transportJSON(logObj, this.format);
-
       const { message, level, ...metadata } = json;
-
       logtail.log(message, level, metadata);
     });
 

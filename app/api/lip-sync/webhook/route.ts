@@ -1,6 +1,34 @@
-import { NextResponse } from 'next/server';
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
+import { createClient } from '@supabase/supabase-js';
 
-import { JobStatus } from '@/types/db';
+const logger = new SynchronicityLogger({
+  name: 'api/lip-sync/webhook'
+});
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string
+);
+
+const getLatestJob = async (jobId: string) => {
+  const { data: fetchedJobs, error: fetchError } = await supabase
+    .from('jobs')
+    .select('*')
+    .eq('original_video_url', jobId)
+    .neq('is_deleted', true);
+
+  if (fetchError) {
+    logger.error('Failed to fetch job');
+    throw fetchError;
+  }
+
+  if (!fetchedJobs || fetchedJobs.length === 0) {
+    logger.error('Job not found');
+    throw new Error('Job not found');
+  }
+
+  return fetchedJobs?.[0];
+};
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
@@ -10,46 +38,38 @@ export async function POST(req: Request) {
   }
 
   const { result } = await req.json();
+  logger.log('GOT RESULT IN LIP SYNC WEBHOOK', result);
 
-  try {
-    const updateJobResponse = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-      }/api/db/update-job-by-original-video-url`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          originalVideoUrl: result.originalVideoUrl,
-          updatedFields: {
-            video_url: result.url
-          }
-        })
-      }
-    );
-
-    if (!updateJobResponse.ok) {
-      console.error(
-        `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
-      );
-      return new Response(
-        JSON.stringify({
-          message: `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
-        }),
-        {
-          status: 500
-        }
-      );
-    }
-
-    const jobData = await updateJobResponse.json();
-
-    return new Response(JSON.stringify({ data: jobData }), {
+  const job = await getLatestJob(result.originalVideoUrl);
+  if (job.status !== 'synchronizing') {
+    return new Response(JSON.stringify({ error: { statusCode: 200 } }), {
       status: 200
     });
-  } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ message: `Error creating job` }), {
-      status: 500
-    });
   }
+
+  const { id, url } = result;
+  logger.log('Updating job', {
+    jobId: id
+  });
+
+  const { error } = await supabase
+    .from('jobs')
+    .update({
+      status: 'completed',
+      video_url: url
+    })
+    .eq('original_video_url', result.originalVideoUrl)
+    .select();
+
+  if (error) {
+    logger.error('Failed to update job', {
+      jobId: id,
+      error
+    });
+    throw error;
+  }
+
+  return new Response(JSON.stringify({}), {
+    status: 200
+  });
 }
