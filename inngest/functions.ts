@@ -84,39 +84,40 @@ export const processJob = inngest.createFunction(
       return { event };
     }
 
-    // Assume job is in "uploaded" state
-    try {
-      console.log('transcribing');
-      const { transcription_id } = await transcribeAndTranslate(job);
-      console.log('Transcription ID', transcription_id);
+    if (job.status !== 'uploaded') {
+      // Assume job is in "uploaded" state
+      try {
+        console.log('transcribing');
+        const { transcription_id } = await transcribeAndTranslate(job);
+        console.log('Transcription ID', transcription_id);
 
-      console.log('updating job with transcription id');
-      await updateJob(data.jobId, {
-        transcription_id,
-        status: 'transcribing'
-      });
-
-      let attempts = 0;
-      const transcriptReady = false;
-      do {
-        console.log('checking for transcript');
-        job = await getLatestJob(data.jobId);
-        if (job.transcript) {
-          console.log('We got the transcript!');
-          break;
-        }
-
-        attempts += 1;
-        console.log("not ready yet, let's wait, attempt #", attempts);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } while (!transcriptReady);
-
-      console.log('transcribed');
-      await step.sleep('waiting-for-transcript', '2s');
-    } catch (err) {
-      console.error('Failed to transcribe and translate');
-      throw err;
+        console.log('updating job with transcription id');
+        await updateJob(data.jobId, {
+          transcription_id,
+          status: 'transcribing'
+        });
+      } catch (err) {
+        console.error('Failed to transcribe and translate');
+        throw err;
+      }
     }
+
+    let attempts = 0;
+    const transcriptReady = false;
+    do {
+      console.log('checking for transcript');
+      job = await getLatestJob(data.jobId);
+      if (job.transcript) {
+        console.log('We got the transcript!');
+        break;
+      }
+
+      attempts += 1;
+      console.log("not ready yet, let's wait, attempt #", attempts);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    } while (!transcriptReady);
+
+    console.log('transcribed');
 
     console.log('Updating state to cloning');
     await updateJob(data.jobId, {
