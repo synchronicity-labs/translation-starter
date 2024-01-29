@@ -1,9 +1,12 @@
+import { FC } from 'react';
+
+import Image from 'next/image';
+
+import { Box, Flex, Stack, Text } from '@chakra-ui/react';
+
 import SelectLanguage from '@/assets/Instructions/select-language.png';
 import SelectVideo from '@/assets/Instructions/select-video.png';
 import Submit from '@/assets/Instructions/submit.png';
-import { Box, Flex, Stack, Text } from '@chakra-ui/react';
-import Image from 'next/image';
-import { FC } from 'react';
 
 interface Props {}
 

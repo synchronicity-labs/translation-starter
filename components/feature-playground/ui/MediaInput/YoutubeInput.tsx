@@ -1,7 +1,9 @@
+import { FC } from 'react';
+
+import { Button, Text, Stack, Tooltip, Input } from '@chakra-ui/react';
+
 import Info from '@/components/ui/Display/Info';
 import { checkIfValidYoutubeUrl } from '@/utils/regex';
-import { Button, Text, Stack, Tooltip, Input } from '@chakra-ui/react';
-import { FC } from 'react';
 
 interface Props {
   url: string;

@@ -1,4 +1,5 @@
-import AuthUI from '@/app/signin/AuthUI';
+import { FC } from 'react';
+
 import {
   Flex,
   Modal,
@@ -8,7 +9,8 @@ import {
   ModalHeader,
   Text
 } from '@chakra-ui/react';
-import { FC } from 'react';
+
+import AuthUI from '@/app/signin/AuthUI';
 
 interface Props {
   isOpen: boolean;

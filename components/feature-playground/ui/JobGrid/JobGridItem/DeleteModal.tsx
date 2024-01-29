@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import {
   Button,
   Flex,
@@ -11,7 +13,6 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useState } from 'react';
 
 const DeleteModal = ({
   jobId,

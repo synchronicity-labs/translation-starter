@@ -1,6 +1,6 @@
 export default async function apiRequest(
   url: string,
-  data: Object,
+  data: object,
   method?: string
 ) {
   const response = await fetch(url, {
@@ -10,7 +10,8 @@ export default async function apiRequest(
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    const text = await response.text();
+    throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
   }
 
   return response.json();

@@ -1,3 +1,5 @@
+import { Flex, Stack } from '@chakra-ui/react';
+
 import {
   getCreditBalance,
   getSession,
@@ -6,7 +8,6 @@ import {
 import JobGrid from '@/components/feature-playground/ui/JobGrid';
 import MediaInput from '@/components/feature-playground/ui/MediaInput';
 import PageHeader from '@/components/ui/Display/PageHeader';
-import { Flex, Stack } from '@chakra-ui/react';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,5 +1,6 @@
-import { exists, isValidUrl } from '@/utils/helpers';
 import fetch, { FormData } from 'node-fetch';
+
+import { exists, isValidUrl } from '@/utils/helpers';
 
 export async function POST(req: Request) {
   // Ensure the API key is set

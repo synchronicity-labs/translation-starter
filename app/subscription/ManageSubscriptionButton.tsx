@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { Session } from '@supabase/supabase-js';
+import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
+
 import Button from '@/components/ui/Input/Button';
 import { postData } from '@/utils/helpers';
-import { Session } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 
 interface Props {
   session: Session;
