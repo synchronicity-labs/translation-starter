@@ -165,6 +165,9 @@ Note - When creating products in Stripe, make sure you add a key/value pair with
 
 ### 7. (Optional) Set up Upload from Youtube
 
+TODO: Optional Betterstack logs
+
+
 ## Running locally
 
 ### 1. Clone your GitHub repository to your local machine 

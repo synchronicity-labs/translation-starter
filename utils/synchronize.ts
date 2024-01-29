@@ -12,7 +12,7 @@ if (!baseUrl) {
   throw new Error('NEXT_PUBLIC_SITE_URL is not set');
 }
 const API_URL =
-  process.env.NEXT_PUBLIC_SYNC_API_URL || 'https://api.synclabs.so';
+  process.env.NEXT_PUBLIC_SYNC_API_URL || 'https://api.synclabs.so/video';
 
 export default async function synchronize(job: Job) {
   logger.log('Checking for SyncLabs API key');
@@ -27,7 +27,7 @@ export default async function synchronize(job: Job) {
   }
   logger.log('SyncLabs API key found');
   logger.log('Sending request to SyncLabs at ' + API_URL);
-  const response = await fetch(`${API_URL}/video`, {
+  const response = await fetch(`${API_URL}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

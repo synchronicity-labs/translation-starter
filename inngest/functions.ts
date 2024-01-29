@@ -1,5 +1,7 @@
 const CONRCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '1');
 
+import assert from 'assert';
+
 import { createClient } from '@supabase/supabase-js';
 
 import { inngest } from '@/inngest/client';
@@ -9,7 +11,6 @@ import deleteVoice from '@/utils/deleteVoice';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
 import transcribeAndTranslate from '@/utils/transcribeAndTranslate';
-import assert from 'assert';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
