@@ -198,12 +198,7 @@ export const processJob = inngest.createFunction(
     }
 
     if (job.status === 'synchronizing') {
-      try {
-        await synchronize(job);
-      } catch (err) {
-        logger.error('Failed to synchronize');
-        throw err;
-      }
+      await synchronize(job);
     }
 
     logger.log(`Job is in ${job.status} state, cleaning up`);
