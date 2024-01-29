@@ -31,7 +31,7 @@ export default async function synchronize(job: Job) {
   // Send the request to SyncLabs
   // const response = await fetch(`https://api.synclabs.so/video`, {
   logger.log('Sending request to SyncLabs at ' + API_URL);
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_URL}/video`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
