@@ -1,19 +1,7 @@
 'use client';
 
-import Requirements from './Requirements';
-import UrlInput from './UrlInput';
-import YoutubeInput from './YoutubeInput';
-import Info from '@/components/ui/Display/Info';
-import FileDrop from '@/components/ui/Input/FileDrop';
-import Selector from '@/components/ui/Input/Selector';
-import { SignUpModal } from '@/components/ui/Modals';
-import { languages } from '@/data/languages';
-import { Job, JobStatus } from '@/types/db';
-import loadFfmpeg from '@/utils/load-ffmpeg';
-import { checkIfValidYoutubeUrl } from '@/utils/regex';
-import supabase from '@/utils/supabase';
-import transcodeVideoToAudio from '@/utils/transcode-video-to-audio';
-import uploadYoutubeToSupabase from '@/utils/upload-youtube-to-supabase';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+
 import {
   Button,
   Flex,
@@ -26,8 +14,23 @@ import {
 } from '@chakra-ui/react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { Session } from '@supabase/auth-helpers-nextjs';
-import { FC, useCallback, useEffect, useState, useRef } from 'react';
 import { HiSparkles } from 'react-icons/hi';
+
+import Info from '@/components/ui/Display/Info';
+import FileDrop from '@/components/ui/Input/FileDrop';
+import Selector from '@/components/ui/Input/Selector';
+import { SignUpModal } from '@/components/ui/Modals';
+import { languages } from '@/data/languages';
+import { JobStatus } from '@/types/db';
+import loadFfmpeg from '@/utils/load-ffmpeg';
+import { checkIfValidYoutubeUrl } from '@/utils/regex';
+import supabase from '@/utils/supabase';
+import transcodeVideoToAudio from '@/utils/transcode-video-to-audio';
+import uploadYoutubeToSupabase from '@/utils/upload-youtube-to-supabase';
+
+import Requirements from './Requirements';
+import UrlInput from './UrlInput';
+import YoutubeInput from './YoutubeInput';
 
 interface Props {
   session: Session | null;
@@ -81,41 +84,19 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
     if (session && isOpen) {
       onClose();
     }
-  }, [session]);
+  }, [isOpen, onClose, session]);
+
+  const load = useCallback(async () => {
+    const ffmpeg_response: FFmpeg = await loadFfmpeg();
+    ffmpegRef.current = ffmpeg_response;
+  }, []);
 
   // Load FFMPEG on component mount
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
-  const load = async () => {
-    const ffmpeg_response: FFmpeg = await loadFfmpeg();
-    ffmpegRef.current = ffmpeg_response;
-  };
-
-  async function getUploadUrl(
-    fileOrUrl: File | string | undefined,
-    pathPrefix: string
-  ) {
-    try {
-      if (typeof fileOrUrl === 'string') {
-        if (checkIfValidYoutubeUrl(fileOrUrl)) {
-          const response = await uploadYoutubeToSupabase(fileOrUrl, pathPrefix);
-          return response.data.url;
-        } else {
-          return fileOrUrl;
-        }
-      } else if (fileOrUrl instanceof File) {
-        return await uploadFile(fileOrUrl, `${pathPrefix}.mp4`);
-      } else {
-        throw new Error('Invalid file or URL provided');
-      }
-    } catch (error: any) {
-      throw new Error('Error in getUploadUrl: ' + error.message);
-    }
-  }
-
-  async function uploadFile(file: File, filePath: string) {
+  const uploadFile = useCallback(async (file: File, filePath: string) => {
     const { data, error } = await supabase.storage
       .from('translation')
       .upload(filePath, file, {
@@ -135,129 +116,171 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
     const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/translation/${data.path}`;
 
     return url;
-  }
+  }, []);
 
-  const handleJobFailed = async (errorMessage: string, jobId?: string) => {
-    setLoading(false);
-    setVideo(null);
-    setUrl('');
-    setLanguage(null);
-    {
-      jobId &&
-        (await fetch('/api/db/update-job', {
-          method: 'POST',
-          body: JSON.stringify({
-            jobId,
-            updatedFields: {
-              status: 'failed' as JobStatus
-            }
-          })
-        }));
-    }
-    toast({
-      title: 'Error occured while creating video',
-      description: errorMessage,
-      status: 'error',
-      duration: null,
-      isClosable: true
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    setLoading(true);
-
-    // If user isn't signed in, open sign up modal
-    if (!session) {
-      onOpen();
-      return;
-    }
-
-    // If no video is selected, show error
-    if (!video && !url) {
-      handleJobFailed('Video file or url is required');
-      return;
-    }
-
-    if (!creditsAvailable) {
-      handleJobFailed('You do not have enough credits to create a video');
-      return;
-    }
-
-    // Create new job
-    const createJob = await fetch(`/api/db/create-job`, {
-      method: 'POST'
-    });
-
-    if (!createJob.ok) {
-      handleJobFailed(`Failed to create job`);
-      return;
-    }
-
-    const { data: job } = await createJob.json();
-
-    // Update job status to uploading
-    const updateJobToUploading = await fetch('/api/db/update-job', {
-      method: 'POST',
-      body: JSON.stringify({
-        jobId: job.id,
-        updatedFields: {
-          status: 'uploading' as JobStatus,
-          target_language: language
+  const getUploadUrl = useCallback(
+    async (fileOrUrl: File | string | undefined, pathPrefix: string) => {
+      try {
+        if (typeof fileOrUrl === 'string') {
+          if (checkIfValidYoutubeUrl(fileOrUrl)) {
+            const response = await uploadYoutubeToSupabase(
+              fileOrUrl,
+              pathPrefix
+            );
+            return response.data.url;
+          } else {
+            return fileOrUrl;
+          }
+        } else if (fileOrUrl instanceof File) {
+          return await uploadFile(fileOrUrl, `${pathPrefix}.mp4`);
+        } else {
+          throw new Error('Invalid file or URL provided');
         }
-      })
-    });
+      } catch (error: any) {
+        throw new Error('Error in getUploadUrl: ' + error.message);
+      }
+    },
+    [uploadFile]
+  );
 
-    if (!updateJobToUploading.ok) {
-      handleJobFailed(`Failed to update job status to 'uploading'`);
-      return;
-    }
+  const handleJobFailed = useCallback(
+    async (errorMessage: string, jobId?: string) => {
+      setLoading(false);
+      setVideo(null);
+      setUrl('');
+      setLanguage(null);
+      {
+        jobId &&
+          (await fetch('/api/db/update-job', {
+            method: 'POST',
+            body: JSON.stringify({
+              jobId,
+              updatedFields: {
+                status: 'failed' as JobStatus
+              }
+            })
+          }));
+      }
+      toast({
+        title: 'Error occured while creating video',
+        description: errorMessage,
+        status: 'error',
+        duration: null,
+        isClosable: true
+      });
+    },
+    [toast]
+  );
 
-    // Upload video to supabase storage
-    const videoUrl = await getUploadUrl(
-      video || url,
-      `public/input-video-${job.id}`
-    );
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    // Transcode video to audio
-    const { blob, output } = await transcodeVideoToAudio(
-      ffmpegRef.current,
-      videoUrl
-    );
+      setLoading(true);
 
-    const audioUrl = await uploadFile(
-      blob,
-      `public/input-audio-${job.id}-${output}`
-    );
+      // If user isn't signed in, open sign up modal
+      if (!session) {
+        onOpen();
+        return;
+      }
 
-    if (!videoUrl || !audioUrl) {
-      handleJobFailed(`Failed to upload video and audio to Supabase storage`);
-      return;
-    }
+      // If no video is selected, show error
+      if (!video && !url) {
+        handleJobFailed('Video file or url is required');
+        return;
+      }
 
-    // Update job status to transcribing
-    const updateJobToTranscribing = await fetch('/api/db/update-job', {
-      method: 'POST',
-      body: JSON.stringify({
-        jobId: job.id,
-        updatedFields: {
-          original_video_url: videoUrl,
-          original_audio_url: audioUrl
-        }
-      })
-    });
+      if (!creditsAvailable) {
+        handleJobFailed('You do not have enough credits to create a video');
+        return;
+      }
 
-    if (!updateJobToTranscribing.ok) {
-      handleJobFailed(`Failed to update job status to 'transcribing'`);
-      return;
-    }
+      // Create new job
+      const createJob = await fetch(`/api/db/create-job`, {
+        method: 'POST'
+      });
 
-    setLoading(false);
-    setVideo(null);
-    setLanguage(null);
-    setUrl('');
-  };
+      if (!createJob.ok) {
+        handleJobFailed(`Failed to create job`);
+        return;
+      }
+
+      const { data: job } = await createJob.json();
+
+      // Update job status to uploading
+      const updateJobToUploading = await fetch('/api/db/update-job', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: job.id,
+          updatedFields: {
+            status: 'uploading' as JobStatus,
+            target_language: language
+          }
+        })
+      });
+
+      if (!updateJobToUploading.ok) {
+        handleJobFailed(`Failed to update job status to 'uploading'`);
+        return;
+      }
+
+      // Upload video to supabase storage
+      const videoUrl = await getUploadUrl(
+        video || url,
+        `public/input-video-${job.id}`
+      );
+
+      // Transcode video to audio
+      const { blob, output } = await transcodeVideoToAudio(
+        ffmpegRef.current,
+        videoUrl
+      );
+
+      const audioUrl = await uploadFile(
+        blob,
+        `public/input-audio-${job.id}-${output}`
+      );
+
+      if (!videoUrl || !audioUrl) {
+        handleJobFailed(`Failed to upload video and audio to Supabase storage`);
+        return;
+      }
+
+      // Update job
+      const updateJobToTranscribing = await fetch('/api/db/update-job', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: job.id,
+          updatedFields: {
+            status: 'uploaded',
+            original_video_url: videoUrl,
+            original_audio_url: audioUrl
+          }
+        })
+      });
+
+      if (!updateJobToTranscribing.ok) {
+        handleJobFailed(`Failed to update job status to 'transcribing'`);
+        return;
+      }
+
+      setLoading(false);
+      setVideo(null);
+      setLanguage(null);
+      setUrl('');
+    },
+    [
+      creditsAvailable,
+      getUploadUrl,
+      handleJobFailed,
+      language,
+      onOpen,
+      session,
+      uploadFile,
+      url,
+      video
+    ]
+  );
 
   // Function for updating video state when file is added
   const handleAddFile = useCallback((e: File[]) => {
