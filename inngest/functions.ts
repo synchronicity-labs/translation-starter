@@ -102,7 +102,7 @@ export const processJob = inngest.createFunction(
       return { event };
     }
 
-    if (job.status !== 'uploaded') {
+    if (job.status === 'uploaded') {
       // Assume job is in "uploaded" state
       try {
         logger.log('transcribing');
