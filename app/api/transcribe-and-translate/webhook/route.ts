@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     translated_text: transalatedText,
     status: 'cloning'
   };
-  logger.log('UPDATE', update);
+  logger.log(`Updating job with ID ${result.request_id}`, update);
   const { error } = await supabase
     .from('jobs')
     .update({

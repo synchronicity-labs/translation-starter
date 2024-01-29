@@ -180,7 +180,7 @@ export const processJob = inngest.createFunction(
 
     if (!job.translated_audio_url && job.status === 'synthesizing') {
       try {
-        logger.log('synthesizing speech', job);
+        logger.log('synthesizing speech');
         const fields = await synthesisSpeech(job);
         await updateJob(data.jobId, {
           ...fields,
