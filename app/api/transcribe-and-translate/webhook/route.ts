@@ -65,14 +65,6 @@ export async function POST(req: Request) {
   );
   const sourceLanguageName = sourceLanauge?.name || sourceLanaugeCode;
 
-  const update = {
-    transcript,
-    source_language: sourceLanguageName,
-    translated_text: transalatedText,
-    status: 'transcribed'
-  };
-  console.log('UPDATE', update);
-
   const job = await getLatestJob(result.request_id);
   if (job.status !== 'transcribing') {
     return new Response(JSON.stringify({ error: { statusCode: 200 } }), {
@@ -80,6 +72,13 @@ export async function POST(req: Request) {
     });
   }
 
+  const update = {
+    transcript,
+    source_language: sourceLanguageName,
+    translated_text: transalatedText,
+    status: 'transcribed'
+  };
+  console.log('UPDATE', update);
   const { error } = await supabase
     .from('jobs')
     .update({

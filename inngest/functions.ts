@@ -3,6 +3,7 @@ const CONRCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '1');
 import { createClient } from '@supabase/supabase-js';
 
 import { inngest } from '@/inngest/client';
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 import cloneVoice from '@/utils/clone-voice';
 import deleteVoice from '@/utils/deleteVoice';
 import synchronize from '@/utils/synchronize';
@@ -14,6 +15,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY as string
 );
 
+const l = new SynchronicityLogger({
+  name: 'process-job'
+});
+
 const getLatestJob = async (jobId: string) => {
   const { data: fetchedJobs, error: fetchError } = await supabase
     .from('jobs')
@@ -22,12 +27,17 @@ const getLatestJob = async (jobId: string) => {
     .neq('is_deleted', true);
 
   if (fetchError) {
-    console.error('Failed to fetch job');
+    l.error('Failed to fetch job', {
+      jobId,
+      error: fetchError
+    });
     throw fetchError;
   }
 
   if (!fetchedJobs || fetchedJobs.length === 0) {
-    console.error('Job not found');
+    l.error('Job not found', {
+      jobId
+    });
     throw new Error('Job not found');
   }
 
@@ -60,12 +70,12 @@ export const processJob = inngest.createFunction(
         videoUrl: string;
         audioUrl: string;
       } = event.data.event.data;
-      console.error('Failed to process job', data, error);
+      logger.error('Failed to process job', data, error);
 
       const job = await getLatestJob(data.jobId);
-      console.log('Deleting voice on failure');
+      logger.log('Deleting voice on failure');
       await deleteVoice(job);
-      console.log('Deleted voice on failure');
+      logger.log('Deleted voice on failure');
     }
   },
   { event: 'jobs.submitted' },
@@ -76,28 +86,32 @@ export const processJob = inngest.createFunction(
       audioUrl: string;
     } = event.data;
 
-    console.log('Processing job:', data);
+    const logger = l.getSubLogger({
+      name: data.jobId
+    });
+
+    logger.log('Processing job:', data);
 
     let job = await getLatestJob(data.jobId);
     if (job.status === 'completed') {
-      console.log('Job already completed');
+      logger.log('Job already completed');
       return { event };
     }
 
     if (job.status !== 'uploaded') {
       // Assume job is in "uploaded" state
       try {
-        console.log('transcribing');
+        logger.log('transcribing');
         const { transcription_id } = await transcribeAndTranslate(job);
-        console.log('Transcription ID', transcription_id);
+        logger.log('Transcription ID', transcription_id);
 
-        console.log('updating job with transcription id');
+        logger.log('updating job with transcription id');
         await updateJob(data.jobId, {
           transcription_id,
           status: 'transcribing'
         });
       } catch (err) {
-        console.error('Failed to transcribe and translate');
+        logger.error('Failed to transcribe and translate');
         throw err;
       }
     }
@@ -105,25 +119,25 @@ export const processJob = inngest.createFunction(
     let attempts = 0;
     const transcriptReady = false;
     do {
-      console.log('checking for transcript');
+      logger.log('checking for transcript');
       job = await getLatestJob(data.jobId);
       if (job.transcript) {
-        console.log('We got the transcript!');
+        logger.log('We got the transcript!');
         break;
       }
 
       attempts += 1;
-      console.log("not ready yet, let's wait, attempt #", attempts);
+      logger.log("not ready yet, let's wait, attempt #", attempts);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } while (!transcriptReady);
 
-    console.log('transcribed');
+    logger.log('transcribed');
 
-    console.log('Updating state to cloning');
+    logger.log('Updating state to cloning');
     await updateJob(data.jobId, {
       status: 'cloning'
     });
-    console.log('Updated state to cloning');
+    logger.log('Updated state to cloning');
 
     job = await getLatestJob(data.jobId);
 
@@ -131,7 +145,7 @@ export const processJob = inngest.createFunction(
       const fields = await cloneVoice(job);
       await updateJob(data.jobId, fields);
     } catch (err) {
-      console.error('Failed to clone voice');
+      logger.error('Failed to clone voice');
       throw err;
     }
 
@@ -143,11 +157,11 @@ export const processJob = inngest.createFunction(
     job = await getLatestJob(data.jobId);
 
     try {
-      console.log('synthesizing speech', job);
+      logger.log('synthesizing speech', job);
       const fields = await synthesisSpeech(job);
       await updateJob(data.jobId, fields);
     } catch (err) {
-      console.error('Failed to synthesize speech');
+      logger.error('Failed to synthesize speech');
       throw err;
     }
 
@@ -159,7 +173,7 @@ export const processJob = inngest.createFunction(
     try {
       await synchronize(job);
     } catch (err) {
-      console.error('Failed to synchronize');
+      logger.error('Failed to synchronize');
       throw err;
     }
 
