@@ -138,7 +138,7 @@ export const processJob = inngest.createFunction(
     if (job.transcription_id) {
       let attempts = 0;
       do {
-        if (attempts > 20) {
+        if (attempts > 50) {
           logger.error('Failed to get transcript');
           throw new Error('Failed to get transcript');
         }
@@ -196,11 +196,7 @@ export const processJob = inngest.createFunction(
 
     if (job.status === 'synchronizing') {
       try {
-        const results = await synchronize(job);
-        await updateJob(data.jobId, {
-          status: 'completed',
-          ...results
-        });
+        await synchronize(job);
       } catch (err) {
         logger.error('Failed to synchronize');
         throw err;

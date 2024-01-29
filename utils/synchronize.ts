@@ -11,10 +11,7 @@ export default async function synchronize(job: Job) {
     audioUrl: job.translated_audio_url
   });
 
-  const { data } = await synchronization;
+  await synchronization;
 
-  const updatedFields = {
-    credits: data.credits_deducted
-  };
-  return updatedFields;
+  return {};
 }
