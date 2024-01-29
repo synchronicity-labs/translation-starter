@@ -14,7 +14,7 @@ const getLatestJob = async (jobId: string) => {
   const { data: fetchedJobs, error: fetchError } = await supabase
     .from('jobs')
     .select('*')
-    .eq('id', jobId)
+    .eq('original_video_url', jobId)
     .neq('is_deleted', true);
 
   if (fetchError) {
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   const { result } = await req.json();
   logger.log('GOT RESULT IN LIP SYNC WEBHOOK', result);
 
-  const job = await getLatestJob(result.id);
+  const job = await getLatestJob(result.originalVideoUrl);
   if (job.status !== 'synchronizing') {
     return new Response(JSON.stringify({ error: { statusCode: 200 } }), {
       status: 200
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       status: 'completed',
       video_url: url
     })
-    .eq('id', id)
+    .eq('original_video_url', result.originalVideoUrl)
     .select();
 
   if (error) {
