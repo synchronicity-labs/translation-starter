@@ -141,6 +141,7 @@ export async function getJobsBetweenDates(
 export async function getCreditBalance() {
   const subscription = await getSubscription();
   if (subscription) {
+    // @ts-ignore
     const metadata: Metadata = subscription?.prices?.products
       ?.metadata as Metadata;
     const subscriptionCredits = Number(metadata?.credits);
