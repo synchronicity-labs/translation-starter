@@ -63,7 +63,10 @@ const updateJob = async (jobId: string, updatedFields: any) => {
 export const processJob = inngest.createFunction(
   {
     id: 'process-job',
-    concurrency: CONRCURRENT_JOBS,
+    concurrency: {
+      scope: 'env',
+      limit: CONRCURRENT_JOBS
+    },
     retries: parseInt(process.env.MAX_JOB_RETRIES || '3') as any,
 
     // this will be used to determine if a job is a duplicate
