@@ -1,5 +1,31 @@
 import { languagesIso639 } from '@/data/iso-639-1-language-codes';
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string
+);
+
+const getLatestJob = async (jobId: string) => {
+  const { data: fetchedJobs, error: fetchError } = await supabase
+    .from('jobs')
+    .select('*')
+    .eq('transcription_id', jobId)
+    .neq('is_deleted', true);
+
+  if (fetchError) {
+    console.error('Failed to fetch job');
+    throw fetchError;
+  }
+
+  if (!fetchedJobs || fetchedJobs.length === 0) {
+    console.error('Job not found');
+    throw new Error('Job not found');
+  }
+
+  return fetchedJobs?.[0];
+};
 
 export async function OPTIONS(req: Request) {
   const data = await req.text();
@@ -24,6 +50,7 @@ export async function POST(req: Request) {
     });
   }
 
+  console.log('GOT RESULT IN TRANSCRIBE WEBHOOK', result);
   const transcript = result.payload.prediction;
 
   const transalatedText = transcript
@@ -36,31 +63,36 @@ export async function POST(req: Request) {
   );
   const sourceLanguageName = sourceLanauge?.name || sourceLanaugeCode;
 
-  const updateJobResponse = await fetch(
-    `${
-      process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    }/api/db/update-job-by-transcription-id`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        transcriptionId: result.request_id,
-        updatedFields: {
-          transcript,
-          source_language: sourceLanguageName,
-          translated_text: transalatedText
-        }
-      })
-    }
-  );
+  const update = {
+    transcript,
+    source_language: sourceLanguageName,
+    translated_text: transalatedText,
+    status: 'transcribed'
+  };
+  console.log('UPDATE', update);
 
-  if (!updateJobResponse.ok) {
-    console.error(
-      `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
-    );
-    return NextResponse.json({
-      success: false,
-      message: `Failed to update job status: ${updateJobResponse.status} ${updateJobResponse.statusText}`
+  const job = await getLatestJob(result.request_id);
+  if (job.status !== 'transcribing') {
+    return new Response(JSON.stringify({ error: { statusCode: 200 } }), {
+      status: 200
     });
+  }
+
+  const { error } = await supabase
+    .from('jobs')
+    .update({
+      ...update
+    })
+    .eq('transcription_id', result.request_id)
+    .select();
+
+  if (error) {
+    console.log('Failed to update job', error);
+    return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
+      status: 500
+    });
+  } else {
+    console.log('Updated job with ID', result.request_id);
   }
 
   return NextResponse.json({ success: true });
