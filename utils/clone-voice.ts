@@ -1,6 +1,9 @@
+import { Job, OnFailedJob } from '@/types/db';
+
 import apiRequest from './api-request';
 import updateJob from './update-job';
-import { Job, OnFailedJob } from '@/types/db';
+
+const VOICE_OVERRIDE_ID = process.env.NEXT_PUBLIC_VOICE_OVERRIDE_ID;
 
 export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
   try {
@@ -12,8 +15,10 @@ export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
 
     const { data } = await voiceClone;
 
+    const voiceIdToUse = VOICE_OVERRIDE_ID || data.voice_id;
+
     const updatedFields = {
-      voice_id: data.voice_id
+      voice_id: voiceIdToUse
     };
 
     await updateJob(job, updatedFields, onFail);
