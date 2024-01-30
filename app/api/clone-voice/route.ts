@@ -1,6 +1,7 @@
-import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
+
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 
 const l = new SynchronicityLogger({
   name: 'api/clone-voice/route'
