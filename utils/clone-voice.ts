@@ -15,7 +15,7 @@ export default async function cloneVoice(job: Job) {
 
   const { data } = await voiceClone;
 
-  const voiceIdToUse = VOICE_OVERRIDE_ID || data.voice_id;
+  const voiceIdToUse = data.voice_id || VOICE_OVERRIDE_ID;
 
   const updatedFields = {
     voice_id: voiceIdToUse
