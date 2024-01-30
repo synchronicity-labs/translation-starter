@@ -170,7 +170,7 @@ TODO: Optional Betterstack logs
 
 ## Running locally
 
-### 1. Clone your GitHub repository to your local machine 
+### 1. Clone your GitHub repository to your local machine and make sure to use Node version 19.1.0 or above.
 
 ### 2. Link your project using the `Vercel CLI`
 
