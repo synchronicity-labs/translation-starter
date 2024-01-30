@@ -13,20 +13,18 @@ export default async function synthesisSpeech(job: Job) {
   const path = `${TRANSLATION_API}/api/speech-synthesis`;
 
   logger.log(`calling /api/speech-synthesis for job ${job.id}`);
-  const synthesis = await apiRequest(path, {
+  const result = await apiRequest(path, {
+    id: job.id,
     text: job.translated_text,
     voiceId: job.voice_id || '9F4C8ztpNUmXkdDDbz3J'
   });
   logger.log(`called /api/speech-synthesis for job ${job.id}`);
 
-  const { data: translatedAudioUrl } = await synthesis;
-  logger.log(
-    `got translated audio url ${translatedAudioUrl} for job ${job.id}`
-  );
+  const { data } = await result;
 
-  const updatedFields = {
-    translated_audio_url: translatedAudioUrl
+  return {
+    id: data.id,
+    synthesizeId: data.synthesizeId,
+    status: data.status
   };
-
-  return updatedFields;
 }
