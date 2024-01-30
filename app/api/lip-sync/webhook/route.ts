@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { id, url } = result;
+  const { id, url, creditsDeducted } = result;
   logger.log('Updating job', {
     jobId: id
   });
@@ -56,7 +56,8 @@ export async function POST(req: Request) {
     .from('jobs')
     .update({
       status: 'completed',
-      video_url: url
+      video_url: url,
+      credits: creditsDeducted
     })
     .eq('original_video_url', result.originalVideoUrl)
     .select();
