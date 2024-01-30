@@ -1,4 +1,3 @@
-import { infer } from './../../../node_modules/inngest/helpers/validators/zod.d';
 import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 import { isValidUrl, exists } from '@/utils/helpers';
 
