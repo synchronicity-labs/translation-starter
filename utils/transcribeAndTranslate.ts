@@ -1,29 +1,19 @@
+import { Job } from '@/types/db';
+
 import apiRequest from './api-request';
-import updateJob from './update-job';
-import { Job, OnFailedJob } from '@/types/db';
 
-export default async function transcribeAndTranslate(
-  job: Job,
-  onFail: OnFailedJob
-) {
-  try {
-    const path = '/api/transcribe-and-translate';
-    const result = await apiRequest(path, {
-      url: job.original_audio_url,
-      targetLanguage: job.target_language
-    });
+const TRANSLATION_API = process.env.NEXT_PUBLIC_TRANSLATION_API;
 
-    const { data } = await result;
+export default async function transcribeAndTranslate(job: Job) {
+  const path = `${TRANSLATION_API}/api/transcribe-and-translate`;
+  const result = await apiRequest(path, {
+    url: job.original_audio_url,
+    targetLanguage: job.target_language
+  });
 
-    const updatedFields = {
-      transcription_id: data.request_id
-    };
+  const { data } = await result;
 
-    await updateJob(job, updatedFields, onFail);
-  } catch (error) {
-    const errorMessage =
-      (error as Error).message || 'An unknown error occurred';
-    onFail(job.id, errorMessage);
-    throw new Error(`Failed to transcribe - ${errorMessage}`);
-  }
+  return {
+    transcription_id: data.request_id
+  };
 }

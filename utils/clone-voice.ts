@@ -1,26 +1,24 @@
+import { Job } from '@/types/db';
+
 import apiRequest from './api-request';
-import updateJob from './update-job';
-import { Job, OnFailedJob } from '@/types/db';
 
-export default async function cloneVoice(job: Job, onFail: OnFailedJob) {
-  try {
-    const path = '/api/clone-voice';
-    const voiceClone = await apiRequest(path, {
-      id: job.id,
-      audioUrl: job.original_audio_url
-    });
+const VOICE_OVERRIDE_ID = process.env.NEXT_PUBLIC_VOICE_OVERRIDE_ID;
 
-    const { data } = await voiceClone;
+const TRANSLATION_API = process.env.NEXT_PUBLIC_TRANSLATION_API;
 
-    const updatedFields = {
-      voice_id: data.voice_id
-    };
+export default async function cloneVoice(job: Job) {
+  const path = `${TRANSLATION_API}/api/clone-voice`;
+  const voiceClone = await apiRequest(path, {
+    id: job.id,
+    audioUrl: job.original_audio_url
+  });
 
-    await updateJob(job, updatedFields, onFail);
-  } catch (error) {
-    const updatedFields = {
-      voice_id: `9F4C8ztpNUmXkdDDbz3J`
-    };
-    await updateJob(job, updatedFields, onFail);
-  }
+  const { data } = await voiceClone;
+
+  const voiceIdToUse = data.voice_id || VOICE_OVERRIDE_ID;
+
+  const updatedFields = {
+    voice_id: voiceIdToUse
+  };
+  return updatedFields;
 }

@@ -1,13 +1,16 @@
 'use client';
 
-import JobGridItem from './JobGridItem';
-import JobGridLoading from './JobGridLoading';
+import { FC, useState } from 'react';
+
+import { Stack, Flex, Grid } from '@chakra-ui/react';
+
 import PageNavigator from '@/components/ui/PageNavigator';
 import useJobData from '@/hooks/useJobData';
 import { Job } from '@/types/db';
 import { sortByCreatedAt } from '@/utils/helpers';
-import { Stack, Flex, Grid } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+
+import JobGridLoading from './JobGridLoading';
+import JobGridItem from './JobGridItem';
 
 export const dynamic = 'force-dynamic';
 

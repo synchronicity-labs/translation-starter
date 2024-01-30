@@ -1,5 +1,6 @@
-import { Flex, ListItem, Stack, Text, UnorderedList } from '@chakra-ui/react';
 import { FC } from 'react';
+
+import { Flex, ListItem, Stack, Text, UnorderedList } from '@chakra-ui/react';
 
 interface Props {
   requirements: { label: string; items: string[] }[];

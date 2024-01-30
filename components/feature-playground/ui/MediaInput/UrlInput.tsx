@@ -1,6 +1,8 @@
-import Info from '@/components/ui/Display/Info';
-import { Input, Text, Stack } from '@chakra-ui/react';
 import { FC } from 'react';
+
+import { Input, Text, Stack } from '@chakra-ui/react';
+
+import Info from '@/components/ui/Display/Info';
 
 interface Props {
   url: string;

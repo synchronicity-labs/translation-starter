@@ -1,5 +1,6 @@
-import { Stack, Input, Box, Flex } from '@chakra-ui/react';
 import { FC, PropsWithChildren, useRef } from 'react';
+
+import { Stack, Input, Box, Flex } from '@chakra-ui/react';
 import { MdOutlineFileUpload } from 'react-icons/md';
 
 interface Props extends PropsWithChildren {

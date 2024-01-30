@@ -124,9 +124,18 @@ Next, you'll need to configure [Stripe](https://stripe.com/) in order to handle 
 
 When you innevitably want to make changes to the app, you'll need to run it locally.
 
+### 6. (Optional) Set up Github as a OAuth provider in Supabase
+
+### 7. (Optional) Set up Upload from Youtube
+
+TODO: Optional Betterstack logs
+
+## Running locally
+
 You can deploy a second Supabase project so that you have an environment to use for local development, but this tutorial will assume you're using the Supabase project that you deployed in the top section.
 
-### 1. Clone your GitHub repository to your local machine 
+
+### 1. Clone your GitHub repository to your local machine and make sure to use Node version 19.1.0 or above.
 
 Clone the repository however you prefer.
 

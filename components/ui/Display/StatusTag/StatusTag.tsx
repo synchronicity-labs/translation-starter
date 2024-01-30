@@ -1,6 +1,8 @@
-import { JobStatus } from '@/types/db';
-import { Box, Flex, Text } from '@chakra-ui/react';
 import { FC } from 'react';
+
+import { Box, Flex, Text } from '@chakra-ui/react';
+
+import { JobStatus } from '@/types/db';
 
 interface Props {
   status: JobStatus;

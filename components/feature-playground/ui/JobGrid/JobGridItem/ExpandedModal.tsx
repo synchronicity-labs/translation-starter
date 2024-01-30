@@ -1,27 +1,30 @@
-import DeleteModal from './DeleteModal';
+import { useEffect, useState } from 'react';
+
+import {
+  Button,
+  Center,
+  Divider,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  Stack,
+  Text,
+  Tooltip,
+  useDisclosure,
+  useMediaQuery
+} from '@chakra-ui/react';
+import { DateTime } from 'luxon';
+import { BsTranslate } from 'react-icons/bs';
+import { FaTrash, FaVideo } from 'react-icons/fa';
+
 import VideoPlayer from '@/components/ui/VideoPlayer';
 import { languages } from '@/data/languages';
 import { Job, Transcript } from '@/types/db';
 import { removeEdgeParentheses } from '@/utils/helpers';
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  Flex,
-  Stack,
-  Text,
-  Center,
-  Divider,
-  useMediaQuery,
-  useDisclosure,
-  Button,
-  Tooltip,
-  ModalCloseButton
-} from '@chakra-ui/react';
-import { DateTime } from 'luxon';
-import { useEffect, useState } from 'react';
-import { BsTranslate } from 'react-icons/bs';
-import { FaTrash, FaVideo } from 'react-icons/fa';
+
+import DeleteModal from './DeleteModal';
 
 interface Props {
   job: Job;
@@ -89,7 +92,7 @@ const ExpandedModal = ({ job, isOpen, onClose }: Props) => {
       default:
         setUrl(null);
     }
-  }, [show]);
+  }, [job, show]);
 
   const {
     isOpen: deleteIsOpen,

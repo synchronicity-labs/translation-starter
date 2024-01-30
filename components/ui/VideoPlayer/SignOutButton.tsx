@@ -1,8 +1,10 @@
 'use client';
 
-import Button from '../Input/Button';
-import { useSupabase } from '@/app/supabase-provider';
 import { useRouter } from 'next/navigation';
+
+import { useSupabase } from '@/app/supabase-provider';
+
+import Button from '../Input/Button';
 
 export default function SignOutButton() {
   const router = useRouter();

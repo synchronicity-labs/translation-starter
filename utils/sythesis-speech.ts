@@ -1,25 +1,30 @@
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
+import { Job } from '@/types/db';
+
 import apiRequest from './api-request';
-import updateJob from './update-job';
-import { Job, OnFailedJob } from '@/types/db';
 
-export default async function synthesisSpeech(job: Job, onFail: OnFailedJob) {
-  try {
-    const path = '/api/speech-synthesis';
-    const synthesis = await apiRequest(path, {
-      text: job.translated_text,
-      voiceId: job.voice_id || '9F4C8ztpNUmXkdDDbz3J'
-    });
+const TRANSLATION_API = process.env.NEXT_PUBLIC_TRANSLATION_API;
 
-    const { data: translatedAudioUrl } = await synthesis;
+const logger = new SynchronicityLogger({
+  name: 'utils/sythesis-speech'
+});
 
-    const updatedFields = {
-      translated_audio_url: translatedAudioUrl
-    };
+export default async function synthesisSpeech(job: Job) {
+  const path = `${TRANSLATION_API}/api/speech-synthesis`;
 
-    await updateJob(job, updatedFields, onFail);
-  } catch (error) {
-    const errorMessage =
-      (error as Error).message || 'An unknown error occurred';
-    onFail(job.id, errorMessage);
-  }
+  logger.log(`calling /api/speech-synthesis for job ${job.id}`);
+  const result = await apiRequest(path, {
+    id: job.id,
+    text: job.translated_text,
+    voiceId: job.voice_id || '9F4C8ztpNUmXkdDDbz3J'
+  });
+  logger.log(`called /api/speech-synthesis for job ${job.id}`);
+
+  const { data } = await result;
+
+  return {
+    id: data.id,
+    synthesizeId: data.synthesizeId,
+    status: data.status
+  };
 }
