@@ -1,12 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
-
-import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
-
 import { createWriteStream, promises as fsPromises, readFileSync } from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+
+import { SynchronicityLogger } from '@/lib/SynchronicityLogger';
 
 const logger = new SynchronicityLogger({
   name: 'api/lip-sync/webhook'
@@ -17,26 +16,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY as string
 );
 
-// const getLatestJob = async (jobId: string) => {
-//   const { data: fetchedJobs, error: fetchError } = await supabase
-//     .from('jobs')
-//     .select('*')
-//     .eq('original_video_url', jobId)
-//     .neq('is_deleted', true);
-
-//   if (fetchError) {
-//     logger.error('Failed to fetch job');
-//     throw fetchError;
-//   }
-
-//   if (!fetchedJobs || fetchedJobs.length === 0) {
-//     logger.error('Job not found');
-//     throw new Error('Job not found');
-//   }
-
-//   return fetchedJobs?.[0];
-// };
-
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ message: `Method not allowed` }), {
@@ -44,14 +23,8 @@ export async function POST(req: Request) {
     });
   }
 
-  // console.log('Raw request body:', await req.text()); // Temporarily log raw body for debugging
-
-  // const data = await req.json();
   const id = req.headers.get('X-JOB-ID');
   const data = req.body;
-  logger.log('GOT RESULT IN SPEECH SYNTHESIS WEBHOOK', data);
-
-  // const data = result.body;
 
   logger.log('Speech Synthesis webhook - data: ', data);
 
@@ -66,7 +39,14 @@ export async function POST(req: Request) {
   const tempFilePath = path.join(tempDir, `translated-audio-${uuid}.mp3`);
   const fileStream = createWriteStream(tempFilePath);
 
-  for await (const chunk of data) {
+  if (!data) {
+    logger.error('No data returned from Speech Synthesis API');
+    return new Response(JSON.stringify({}), {
+      status: 500
+    });
+  }
+
+  for await (const chunk of data as any) {
     fileStream.write(chunk);
   }
   fileStream.end();
@@ -132,70 +112,4 @@ export async function POST(req: Request) {
   return new Response(JSON.stringify({}), {
     status: 200
   });
-
-  // const update = {
-  //   transcript,
-  //   source_language: sourceLanguageName,
-  //   translated_text: transalatedText,
-  //   status: 'cloning'
-  // };
-  // logger.log(`Updating job with ID ${result.request_id}`, update);
-  // const { error } = await supabase
-  //   .from('jobs')
-  //   .update({
-  //     ...update
-  //   })
-  //   .eq('transcription_id', result.request_id)
-  //   .select();
-
-  // if (error) {
-  //   logger.log('Failed to update job', error);
-  //   return new Response(JSON.stringify({ error: { statusCode: 500 } }), {
-  //     status: 500
-  //   });
-  // } else {
-  //   logger.log('Updated job with ID', result.request_id);
-  // }
-
-  // const updatedFields = {
-  //   translated_audio_url: translatedAudioUrl
-  // };
-
-  // return new Response(JSON.stringify({ data: url }), {
-  //   status: 200
-  // });
 }
-
-// const job = await getLatestJob(result.originalVideoUrl);
-// if (job.status !== 'synchronizing') {
-//   return new Response(JSON.stringify({ error: { statusCode: 200 } }), {
-//     status: 200
-//   });
-// }
-
-// const { id, url } = result;
-// logger.log('Updating job', {
-//   jobId: id
-// });
-
-// const { error } = await supabase
-//   .from('jobs')
-//   .update({
-//     status: 'completed',
-//     video_url: url
-//   })
-//   .eq('original_video_url', result.originalVideoUrl)
-//   .select();
-
-// if (error) {
-//   logger.error('Failed to update job', {
-//     jobId: id,
-//     error
-//   });
-//   throw error;
-// }
-
-// return new Response(JSON.stringify({}), {
-//   status: 200
-// });
-// }
