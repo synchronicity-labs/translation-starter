@@ -113,3 +113,9 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET() {
+  return new Response(JSON.stringify({ data: 'GOTTTEM' }), {
+    status: 200
+  });
+}
