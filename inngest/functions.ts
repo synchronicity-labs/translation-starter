@@ -1,4 +1,4 @@
-const CONRCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '1');
+const CONRCURRENT_JOBS = parseInt(process.env.MAX_CONCURRENT_JOBS || '10');
 
 import assert from 'assert';
 
