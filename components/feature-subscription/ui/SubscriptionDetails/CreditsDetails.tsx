@@ -1,5 +1,5 @@
-import { FC } from 'react';
-
+import { useCreditBalance } from '@/hooks/useCreditBalance';
+import { SubscriptionWithProduct } from '@/types/db';
 import {
   Badge,
   Box,
@@ -9,9 +9,7 @@ import {
   Stack,
   Spinner
 } from '@chakra-ui/react';
-
-import { useCreditBalance } from '@/hooks/useCreditBalance';
-import { SubscriptionWithProduct } from '@/types/db';
+import { FC } from 'react';
 
 interface Props {
   subscription: SubscriptionWithProduct;

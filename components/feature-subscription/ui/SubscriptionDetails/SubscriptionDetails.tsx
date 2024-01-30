@@ -1,16 +1,13 @@
 'use client';
 
-import { FC } from 'react';
-
-import { Stack, Flex, Divider, Text, Spinner } from '@chakra-ui/react';
-import { Session } from '@supabase/supabase-js';
-
-import ManageSubscriptionButton from '@/app/subscription/ManageSubscriptionButton';
-import { useSubscription } from '@/hooks/useSubscription';
-
 import CreditsDetails from './CreditsDetails';
 import PlanDetails from './PlanDetails';
 import RenewalDetails from './RenewalDetails';
+import ManageSubscriptionButton from '@/app/subscription/ManageSubscriptionButton';
+import { useSubscription } from '@/hooks/useSubscription';
+import { Stack, Flex, Divider, Text, Spinner } from '@chakra-ui/react';
+import { Session } from '@supabase/supabase-js';
+import { FC } from 'react';
 
 interface Props {
   session: Session;

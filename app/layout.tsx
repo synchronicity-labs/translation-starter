@@ -1,12 +1,8 @@
-import { PropsWithChildren } from 'react';
-
-import { ChakraProvider, Flex, Stack } from '@chakra-ui/react';
-
+import SupabaseProvider from './supabase-provider';
 import Footer from '@/components/ui/Footer';
 import Navbar from '@/components/ui/Navbar';
-
-import SupabaseProvider from './supabase-provider';
-
+import { ChakraProvider, Flex, Stack } from '@chakra-ui/react';
+import { PropsWithChildren } from 'react';
 import '@/styles/main.css';
 
 const meta = {

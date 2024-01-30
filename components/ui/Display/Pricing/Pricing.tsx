@@ -1,12 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
-import { useRouter } from 'next/navigation';
-
-import { Box, Flex, Link, Stack, Text } from '@chakra-ui/react';
-import { Session, User } from '@supabase/supabase-js';
-
+import Button from '../../Input/Button';
+import PageHeader from '../PageHeader';
 import {
   BillingInterval,
   Price,
@@ -15,9 +10,10 @@ import {
 } from '@/types/db';
 import { postData } from '@/utils/helpers';
 import { getStripe } from '@/utils/stripe-client';
-
-import Button from '../../Input/Button';
-import PageHeader from '../PageHeader';
+import { Box, Flex, Link, Stack, Text } from '@chakra-ui/react';
+import { Session, User } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface Props {
   session: Session | null;
@@ -136,7 +132,6 @@ export default function Pricing({
                 p={'4'}
                 rounded={'md'}
                 color="white"
-                key={product.id}
               >
                 <Flex gap="4">
                   <Text fontSize="xl">{product.name}</Text>

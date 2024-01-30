@@ -1,6 +1,5 @@
-import fetch, { FormData } from 'node-fetch';
-
 import { exists, isValidUrl } from '@/utils/helpers';
+import fetch, { FormData } from 'node-fetch';
 
 export async function POST(req: Request) {
   // Ensure the API key is set
@@ -52,7 +51,9 @@ export async function POST(req: Request) {
     );
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://5cd5-2600-1702-c20-21a0-809b-ce25-115d-6af0.ngrok-free.app';
 
   const webhook_url = `${baseUrl}/api/transcribe-and-translate/webhook`;
 

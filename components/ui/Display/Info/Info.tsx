@@ -1,6 +1,5 @@
-import { FC } from 'react';
-
 import { Box, Flex, Tooltip, Text } from '@chakra-ui/react';
+import { FC } from 'react';
 import { FaInfo } from 'react-icons/fa';
 
 interface Props {

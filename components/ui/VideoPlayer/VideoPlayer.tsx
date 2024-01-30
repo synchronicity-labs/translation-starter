@@ -1,9 +1,8 @@
 'use client';
 
 // import { Flex } from "@chakra-ui/react";
-import { FC, useState, useRef } from 'react';
-
 import { Box, AspectRatio, Flex } from '@chakra-ui/react';
+import { FC, useState, useRef } from 'react';
 import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 
 interface Props {

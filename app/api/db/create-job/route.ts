@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server';
-
 import { insertJob } from '@/app/supabase-server';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
@@ -13,11 +12,9 @@ export async function POST(req: Request) {
     if (!jobs || jobs.length === 0) {
       return NextResponse.json({
         success: false,
-        message: `Error creating job`
+        message: `Error craeting job`
       });
     }
-
-    const jobId = jobs[0].id;
 
     return NextResponse.json({
       success: true,

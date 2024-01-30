@@ -1,11 +1,9 @@
-import { cookies, headers } from 'next/headers';
-
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-
 import { Database } from '@/types_db';
 import { getURL } from '@/utils/helpers';
 import { stripe } from '@/utils/stripe';
 import { createOrRetrieveCustomer } from '@/utils/supabase-admin';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies, headers } from 'next/headers';
 
 export async function POST(req: Request) {
   if (req.method === 'POST') {

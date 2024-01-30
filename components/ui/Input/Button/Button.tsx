@@ -1,9 +1,8 @@
-import { FC } from 'react';
-
 import {
   Button as ChakraButton,
   ButtonProps as ChakraButtonProps
 } from '@chakra-ui/react';
+import { FC } from 'react';
 
 interface ButtonProps extends ChakraButtonProps {}
 

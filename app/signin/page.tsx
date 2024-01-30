@@ -1,12 +1,9 @@
-import Image from 'next/image';
-import { redirect } from 'next/navigation';
-
-import { Box, Flex, Link, Stack } from '@chakra-ui/react';
-
+import AuthUI from './AuthUI';
 import { getSession } from '@/app/supabase-server';
 import logo from '@/assets/logo.png';
-
-import AuthUI from './AuthUI';
+import { Box, Flex, Link, Stack } from '@chakra-ui/react';
+import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
 export default async function SignIn() {
   const session = await getSession();

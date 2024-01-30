@@ -1,9 +1,6 @@
 'use client';
 
-import { FC } from 'react';
-
-import { useRouter, usePathname } from 'next/navigation';
-
+import SignOutButton from './SignOutButton';
 import {
   Box,
   Flex,
@@ -16,9 +13,9 @@ import {
   Divider
 } from '@chakra-ui/react';
 import { User } from '@supabase/auth-helpers-nextjs';
+import { useRouter, usePathname } from 'next/navigation';
+import { FC } from 'react';
 import { MdSettings, MdPerson } from 'react-icons/md';
-
-import SignOutButton from './SignOutButton';
 
 interface Props {
   user: User;

@@ -1,13 +1,10 @@
 'use client';
 
-import { FC } from 'react';
-
-import { usePathname } from 'next/navigation';
-
+import ProfileButton from '../Input/ProfileButton';
 import { Flex, Link, Text, useMediaQuery } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
-
-import ProfileButton from '../Input/ProfileButton';
+import { usePathname } from 'next/navigation';
+import { FC } from 'react';
 
 interface Props {
   user: User;

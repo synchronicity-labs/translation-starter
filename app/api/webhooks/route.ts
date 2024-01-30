@@ -1,5 +1,4 @@
 import Stripe from 'stripe';
-
 import { stripe } from '@/utils/stripe';
 import {
   upsertProductRecord,

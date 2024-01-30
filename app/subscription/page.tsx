@@ -1,7 +1,3 @@
-import { redirect } from 'next/navigation';
-
-import { Flex, Stack } from '@chakra-ui/react';
-
 import {
   getSession,
   getActiveProductsWithPrices,
@@ -11,6 +7,8 @@ import {
 import SubscriptionDetails from '@/components/feature-subscription/ui/SubscriptionDetails/SubscriptionDetails';
 import PageHeader from '@/components/ui/Display/PageHeader';
 import Pricing from '@/components/ui/Display/Pricing';
+import { Flex, Stack } from '@chakra-ui/react';
+import { redirect } from 'next/navigation';
 
 export default async function Subscription() {
   // Grab data from db

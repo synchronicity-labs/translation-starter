@@ -1,8 +1,6 @@
-import { FC } from 'react';
-
-import { Badge, Box, Flex, Spinner } from '@chakra-ui/react';
-
 import { SubscriptionWithProduct } from '@/types/db';
+import { Badge, Box, Flex, Spinner } from '@chakra-ui/react';
+import { FC } from 'react';
 
 interface Props {
   subscription: SubscriptionWithProduct;

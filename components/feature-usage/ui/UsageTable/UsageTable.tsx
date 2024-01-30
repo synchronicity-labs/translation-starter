@@ -1,7 +1,11 @@
 'use client';
 
-import { FC, useState } from 'react';
-
+import UsageTableLoading from './UsageTableLoading';
+import StatusTag from '@/components/ui/Display/StatusTag';
+import PageNavigator from '@/components/ui/PageNavigator';
+import useJobData from '@/hooks/useJobData';
+import { Job, JobStatus } from '@/types/db';
+import { sortByCreatedAt } from '@/utils/helpers';
 import {
   Button,
   Flex,
@@ -18,14 +22,7 @@ import {
   Tr
 } from '@chakra-ui/react';
 import { DateTime } from 'luxon';
-
-import StatusTag from '@/components/ui/Display/StatusTag';
-import PageNavigator from '@/components/ui/PageNavigator';
-import useJobData from '@/hooks/useJobData';
-import { Job, JobStatus } from '@/types/db';
-import { sortByCreatedAt } from '@/utils/helpers';
-
-import UsageTableLoading from './UsageTableLoading';
+import { FC, useState } from 'react';
 
 interface Props {
   userId: string;

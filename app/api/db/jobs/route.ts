@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server';
-
 import { getJobs } from '@/app/supabase-server';
+import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
   if (req.method !== 'GET') {

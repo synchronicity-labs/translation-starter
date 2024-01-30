@@ -1,9 +1,7 @@
-import { FC } from 'react';
-
-import { Flex, Text, useMediaQuery } from '@chakra-ui/react';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
-
 import Button from '../Input/Button';
+import { Flex, Text, useMediaQuery } from '@chakra-ui/react';
+import { FC } from 'react';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
 interface Props {
   offset: number;
