@@ -59,8 +59,8 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
     label: `Video Requirements`,
     items: [
       `Accepted Formats: MP4`,
-      `Max video file size: 250mb`,
-      `Max resolution: 1080p`,
+      `Max video file size: 50mb`,
+      `Max resolution: 720p`,
       `Max frame rate: 30fps`,
       `Avoid multiple people in the video`,
       `Make sure there's a face in the first frame of the video`
@@ -71,8 +71,8 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
   const youtubeRequirements = {
     label: `Video Requirements`,
     items: [
-      `Max video length: 5min`,
-      `Max resolution: 1080p`,
+      `Max video length: 2min`,
+      `Max resolution: 720p`,
       `Max frame rate: 30fps`,
       `Avoid multiple people in the video`,
       `Make sure there's a face in the first frame of the video`
