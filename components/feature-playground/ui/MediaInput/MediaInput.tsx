@@ -79,6 +79,24 @@ const MediaInput: FC<Props> = ({ session, creditsAvailable }) => {
     ]
   };
 
+  // Show warning when user tries to leave/refresh page
+  useEffect(() => {
+    // This function will be called when the component is mounted
+    const handleBeforeUnload = (event: BeforeUnloadEvent): string | void => {
+      const message: string =
+        'Are you sure you want to leave this page? Any jobs that are uploading will not be saved.';
+      event.returnValue = message;
+      return message;
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   // Close sign up modal if user is signed in
   useEffect(() => {
     if (session && isOpen) {
