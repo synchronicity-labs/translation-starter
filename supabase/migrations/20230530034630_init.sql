@@ -107,7 +107,7 @@ CREATE TABLE jobs (
   user_id UUID REFERENCES auth.users NOT NULL
 );
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable insert for authenticated users" ON jobs FOR INSERT TO authenticated WITH CHECK true;
+CREATE POLICY "Enable insert for authenticated users" ON jobs FOR INSERT TO authenticated WITH CHECK (TRUE);
 
 CREATE POLICY "Enable update own data for authenticated users" ON jobs FOR UPDATE TO authenticated WITH CHECK (auth.uid() = user_id);
 
