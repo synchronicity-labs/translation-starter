@@ -1,4 +1,10 @@
 {
+  "env": {
+    "NEXT_PUBLIC_SYNC_API_URL": "https://api.synclabs.so/video",
+    "NEXT_PUBLIC_SPEECH_SYNTHESIS_API_URL": "https://api.synclabs.so/speech-synthesis",
+    "MAX_JOB_RETRIES": 6,
+    "INNGEST_CLIENT_ID": "translation-starter-app"
+  },
   "functions": {
     "app/api/**/**.ts": {
       "maxDuration": 10
