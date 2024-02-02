@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 
-import { ChakraProvider, Flex, Stack } from '@chakra-ui/react';
+import { ChakraProvider, Flex, Link, Stack, Text } from '@chakra-ui/react';
 
 import Footer from '@/components/ui/Footer';
 import Navbar from '@/components/ui/Navbar';
@@ -28,6 +28,10 @@ export const metadata = {
   }
 };
 
+const bannerCopy = `voice cloning is suspended: we're limited by 11labs 🙃 w/o bankrupting ourselves we can't offer this service — but you can clone the repo + launch a version for yourself `;
+
+const bannerLink = `https://github.com/synchronicity-labs/translation-starter`;
+
 export default function RootLayout({
   // Layouts must accept a children prop.
   // This will be populated with nested layouts or pages
@@ -44,6 +48,20 @@ export default function RootLayout({
               gap={0}
             >
               <Flex direction="column" flex="1">
+                <Flex
+                  className="bg-red-400"
+                  w="full"
+                  p={2}
+                  justifyContent={'center'}
+                  fontSize="sm"
+                >
+                  <Text>
+                    {bannerCopy}
+                    <Link href={bannerLink} target="_blank" fontWeight="bold">
+                      here
+                    </Link>
+                  </Text>
+                </Flex>
                 <Navbar />
                 <Flex w="full" flex="1" justifyContent={'center'}>
                   <Flex w="full" maxW="6xl" flex="1">
