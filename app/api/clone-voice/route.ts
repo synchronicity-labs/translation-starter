@@ -55,12 +55,15 @@ export async function POST(req: Request) {
   if (!voiceClone.ok) {
     const errorResponse = await voiceClone.text(); // Get the detailed error message
     logger.error(
-      `Failed to clone voice: ${voiceClone.status} ${voiceClone.statusText}`
+      `Failed to clone voice: ${voiceClone.status} ${voiceClone.statusText}`,
+      errorResponse
     );
-    logger.error(`Error response body: ${errorResponse}`);
-    throw new Error(
-      `Failed Eleven Labs API call to clone voice failed with status: ${voiceClone.status}, body: ${errorResponse}`
-    );
+    const data = {
+      voice_id: process.env.NEXT_PUBLIC_VOICE_OVERRIDE_ID
+    };
+    return new Response(JSON.stringify({ data }), {
+      status: 200
+    });
   }
 
   logger.log('Parsing response from Eleven Labs API');
