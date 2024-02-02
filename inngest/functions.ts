@@ -74,9 +74,6 @@ export const processJob = inngest.createFunction(
     idempotency: 'event.data.jobId',
 
     onFailure: async ({ event, error }) => {
-      // TODO: @Noah
-      // delete the voice from 11labs
-      // update the job to failed
       const data: {
         jobId: string;
         videoUrl: string;
