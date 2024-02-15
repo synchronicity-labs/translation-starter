@@ -11,6 +11,7 @@ import deleteVoice from '@/utils/deleteVoice';
 import synchronize from '@/utils/synchronize';
 import synthesisSpeech from '@/utils/sythesis-speech';
 import transcribeAndTranslate from '@/utils/transcribeAndTranslate';
+import { Job } from '@/types/db';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -88,7 +89,7 @@ export const processJob = inngest.createFunction(
       l.log('Deleting voice on failure', {
         jobId: job.id
       });
-      await deleteVoice(job);
+      await deleteVoice(job as Job);
       l.log('Deleted voice on failure', {
         jobId: job.id
       });
@@ -127,7 +128,7 @@ export const processJob = inngest.createFunction(
     const hasTranscript = job.transcript;
     if (!hasTranscript && !job.transcription_id) {
       logger.log('transcribing');
-      const { transcription_id } = await transcribeAndTranslate(job);
+      const { transcription_id } = await transcribeAndTranslate(job as Job);
       logger.log('Transcription ID', transcription_id);
 
       logger.log('updating job with transcription id');
@@ -168,7 +169,7 @@ export const processJob = inngest.createFunction(
 
     if (!job.voice_id && job.status === 'cloning') {
       try {
-        const fields = await cloneVoice(job);
+        const fields = await cloneVoice(job as Job);
         await updateJob(data.jobId, {
           ...fields,
           status: 'synthesizing'
@@ -185,7 +186,7 @@ export const processJob = inngest.createFunction(
     if (!job.translated_audio_url && job.status === 'synthesizing') {
       try {
         logger.log('synthesizing speech');
-        const fields = await synthesisSpeech(job);
+        const fields = await synthesisSpeech(job as Job);
         await updateJob(data.jobId, {
           ...fields,
           status: 'synchronizing'
@@ -199,13 +200,13 @@ export const processJob = inngest.createFunction(
     }
 
     if (job.status === 'synchronizing') {
-      await synchronize(job);
+      await synchronize(job as Job);
     }
 
     logger.log(`Job is in ${job.status} state, cleaning up`);
 
     if (job.voice_id) {
-      await deleteVoice(job);
+      await deleteVoice(job as Job);
     }
     return { event };
   }

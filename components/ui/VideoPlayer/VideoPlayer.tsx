@@ -101,6 +101,7 @@ const VideoPlayer: FC<Props> = ({
       </Box>
     );
   }
+  return null;
 };
 
 export default VideoPlayer;

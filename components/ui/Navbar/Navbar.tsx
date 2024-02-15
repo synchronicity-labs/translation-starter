@@ -1,14 +1,13 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
+import { useSupabase } from '@/app/supabase-provider';
+import { User } from '@supabase/supabase-js';
 import { Box, Flex } from '@chakra-ui/react';
-import { FaDollarSign, FaRegWindowMaximize } from 'react-icons/fa';
-
 import logo from '@/assets/logo.png';
-import { createServerSupabaseClient } from '@/app/supabase-server';
-
 import Button from '../Input/Button';
-
 import AuthView from './AuthView';
 
 const pages = [
@@ -22,11 +21,29 @@ const pages = [
   }
 ];
 
-export default async function Navbar() {
-  const supabase = createServerSupabaseClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+export default function Navbar() {
+  const { supabase } = useSupabase(); // Use the hook to get Supabase client
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        // Get the current user session
+        const { data, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        if (data.user) {
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [supabase]);
 
   return (
     <Flex

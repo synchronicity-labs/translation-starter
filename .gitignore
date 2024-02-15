@@ -36,3 +36,5 @@ yarn-error.log*
 # editors
 .vscode
 .env*.local
+
+.local

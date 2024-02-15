@@ -1,0 +1,42 @@
+run = ["yarn", "dev"]
+modules = ["nodejs-20:v8-20230920-bd784b9"]
+
+[nix]
+channel = "stable-22_11"
+
+[deployment]
+build = ["yarn", "build"]
+run = ["yarn", "start"]
+deploymentTarget = "cloudrun"
+ignorePorts = false
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[[ports]]
+localPort = 8288
+
+[[ports]]
+localPort = 35461
+externalPort = 5000
+
+[[ports]]
+localPort = 37667
+externalPort = 4200
+
+[[ports]]
+localPort = 40495
+externalPort = 3003
+
+[[ports]]
+localPort = 41517
+externalPort = 3001
+
+[[ports]]
+localPort = 46429
+externalPort = 3002
+
+[[ports]]
+localPort = 46833
+externalPort = 3004

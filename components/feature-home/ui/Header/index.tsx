@@ -14,6 +14,21 @@ const Header: FC<Props> = () => {
   const router = useRouter();
   const title = `Translation AI`;
   const subtitle = `Lip-synced Language Translation at Your Fingertips`;
+
+  // const [user, setUser] = useState<User | null>(null); // Initial user state is null
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const supabase = createServerSupabaseClient();
+  //     const {
+  //       data: { user }
+  //     } = await supabase.auth.getUser();
+  //     setUser(user); // Set user state
+  //   };
+
+  //   fetchUser(); // Invoke the async function
+  // }, []); // Empty dependency array ensures this runs once on mount
+
   return (
     <Flex
       gap="8"
