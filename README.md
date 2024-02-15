@@ -4,6 +4,8 @@
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6,oac_H9biZULoTuJYFO32xkUydDmT&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
 
+[![Run on Repl.it](https://replit.com/badge/github/synchronicity-labs/translation-starter)](https://replit.com/new/github//synchronicity-labs/translation-starter?branch=replit)
+
 - [babelfish by sync.](#babelfish-by-sync)
   - [tldr](#tldr)
   - [How its built](#how-its-built)
@@ -62,6 +64,8 @@ To successfully deploy the template to production, execute the following steps i
 ### 1. Initiate Deployment
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter&env=SYNC_LABS_API_KEY,GLADIA_API_KEY,ELEVEN_LABS_API_KEY&envDescription=API%20Keys%20and%20other%20environement%20variables%20required%20for%20this%20app%20to%20function%20correctly.&envLink=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%231-initiate-deployment&project-name=translation-starter&repository-name=translation-starter&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6,oac_H9biZULoTuJYFO32xkUydDmT&external-id=https%3A%2F%2Fgithub.com%2Fsynchronicity-labs%2Ftranslation-starter%2Ftree%2Fmain)
+
+[![Run on Repl.it](https://replit.com/badge/github/synchronicity-labs/translation-starter)](https://replit.com/new/github//synchronicity-labs/translation-starter?branch=replit)
 
 Clicking the Deploy button will open up a browser tab with instructions on generating a new GitHub repository from this template, creating a corrseponding project in Supabase for `auth` and `storage` and setting up Inngest for serverless queues. Below are the steps you'll walk through:
 
